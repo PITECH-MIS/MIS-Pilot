@@ -50,6 +50,7 @@ private:
     QLabel *statusBarWkcLabel;
     QLabel *statusBarSlaveCountLabel;
     QMap<QString, QString> ethInfo;
+    QMap<QString, QJoystickDevice*> joysticks;
     QString currentPath;
     QString configXMLPath;
 };

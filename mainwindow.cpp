@@ -3,6 +3,8 @@
 #include <QMessageBox>
 #include <QFontMetrics>
 
+#define DEBUG_ENVIRONMENT
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -21,8 +23,16 @@ MainWindow::MainWindow(QWidget *parent)
     ui->configXmlPathEdit->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
     stateViewModel = new QStandardItemModel;
     ui->stateTreeView->setModel(stateViewModel);
+#ifndef DEBUG_ENVIRONMENT
     ui->enterControllerButton->setEnabled(false);
+#else
+    ui->enterControllerButton->setEnabled(true);
+#endif
     updateEthList();
+    QJoysticks *QJoy = QJoysticks::getInstance();
+    for(int i = 0; i < QJoy->deviceNames().size(); i++) joysticks.insert(QJoy->deviceNames().at(i), QJoy->inputDevices().at(i));
+    onDebugMsg(QString::asprintf("Detected %d joystick(s): ", joysticks.size()));
+    for(auto i = joysticks.constKeyValueBegin(); i != joysticks.constKeyValueEnd(); ++i) onDebugMsg(i->first);
     connect(ui->con_pushButton, &QPushButton::clicked, this, &MainWindow::onClickConnect);
     connect(&wrapper, &ECATWrapper::errorMessage, this, &MainWindow::onErrorMsg);
     connect(&wrapper, &ECATWrapper::infoMessage, this, &MainWindow::onInfoMsg);
@@ -42,7 +52,7 @@ void MainWindow::onEnableController()
 {
     if(!controllerWindow)
     {
-        controllerWindow = new ControllerWindow(this, &wrapper);
+        controllerWindow = new ControllerWindow(wrapper, joysticks, this);
         connect(controllerWindow, &ControllerWindow::closed, this, &MainWindow::onDisableController);
         connect(controllerWindow, &ControllerWindow::errorMessage, this, &MainWindow::onErrorMsg);
         connect(controllerWindow, &ControllerWindow::infoMessage, this, &MainWindow::onInfoMsg);
@@ -66,7 +76,6 @@ void MainWindow::onSelectXMLPath()
     if(dialog.exec())
     {
         configXMLPath = dialog.selectedFiles().at(0);
-        // onDebugMsg(configXMLPath);
         QFontMetrics fontWidth(ui->configXmlPathEdit->font());
         QString pathElided = fontWidth.elidedText(configXMLPath, Qt::ElideMiddle, ui->configXmlPathEdit->width() - 5);
         ui->configXmlPathEdit->setText(pathElided);
@@ -116,13 +125,17 @@ void MainWindow::onECATStateChanged()
     {
         if(controllerWindow && (wrapper.getExpectedWKC() == wrapper.getRealWKC())) controllerWindow->controlLoop();
         ui->con_pushButton->setText(QString::fromUtf8("Disconnect"));
+#ifndef DEBUG_ENVIRONMENT
         ui->enterControllerButton->setEnabled(true);
+#endif
     }
     else
     {
         stateViewModel->clear();
         ui->con_pushButton->setText(QString::fromUtf8("Connect"));
+#ifndef DEBUG_ENVIRONMENT
         ui->enterControllerButton->setEnabled(false);
+#endif
     }
     statusBarStateLabel->setText("State: " + wrapper.getExpectedStateName() + " ");
     statusBarWkcLabel->setText(QString::asprintf("WKC: %d/%d ", wrapper.getRealWKC(), wrapper.getExpectedWKC()));

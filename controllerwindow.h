@@ -17,11 +17,10 @@ class ControllerWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit ControllerWindow(QWidget *parent = nullptr, ECATWrapper *w = nullptr);
+    explicit ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice*>& j, QWidget *parent = nullptr);
     ~ControllerWindow();
-    QJoysticks *QJoy;
-    QMap<QString, QJoystickDevice*> joysticks;
-    ECATWrapper *wrapper;
+    ECATWrapper& wrapper;
+    QMap<QString, QJoystickDevice*>& joysticks;
     void closeEvent(QCloseEvent *event) override;
 public slots:
     void onPOVEvent(const QJoystickPOVEvent &event);

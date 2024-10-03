@@ -10,15 +10,13 @@
 #define UI_CONTROLLERWINDOW_H
 
 #include <QtCore/QVariant>
+#include <QtGui/QAction>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QGridLayout>
-#include <QtWidgets/QGroupBox>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QLCDNumber>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QStatusBar>
@@ -45,31 +43,9 @@ public:
     QSlider *rightJoyVerticalSlider;
     JoyPad *rightJoyPad;
     QLabel *label_2;
-    QGroupBox *motorDebugGroupBox;
-    QWidget *gridLayoutWidget_3;
-    QGridLayout *gridLayout;
-    QGroupBox *groupBox_3;
-    QLCDNumber *motorPositionLcd;
-    QSlider *motorModeSlider;
-    QSlider *motorTrajAngleSlider;
-    QCheckBox *motorEnableCheckBox;
-    QComboBox *motorSNComboBox;
-    QGroupBox *groupBox_2;
-    QLCDNumber *motorSpeedLcd;
-    QHBoxLayout *horizontalLayout;
-    QGroupBox *groupBox;
-    QLCDNumber *motorStatusLed1;
-    QGroupBox *groupBox_8;
-    QLCDNumber *motorStatusLed2;
-    QGroupBox *groupBox_7;
-    QLCDNumber *motorStatusLed3;
-    QGroupBox *groupBox_6;
-    QLCDNumber *motorStatusLed4;
-    QGroupBox *groupBox_5;
-    QLCDNumber *motorStatusLed5;
-    QGroupBox *groupBox_4;
-    QLCDNumber *motorStatusLed6;
     QMenuBar *menubar;
+    QMenu *menuLoadDestFiles;
+    QMenu *menuDebugger;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *ControllerWindow)
@@ -81,7 +57,7 @@ public:
         centralwidget->setObjectName("centralwidget");
         gridLayoutWidget = new QWidget(centralwidget);
         gridLayoutWidget->setObjectName("gridLayoutWidget");
-        gridLayoutWidget->setGeometry(QRect(40, 270, 222, 299));
+        gridLayoutWidget->setGeometry(QRect(40, 270, 223, 299));
         gridLayout_2 = new QGridLayout(gridLayoutWidget);
         gridLayout_2->setObjectName("gridLayout_2");
         gridLayout_2->setVerticalSpacing(10);
@@ -134,7 +110,7 @@ public:
 
         gridLayoutWidget_2 = new QWidget(centralwidget);
         gridLayoutWidget_2->setObjectName("gridLayoutWidget_2");
-        gridLayoutWidget_2->setGeometry(QRect(540, 270, 221, 299));
+        gridLayoutWidget_2->setGeometry(QRect(540, 270, 223, 299));
         gridLayout_3 = new QGridLayout(gridLayoutWidget_2);
         gridLayout_3->setObjectName("gridLayout_3");
         gridLayout_3->setVerticalSpacing(10);
@@ -180,129 +156,21 @@ public:
 
         gridLayout_3->addWidget(label_2, 0, 0, 1, 1);
 
-        motorDebugGroupBox = new QGroupBox(centralwidget);
-        motorDebugGroupBox->setObjectName("motorDebugGroupBox");
-        motorDebugGroupBox->setGeometry(QRect(20, 10, 751, 101));
-        gridLayoutWidget_3 = new QWidget(motorDebugGroupBox);
-        gridLayoutWidget_3->setObjectName("gridLayoutWidget_3");
-        gridLayoutWidget_3->setGeometry(QRect(0, 20, 751, 80));
-        gridLayout = new QGridLayout(gridLayoutWidget_3);
-        gridLayout->setObjectName("gridLayout");
-        gridLayout->setContentsMargins(0, 0, 0, 0);
-        groupBox_3 = new QGroupBox(gridLayoutWidget_3);
-        groupBox_3->setObjectName("groupBox_3");
-        motorPositionLcd = new QLCDNumber(groupBox_3);
-        motorPositionLcd->setObjectName("motorPositionLcd");
-        motorPositionLcd->setGeometry(QRect(0, 20, 101, 31));
-
-        gridLayout->addWidget(groupBox_3, 1, 2, 1, 1);
-
-        motorModeSlider = new QSlider(gridLayoutWidget_3);
-        motorModeSlider->setObjectName("motorModeSlider");
-        sizePolicy.setHeightForWidth(motorModeSlider->sizePolicy().hasHeightForWidth());
-        motorModeSlider->setSizePolicy(sizePolicy);
-        motorModeSlider->setMinimumSize(QSize(100, 0));
-        motorModeSlider->setMaximum(3);
-        motorModeSlider->setOrientation(Qt::Orientation::Horizontal);
-        motorModeSlider->setTickPosition(QSlider::TickPosition::TicksBelow);
-
-        gridLayout->addWidget(motorModeSlider, 0, 2, 1, 1);
-
-        motorTrajAngleSlider = new QSlider(gridLayoutWidget_3);
-        motorTrajAngleSlider->setObjectName("motorTrajAngleSlider");
-        motorTrajAngleSlider->setMinimum(-80);
-        motorTrajAngleSlider->setMaximum(80);
-        motorTrajAngleSlider->setSingleStep(1);
-        motorTrajAngleSlider->setPageStep(1);
-        motorTrajAngleSlider->setOrientation(Qt::Orientation::Horizontal);
-        motorTrajAngleSlider->setTickPosition(QSlider::TickPosition::TicksBelow);
-        motorTrajAngleSlider->setTickInterval(1);
-
-        gridLayout->addWidget(motorTrajAngleSlider, 0, 3, 1, 1);
-
-        motorEnableCheckBox = new QCheckBox(gridLayoutWidget_3);
-        motorEnableCheckBox->setObjectName("motorEnableCheckBox");
-
-        gridLayout->addWidget(motorEnableCheckBox, 0, 1, 1, 1);
-
-        motorSNComboBox = new QComboBox(gridLayoutWidget_3);
-        motorSNComboBox->setObjectName("motorSNComboBox");
-        sizePolicy.setHeightForWidth(motorSNComboBox->sizePolicy().hasHeightForWidth());
-        motorSNComboBox->setSizePolicy(sizePolicy);
-        motorSNComboBox->setMinimumSize(QSize(120, 0));
-        motorSNComboBox->setMaximumSize(QSize(120, 16777215));
-
-        gridLayout->addWidget(motorSNComboBox, 0, 0, 1, 1);
-
-        groupBox_2 = new QGroupBox(gridLayoutWidget_3);
-        groupBox_2->setObjectName("groupBox_2");
-        motorSpeedLcd = new QLCDNumber(groupBox_2);
-        motorSpeedLcd->setObjectName("motorSpeedLcd");
-        motorSpeedLcd->setGeometry(QRect(0, 20, 161, 31));
-
-        gridLayout->addWidget(groupBox_2, 1, 0, 1, 2);
-
-        horizontalLayout = new QHBoxLayout();
-        horizontalLayout->setObjectName("horizontalLayout");
-        groupBox = new QGroupBox(gridLayoutWidget_3);
-        groupBox->setObjectName("groupBox");
-        motorStatusLed1 = new QLCDNumber(groupBox);
-        motorStatusLed1->setObjectName("motorStatusLed1");
-        motorStatusLed1->setGeometry(QRect(0, 20, 71, 31));
-
-        horizontalLayout->addWidget(groupBox);
-
-        groupBox_8 = new QGroupBox(gridLayoutWidget_3);
-        groupBox_8->setObjectName("groupBox_8");
-        motorStatusLed2 = new QLCDNumber(groupBox_8);
-        motorStatusLed2->setObjectName("motorStatusLed2");
-        motorStatusLed2->setGeometry(QRect(0, 20, 71, 31));
-
-        horizontalLayout->addWidget(groupBox_8);
-
-        groupBox_7 = new QGroupBox(gridLayoutWidget_3);
-        groupBox_7->setObjectName("groupBox_7");
-        motorStatusLed3 = new QLCDNumber(groupBox_7);
-        motorStatusLed3->setObjectName("motorStatusLed3");
-        motorStatusLed3->setGeometry(QRect(0, 20, 61, 31));
-
-        horizontalLayout->addWidget(groupBox_7);
-
-        groupBox_6 = new QGroupBox(gridLayoutWidget_3);
-        groupBox_6->setObjectName("groupBox_6");
-        motorStatusLed4 = new QLCDNumber(groupBox_6);
-        motorStatusLed4->setObjectName("motorStatusLed4");
-        motorStatusLed4->setGeometry(QRect(0, 20, 61, 31));
-
-        horizontalLayout->addWidget(groupBox_6);
-
-        groupBox_5 = new QGroupBox(gridLayoutWidget_3);
-        groupBox_5->setObjectName("groupBox_5");
-        motorStatusLed5 = new QLCDNumber(groupBox_5);
-        motorStatusLed5->setObjectName("motorStatusLed5");
-        motorStatusLed5->setGeometry(QRect(0, 20, 61, 31));
-
-        horizontalLayout->addWidget(groupBox_5);
-
-        groupBox_4 = new QGroupBox(gridLayoutWidget_3);
-        groupBox_4->setObjectName("groupBox_4");
-        motorStatusLed6 = new QLCDNumber(groupBox_4);
-        motorStatusLed6->setObjectName("motorStatusLed6");
-        motorStatusLed6->setGeometry(QRect(0, 20, 61, 31));
-
-        horizontalLayout->addWidget(groupBox_4);
-
-
-        gridLayout->addLayout(horizontalLayout, 1, 3, 1, 1);
-
         ControllerWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(ControllerWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 17));
+        menubar->setGeometry(QRect(0, 0, 800, 21));
+        menuLoadDestFiles = new QMenu(menubar);
+        menuLoadDestFiles->setObjectName("menuLoadDestFiles");
+        menuDebugger = new QMenu(menubar);
+        menuDebugger->setObjectName("menuDebugger");
         ControllerWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(ControllerWindow);
         statusbar->setObjectName("statusbar");
         ControllerWindow->setStatusBar(statusbar);
+
+        menubar->addAction(menuLoadDestFiles->menuAction());
+        menubar->addAction(menuDebugger->menuAction());
 
         retranslateUi(ControllerWindow);
 
@@ -314,16 +182,8 @@ public:
         ControllerWindow->setWindowTitle(QCoreApplication::translate("ControllerWindow", "Controller", nullptr));
         label->setText(QCoreApplication::translate("ControllerWindow", "Left Joystick", nullptr));
         label_2->setText(QCoreApplication::translate("ControllerWindow", "Right Joystick", nullptr));
-        motorDebugGroupBox->setTitle(QCoreApplication::translate("ControllerWindow", "Motor Debug", nullptr));
-        groupBox_3->setTitle(QCoreApplication::translate("ControllerWindow", "Position", nullptr));
-        motorEnableCheckBox->setText(QCoreApplication::translate("ControllerWindow", "Enable", nullptr));
-        groupBox_2->setTitle(QCoreApplication::translate("ControllerWindow", "Speed", nullptr));
-        groupBox->setTitle(QCoreApplication::translate("ControllerWindow", "Iq", nullptr));
-        groupBox_8->setTitle(QCoreApplication::translate("ControllerWindow", "CurrentLimit", nullptr));
-        groupBox_7->setTitle(QCoreApplication::translate("ControllerWindow", "LimiterState", nullptr));
-        groupBox_6->setTitle(QCoreApplication::translate("ControllerWindow", "ErrorCode", nullptr));
-        groupBox_5->setTitle(QCoreApplication::translate("ControllerWindow", "Enable", nullptr));
-        groupBox_4->setTitle(QCoreApplication::translate("ControllerWindow", "Mode", nullptr));
+        menuLoadDestFiles->setTitle(QCoreApplication::translate("ControllerWindow", "Load Dest. files", nullptr));
+        menuDebugger->setTitle(QCoreApplication::translate("ControllerWindow", "Debugger", nullptr));
     } // retranslateUi
 
 };

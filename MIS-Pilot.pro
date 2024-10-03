@@ -31,6 +31,7 @@ SOURCES += \
     iFOC/motor.cpp \
     main.cpp \
     mainwindow.cpp \
+    motordebugger.cpp \
     utils.cpp
 
 HEADERS += \
@@ -40,12 +41,14 @@ HEADERS += \
     iFOC/mis_equipment.h \
     iFOC/motor.h \
     mainwindow.h \
+    motordebugger.h \
     utils.h \
     utypes.h
 
 FORMS += \
     controllerwindow.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    motordebugger.ui
 
 QT += xml
 QT += core
