@@ -30,7 +30,7 @@ void ControllerWindow::showWindow()
     motorSNSet.clear();
     motorHashMap.clear();
     motorSNSet = getMotorSN(wrapper.input_vector);
-    emit infoMessage(QString::asprintf("Find %d motor(s) in EtherCAT Bus", motorSNSet.size()));
+    emit infoMessage(QString::asprintf("Find %d motor(s) on EtherCAT Bus", motorSNSet.size()));
     for(const auto &i : std::as_const(motorSNSet))
     {
         emit debugMessage("Find motor SN: " + i);

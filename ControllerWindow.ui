@@ -252,7 +252,7 @@
    </property>
    <widget class="QMenu" name="menuLoadDestFiles">
     <property name="title">
-     <string>Load Dest. files</string>
+     <string>Load Desc. files</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuDebugger">
