@@ -6,6 +6,7 @@
 #include <QStringList>
 #include <QMap>
 #include <QCloseEvent>
+#include "motordebugger.h"
 #include "ecatwrapper.h"
 #include "iFOC/motor.h"
 
@@ -26,10 +27,6 @@ public slots:
     void onPOVEvent(const QJoystickPOVEvent &event);
     void onAxisEvent(const QJoystickAxisEvent &event);
     void onButtonEvent(const QJoystickButtonEvent &event);
-    void onClickDebugEnable();
-    void onSelectDebugMode();
-    void onSendDebugAction();
-    void onSelectDebugMotor();
     void showWindow();
     void controlLoop();
 signals:
@@ -39,9 +36,9 @@ signals:
     void closed();
 private:
     Ui::ControllerWindow *ui;
+    MotorDebugger* debuggerWindow = nullptr;
     QSet<QString> motorSNSet;
-    QMap<QString, Motor*> motorMap;
-    Motor* currentDebuggingMotor = nullptr;
+    QMap<QString, QSharedPointer<Motor>> motorMap;
 };
 
 #endif // CONTROLLERWINDOW_H

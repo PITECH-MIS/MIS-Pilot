@@ -161,7 +161,7 @@ void JoyPad::resizeEvent(QResizeEvent *event)
     }
 
     m_bounds = QRectF(topleft, QSize(a, a));
-    qDebug() << m_bounds;
+    // qDebug() << m_bounds;
 
     m_knopBounds.setWidth(a * 0.3);
     m_knopBounds.setHeight(a*0.3);
@@ -220,12 +220,15 @@ void JoyPad::paintEvent(QPaintEvent *event)
  */
 void JoyPad::mousePressEvent(QMouseEvent *event)
 {
-    // if (m_knopBounds.contains(event->pos()))
-    // {
-    //     m_returnAnimation->stop();
-    //     m_lastPos = event->pos();
-    //     knopPressed = true;
-    // }
+    if(isVirtualJoystick)
+    {
+        if (m_knopBounds.contains(event->pos()))
+        {
+            m_returnAnimation->stop();
+            m_lastPos = event->pos();
+            knopPressed = true;
+        }
+    }
 }
 
 /**
@@ -234,10 +237,12 @@ void JoyPad::mousePressEvent(QMouseEvent *event)
  */
 void JoyPad::mouseReleaseEvent(QMouseEvent *event)
 {
-    // Q_UNUSED(event)
-
-    // knopPressed = false;
-    // m_returnAnimation->start();
+    if(isVirtualJoystick)
+    {
+        Q_UNUSED(event)
+        knopPressed = false;
+        m_returnAnimation->start();
+    }
 }
 
 /**
@@ -246,41 +251,44 @@ void JoyPad::mouseReleaseEvent(QMouseEvent *event)
  */
 void JoyPad::mouseMoveEvent(QMouseEvent *event)
 {
-    // if (!knopPressed) return;
+    if(isVirtualJoystick)
+    {
+        if (!knopPressed) return;
 
-    // // moved distance
-    // QPointF dPos = event->pos() - m_lastPos;
+        // moved distance
+        QPointF dPos = event->pos() - m_lastPos;
 
-    // // change the distance sligthly to guarantee overlaping knop and pointer
-    // dPos += 0.05 * (event->pos() - m_knopBounds.center());
+        // change the distance sligthly to guarantee overlaping knop and pointer
+        dPos += 0.05 * (event->pos() - m_knopBounds.center());
 
-    // QPointF fromCenterToKnop = m_knopBounds.center() + dPos - m_bounds.center();
+        QPointF fromCenterToKnop = m_knopBounds.center() + dPos - m_bounds.center();
 
-    // qreal radius = ( m_bounds.width() - m_knopBounds.width() ) / 2;
+        qreal radius = ( m_bounds.width() - m_knopBounds.width() ) / 2;
 
-    // fromCenterToKnop.setX(constrain(fromCenterToKnop.x(), -radius, radius));
-    // fromCenterToKnop.setY(constrain(fromCenterToKnop.y(), -radius, radius));
+        fromCenterToKnop.setX(constrain(fromCenterToKnop.x(), -radius, radius));
+        fromCenterToKnop.setY(constrain(fromCenterToKnop.y(), -radius, radius));
 
-    // m_knopBounds.moveCenter(fromCenterToKnop + m_bounds.center());
-    // m_lastPos = event->pos();
+        m_knopBounds.moveCenter(fromCenterToKnop + m_bounds.center());
+        m_lastPos = event->pos();
 
-    // update();
+        update();
 
-    // if (radius == 0) return;
-    // float x = ( m_knopBounds.center().x() - m_bounds.center().x() ) / radius;
-    // float y = (-m_knopBounds.center().y() + m_bounds.center().y() ) / radius;
+        if (radius == 0) return;
+        float x = ( m_knopBounds.center().x() - m_bounds.center().x() ) / radius;
+        float y = (-m_knopBounds.center().y() + m_bounds.center().y() ) / radius;
 
-    // if (m_x !=x)
-    // {
-    //     m_x = x;
-    //     emit xChanged(m_x);
-    // }
+        if (m_x !=x)
+        {
+            m_x = x;
+            emit xChanged(m_x);
+        }
 
-    // if (m_y !=y)
-    // {
-    //     m_y = y;
-    //     emit yChanged(m_y);
-    // }
+        if (m_y !=y)
+        {
+            m_y = y;
+            emit yChanged(m_y);
+        }
+    }
 }
 
 

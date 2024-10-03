@@ -2,7 +2,7 @@
 
 // Motor::Motor(uint32_t _SN) {}
 
-bool Motor::findMotorInVector()
+bool Motor::findMotorInVector(QVector<slave_inputs_t*>& input, QVector<slave_outputs_t*>& output)
 {
     if(input.size() != output.size()) return false;
     for(int i = 0; i < input.size(); i++)
@@ -26,7 +26,7 @@ bool Motor::findMotorInVector()
 
 bool Motor::checkAlive()
 {
-    return state_ptr && (state_ptr->IsAlive) && (state_ptr->SN == SN);
+    return state_ptr && (state_ptr->IsAlive) && (getSN() == SN);
 }
 
 void Motor::resetState()
@@ -48,7 +48,7 @@ bool Motor::setState(Motor::State state)
 {
     if(!checkAlive()) return false;
     set.Enable = (uint8_t)state;
-    if(state && getCurrentLimit() <= 0.0f) setCurrentLimit(0.5f);
+    // if(state && getCurrentLimit() <= 0.0f) setCurrentLimit(0.5f);
     return true;
 }
 
@@ -56,7 +56,6 @@ bool Motor::setSpeed(float rpm)
 {
     if(!checkAlive()) return false;
     set.SetSpeed = rpm;
-    // set_ptr->SetSpeed = rpm;
     return true;
 }
 
@@ -64,7 +63,6 @@ bool Motor::setTrajAbsAngle(float deg)
 {
     if(!checkAlive()) return false;
     set.SetTrajectoryAngle = deg;
-    // set_ptr->SetTrajectoryAngle = deg;
     return true;
 }
 
@@ -72,6 +70,20 @@ bool Motor::setCurrentLimit(float limit)
 {
     if(!checkAlive()) return false;
     set.SetCurrentLimit = limit;
+    return true;
+}
+
+bool Motor::setTorque(float Iq)
+{
+    if(!checkAlive()) return false;
+    set.IqSet = Iq;
+    return true;
+}
+
+bool Motor::setPosAbsAngle(float deg)
+{
+    if(!checkAlive()) return false;
+    set.SetRawAngle = deg;
     return true;
 }
 
@@ -100,9 +112,19 @@ float Motor::getIq()
     return state_ptr->IqReal;
 }
 
+float Motor::getId()
+{
+    return state_ptr->IdReal;
+}
+
 float Motor::getVBus()
 {
     return state_ptr->Vbus;
+}
+
+float Motor::getIBus()
+{
+    return state_ptr->Ibus;
 }
 
 uint16_t Motor::getErrorCode()
@@ -113,6 +135,21 @@ uint16_t Motor::getErrorCode()
 float Motor::getCurrentLimit()
 {
     return state_ptr->CurrentLimit;
+}
+
+uint16_t Motor::getMCUTemp()
+{
+    return state_ptr->MCUTemp;
+}
+
+uint8_t Motor::getRawLimiterState()
+{
+    return state_ptr->LimiterState;
+}
+
+uint32_t Motor::getSN()
+{
+    return state_ptr->SN;
 }
 
 void Motor::applyMotorConfig()

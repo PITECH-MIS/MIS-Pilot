@@ -8,24 +8,24 @@
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 },
                 "PushPull": {
                     "motor_sn": 4185641872,
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 },
                 "Linear": {
                     "motor_sn": 4225469057,
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 }
             },
             "Distal": {
@@ -34,24 +34,24 @@
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 },
                 "PushPull": {
                     "motor_sn": 4279984532,
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 },
                 "Linear": {
                     "motor_sn": 4225469058,
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 }
             }
         },
@@ -62,24 +62,24 @@
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 },
                 "PushPull": {
                     "motor_sn": 3170866565,
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 },
                 "Linear": {
                     "motor_sn": 2950615774,
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 }
             },
             "Distal": {
@@ -88,24 +88,24 @@
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 },
                 "PushPull": {
                     "motor_sn": 4212860423,
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 },
                 "Linear": {
                     "motor_sn": 2950615775,
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 }
             }
         },
@@ -116,24 +116,24 @@
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 },
                 "PushPull": {
                     "motor_sn": 0,
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 },
                 "Linear": {
                     "motor_sn": 4252734490,
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 }
             },
             "Distal": {
@@ -142,24 +142,24 @@
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 },
                 "PushPull": {
                     "motor_sn": 4189814537,
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 },
                 "Linear": {
                     "motor_sn": 4252734491,
                     "limiter_idx": 0,
                     "current_limit": 0.5,
                     "velocity_limit": 0,
-                    "neg_pos_limit": -720,
-                    "right_pos_limit": 720
+                    "neg_angle_limit": -720,
+                    "pos_angle_limit": 720
                 }
             }
         }

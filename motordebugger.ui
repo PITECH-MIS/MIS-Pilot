@@ -265,7 +265,11 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="motorSNComboBox"/>
+           <widget class="QComboBox" name="motorSNComboBox">
+            <property name="placeholderText">
+             <string>Serial Number</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -279,7 +283,11 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="motorModeComboBox"/>
+           <widget class="QComboBox" name="motorModeComboBox">
+            <property name="placeholderText">
+             <string>Motor Mode</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -304,10 +312,13 @@
          <x>-1</x>
          <y>19</y>
          <width>391</width>
-         <height>111</height>
+         <height>120</height>
         </rect>
        </property>
        <layout class="QFormLayout" name="formLayout_2">
+        <property name="verticalSpacing">
+         <number>3</number>
+        </property>
         <item row="0" column="0">
          <widget class="QLabel" name="label_2">
           <property name="text">
@@ -329,13 +340,6 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QSpinBox" name="motorTargetSpeedSpinBox">
-          <property name="singleStep">
-           <number>5</number>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="0">
          <widget class="QLabel" name="label_5">
           <property name="text">
@@ -343,26 +347,25 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QSpinBox" name="motorTargetPosSpinBox">
-          <property name="singleStep">
-           <number>15</number>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="1">
-         <widget class="QDoubleSpinBox" name="motorTargetTorqueDoubleSpinBox">
+         <widget class="QDoubleSpinBox" name="motorTargetTorqueSpinBox">
           <property name="singleStep">
            <double>0.050000000000000</double>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QDoubleSpinBox" name="motorTargetCurrLimitDoubleSpinBox">
+         <widget class="QDoubleSpinBox" name="motorTargetCurrLimitSpinBox">
           <property name="singleStep">
            <double>0.100000000000000</double>
           </property>
          </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QDoubleSpinBox" name="motorTargetPosSpinBox"/>
+        </item>
+        <item row="2" column="1">
+         <widget class="QDoubleSpinBox" name="motorTargetSpeedSpinBox"/>
         </item>
        </layout>
       </widget>

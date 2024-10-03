@@ -16,6 +16,7 @@ public:
     float x() const;
     float y() const;
 
+    bool isVirtualJoystick = false;
 signals:
     void xChanged(float value);
     void yChanged(float value);

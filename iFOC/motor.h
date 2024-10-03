@@ -58,35 +58,40 @@ public:
         STATE_ON,
     };
 
-    Motor(QVector<slave_inputs_t*>& i, QVector<slave_outputs_t*>& o, uint32_t _SN) : input(i), output(o), SN(_SN) {};
-    Motor(QVector<slave_inputs_t*>& i, QVector<slave_outputs_t*>& o, uint32_t _SN, uint8_t _limit) : input(i), output(o), SN(_SN), limiter_index(_limit) {};
-    bool findMotorInVector();
+    Motor(uint32_t _SN) : SN(_SN) {};
+    Motor(uint32_t _SN, uint8_t _limit) : SN(_SN), limiter_index(_limit) {};
+    bool findMotorInVector(QVector<slave_inputs_t*>& input, QVector<slave_outputs_t*>& output);
     void resetState();
     bool setMode(Motor::Mode mode);
     bool setState(Motor::State state);
     bool setSpeed(float rpm);
     bool setTrajAbsAngle(float deg);
     bool setCurrentLimit(float limit);
+    bool setTorque(float Iq);
+    bool setPosAbsAngle(float deg);
     Motor::Mode getMode();
     Motor::State getState();
     float getSpeed();
     float getPosDeg();
     float getIq();
+    float getId();
     float getVBus();
+    float getIBus();
     uint16_t getErrorCode();
+    uint32_t getSN();
     float getCurrentLimit();
+    uint16_t getMCUTemp();
     bool isLimiterActivated();
     bool hasLimiterActivated();
+    uint8_t getRawLimiterState();
+    bool checkAlive();
     void applyMotorConfig();
 private:
-    QVector<slave_inputs_t*>& input;
-    QVector<slave_outputs_t*>& output;
     uint32_t SN = 0;
     uint8_t limiter_index = 0;
     motor_state_t *state_ptr = nullptr;
     motor_set_t set;
     motor_set_t *set_ptr = nullptr;
-    bool checkAlive();
 };
 
 QSet<QString> getMotorSN(QVector<slave_inputs_t*>& input_vector);

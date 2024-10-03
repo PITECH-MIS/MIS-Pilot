@@ -9,68 +9,42 @@ ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice
     connect(QJoysticks::getInstance(), &QJoysticks::POVEvent, this, &ControllerWindow::onPOVEvent);
     connect(QJoysticks::getInstance(), &QJoysticks::axisEvent, this, &ControllerWindow::onAxisEvent);
     connect(QJoysticks::getInstance(), &QJoysticks::buttonEvent, this, &ControllerWindow::onButtonEvent);
-    connect(ui->motorSNComboBox, &QComboBox::currentIndexChanged, this, &ControllerWindow::onSelectDebugMotor);
-    connect(ui->motorEnableCheckBox, &QCheckBox::checkStateChanged, this, &ControllerWindow::onClickDebugEnable);
-    connect(ui->motorModeSlider, &QSlider::valueChanged, this, &ControllerWindow::onSelectDebugMode);
-    connect(ui->motorTrajAngleSlider, &QSlider::valueChanged, this, &ControllerWindow::onSendDebugAction);
 }
 
 void ControllerWindow::showWindow()
 {
     ui->leftJoyComboBox->addItems(joysticks.keys());
     ui->rightJoyComboBox->addItems(joysticks.keys());
-    if(joysticks.size() > 0) ui->leftJoyComboBox->setCurrentIndex(0);
-    if(joysticks.size() > 1) ui->rightJoyComboBox->setCurrentIndex(1);
-    ui->motorSNComboBox->clear();
+    if(joysticks.size() > 0)
+    {
+        ui->leftJoyComboBox->setCurrentIndex(0);
+        if(joysticks.size() > 1) ui->rightJoyComboBox->setCurrentIndex(1);
+    }
+    else
+    {
+        ui->leftJoyPad->isVirtualJoystick = true;
+        ui->rightJoyPad->isVirtualJoystick = true;
+        emit infoMessage("No physics joysticks found, now the left/right joysticks behave virtually");
+    }
     motorSNSet.clear();
     motorMap.clear();
-    emit debugMessage("Motor infomation cleared");
     motorSNSet = getMotorSN(wrapper.input_vector);
     emit infoMessage(QString::asprintf("Find %d motor(s) in EtherCAT Bus", motorSNSet.size()));
     for(const auto &i : std::as_const(motorSNSet))
     {
         emit debugMessage("Find motor SN: " + i);
         uint8_t limiter_index = 0;
-        Motor* motor = new Motor(wrapper.input_vector, wrapper.output_vector, i.toUInt(), limiter_index);
-        if(motor->findMotorInVector())
+        QSharedPointer<Motor> motor = QSharedPointer<Motor>(new Motor(i.toUInt(), limiter_index));
+        if(motor->findMotorInVector(wrapper.input_vector, wrapper.output_vector))
         {
             motor->resetState();
             motor->setCurrentLimit(0.5f);
             motorMap.insert(i, motor);
-            ui->motorSNComboBox->addItem(i);
             emit debugMessage("Successfully mapped motor SN: " + i);
         }
         else emit errorMessage("Error mapping motor SN:" + i);
     }
-    if(motorSNSet.size() > 0) onSelectDebugMotor();
     this->show();
-}
-
-void ControllerWindow::onSelectDebugMotor()
-{
-    currentDebuggingMotor = motorMap.value(ui->motorSNComboBox->currentText());
-    ui->motorEnableCheckBox->setChecked(currentDebuggingMotor->getState());
-    ui->motorModeSlider->setValue((int)currentDebuggingMotor->getMode());
-    ui->motorTrajAngleSlider->setValue((int)(currentDebuggingMotor->getPosDeg() / 45.0f));
-    emit debugMessage("Change debugging motor: " + ui->motorSNComboBox->currentText());
-}
-
-void ControllerWindow::onClickDebugEnable()
-{
-    if(!(currentDebuggingMotor && currentDebuggingMotor->setState((Motor::State)ui->motorEnableCheckBox->isChecked())))
-    emit errorMessage("Error");
-}
-
-void ControllerWindow::onSelectDebugMode()
-{
-    if(!(currentDebuggingMotor && currentDebuggingMotor->setMode((Motor::Mode)ui->motorModeSlider->value())))
-    emit errorMessage("Error");
-}
-
-void ControllerWindow::onSendDebugAction()
-{
-    if(!(currentDebuggingMotor && currentDebuggingMotor->setTrajAbsAngle((float)ui->motorTrajAngleSlider->value() * 45.0f)))
-    emit errorMessage("Error");
 }
 
 void ControllerWindow::onPOVEvent(const QJoystickPOVEvent &event)
@@ -161,17 +135,6 @@ void ControllerWindow::controlLoop()
     for(auto i = motorMap.constKeyValueBegin(); i != motorMap.constKeyValueEnd(); ++i)
     {
         i->second->applyMotorConfig();
-    }
-    if(currentDebuggingMotor)
-    {
-        ui->motorSpeedLcd->display(currentDebuggingMotor->getSpeed());
-        ui->motorPositionLcd->display(currentDebuggingMotor->getPosDeg());
-        ui->motorStatusLed1->display(currentDebuggingMotor->getIq());
-        ui->motorStatusLed2->display(currentDebuggingMotor->getCurrentLimit());
-        ui->motorStatusLed3->display(currentDebuggingMotor->hasLimiterActivated());
-        ui->motorStatusLed4->display(currentDebuggingMotor->getErrorCode());
-        ui->motorStatusLed5->display(currentDebuggingMotor->getState());
-        ui->motorStatusLed6->display(currentDebuggingMotor->getMode());
     }
 }
 
