@@ -1,7 +1,7 @@
 #ifndef EQUIPMENT_H
 #define EQUIPMENT_H
 
-#include "actuator_set.h"
+#include "ActuatorSet.h"
 
 class Equipment
 {

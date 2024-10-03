@@ -1,5 +1,5 @@
-#include "controllerwindow.h"
-#include "ui_controllerwindow.h"
+#include "ControllerWindow.h"
+#include "ui_ControllerWindow.h"
 
 ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice*>& j, QWidget *parent)
     : QMainWindow(parent), wrapper(w), joysticks(j)

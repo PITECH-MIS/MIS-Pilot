@@ -1,5 +1,5 @@
-#include "motordebugger.h"
-#include "ui_motordebugger.h"
+#include "MotorDebugger.h"
+#include "ui_MotorDebugger.h"
 #include <QCollator>
 
 MotorDebugger::MotorDebugger(QHash<QString, QSharedPointer<Motor>>& hashMap, QWidget *parent)

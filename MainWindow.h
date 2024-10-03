@@ -11,8 +11,8 @@
 #include <QDir>
 #include <QStandardItemModel>
 
-#include "ecatwrapper.h"
-#include "controllerwindow.h"
+#include "ECATWrapper.h"
+#include "ControllerWindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

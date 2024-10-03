@@ -1,4 +1,4 @@
-#include "ecatwrapper.h"
+#include "ECATWrapper.h"
 #include "utils.h"
 
 ECATWrapper::ECATWrapper() {}

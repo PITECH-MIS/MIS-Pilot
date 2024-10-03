@@ -25,34 +25,38 @@ LIBS += \
 
 SOURCES += \
     $$PWD/JoypadWidget/joypad.cpp \
-    controllerwindow.cpp \
-    ecatwrapper.cpp \
-    iFOC/actuator_set.cpp \
-    iFOC/device.cpp \
-    iFOC/equipment.cpp \
-    iFOC/motor.cpp \
+    ControllerWindow.cpp \
+    ECATWrapper.cpp \
+    Kinematics/KinematicsAtan2.cpp \
+    Kinematics/KinematicsBase.cpp \
+    MainWindow.cpp \
+    MotorDebugger.cpp \
+    iFOC/ActuatorSet.cpp \
+    iFOC/Device.cpp \
+    iFOC/Equipment.cpp \
+    iFOC/Motor.cpp \
     main.cpp \
-    mainwindow.cpp \
-    motordebugger.cpp \
     utils.cpp
 
 HEADERS += \
     $$PWD/JoypadWidget/joypad.h \
-    controllerwindow.h \
-    ecatwrapper.h \
-    iFOC/actuator_set.h \
-    iFOC/device.h \
-    iFOC/equipment.h \
-    iFOC/motor.h \
-    mainwindow.h \
-    motordebugger.h \
+    ControllerWindow.h \
+    ECATWrapper.h \
+    Kinematics/KinematicsAtan2.h \
+    Kinematics/KinematicsBase.h \
+    MainWindow.h \
+    MotorDebugger.h \
+    iFOC/ActuatorSet.h \
+    iFOC/Device.h \
+    iFOC/Equipment.h \
+    iFOC/Motor.h \
     utils.h \
     utypes.h
 
 FORMS += \
-    controllerwindow.ui \
-    mainwindow.ui \
-    motordebugger.ui
+    ControllerWindow.ui \
+    MainWindow.ui \
+    MotorDebugger.ui
 
 QT += xml
 QT += core

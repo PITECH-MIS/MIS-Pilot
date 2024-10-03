@@ -1,7 +1,7 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
-#include "ecatwrapper.h"
+#include "ECATWrapper.h"
 #include <QSet>
 #include <QList>
 #include <QSharedPointer>

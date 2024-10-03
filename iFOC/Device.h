@@ -1,7 +1,7 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#include "equipment.h"
+#include "Equipment.h"
 #include <QPair>
 #include <QVector>
 #include <QString>

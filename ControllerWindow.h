@@ -6,9 +6,9 @@
 #include <QStringList>
 #include <QMap>
 #include <QCloseEvent>
-#include "motordebugger.h"
-#include "ecatwrapper.h"
-#include "iFOC/motor.h"
+#include "MotorDebugger.h"
+#include "ECATWrapper.h"
+#include "iFOC/Motor.h"
 
 namespace Ui {
 class ControllerWindow;

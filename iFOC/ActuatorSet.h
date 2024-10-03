@@ -1,7 +1,7 @@
-#ifndef ACTUATOR_SET_H
-#define ACTUATOR_SET_H
+#ifndef ACTUATORSET_H
+#define ACTUATORSET_H
 
-#include "motor.h"
+#include "Motor.h"
 
 class ActuatorSet
 {
@@ -14,4 +14,4 @@ private:
     QSharedPointer<Motor> motorLinear;
 };
 
-#endif // ACTUATOR_SET_H
+#endif // ACTUATORSET_H
