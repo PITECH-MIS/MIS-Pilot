@@ -24,11 +24,13 @@ public:
     QMap<QString, QJoystickDevice*>& joysticks;
     void closeEvent(QCloseEvent *event) override;
 public slots:
+    void showWindow();
+    void controlLoop();
+private slots:
     void onPOVEvent(const QJoystickPOVEvent &event);
     void onAxisEvent(const QJoystickAxisEvent &event);
     void onButtonEvent(const QJoystickButtonEvent &event);
-    void showWindow();
-    void controlLoop();
+    void onEnableMotorDebugger();
 signals:
     void debugMessage(QString msg);
     void infoMessage(QString msg);
@@ -38,7 +40,7 @@ private:
     Ui::ControllerWindow *ui;
     MotorDebugger* debuggerWindow = nullptr;
     QSet<QString> motorSNSet;
-    QMap<QString, QSharedPointer<Motor>> motorMap;
+    QHash<QString, QSharedPointer<Motor>> motorHashMap;
 };
 
 #endif // CONTROLLERWINDOW_H

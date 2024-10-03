@@ -9,6 +9,7 @@ ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice
     connect(QJoysticks::getInstance(), &QJoysticks::POVEvent, this, &ControllerWindow::onPOVEvent);
     connect(QJoysticks::getInstance(), &QJoysticks::axisEvent, this, &ControllerWindow::onAxisEvent);
     connect(QJoysticks::getInstance(), &QJoysticks::buttonEvent, this, &ControllerWindow::onButtonEvent);
+    connect(ui->menuDebugger, &QMenu::aboutToShow, this, &ControllerWindow::onEnableMotorDebugger);
 }
 
 void ControllerWindow::showWindow()
@@ -27,7 +28,7 @@ void ControllerWindow::showWindow()
         emit infoMessage("No physics joysticks found, now the left/right joysticks behave virtually");
     }
     motorSNSet.clear();
-    motorMap.clear();
+    motorHashMap.clear();
     motorSNSet = getMotorSN(wrapper.input_vector);
     emit infoMessage(QString::asprintf("Find %d motor(s) in EtherCAT Bus", motorSNSet.size()));
     for(const auto &i : std::as_const(motorSNSet))
@@ -39,7 +40,7 @@ void ControllerWindow::showWindow()
         {
             motor->resetState();
             motor->setCurrentLimit(0.5f);
-            motorMap.insert(i, motor);
+            motorHashMap.insert(i, motor);
             emit debugMessage("Successfully mapped motor SN: " + i);
         }
         else emit errorMessage("Error mapping motor SN:" + i);
@@ -132,9 +133,21 @@ void ControllerWindow::controlLoop()
         i->Interface_Set.LEDG = g;
         i->Interface_Set.LEDB = b;
     }
-    for(auto i = motorMap.constKeyValueBegin(); i != motorMap.constKeyValueEnd(); ++i)
+    for(auto i = motorHashMap.constKeyValueBegin(); i != motorHashMap.constKeyValueEnd(); ++i)
     {
         i->second->applyMotorConfig();
+    }
+}
+
+void ControllerWindow::onEnableMotorDebugger()
+{
+    if(!debuggerWindow)
+    {
+        debuggerWindow = new MotorDebugger(motorHashMap, this);
+        connect(debuggerWindow, &MotorDebugger::debugMessage, this, &ControllerWindow::debugMessage);
+        connect(debuggerWindow, &MotorDebugger::errorMessage, this, &ControllerWindow::errorMessage);
+        connect(debuggerWindow, &MotorDebugger::infoMessage, this, &ControllerWindow::infoMessage);
+        debuggerWindow->showWindow();
     }
 }
 

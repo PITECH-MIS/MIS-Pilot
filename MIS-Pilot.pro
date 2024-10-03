@@ -27,7 +27,9 @@ SOURCES += \
     $$PWD/JoypadWidget/joypad.cpp \
     controllerwindow.cpp \
     ecatwrapper.cpp \
-    iFOC/mis_equipment.cpp \
+    iFOC/actuator_set.cpp \
+    iFOC/device.cpp \
+    iFOC/equipment.cpp \
     iFOC/motor.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -38,7 +40,9 @@ HEADERS += \
     $$PWD/JoypadWidget/joypad.h \
     controllerwindow.h \
     ecatwrapper.h \
-    iFOC/mis_equipment.h \
+    iFOC/actuator_set.h \
+    iFOC/device.h \
+    iFOC/equipment.h \
     iFOC/motor.h \
     mainwindow.h \
     motordebugger.h \

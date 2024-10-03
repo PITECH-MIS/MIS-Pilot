@@ -4,6 +4,7 @@
 #include "ecatwrapper.h"
 #include <QSet>
 #include <QList>
+#include <QSharedPointer>
 
 #pragma pack(push, 1)
 typedef struct motor_state_t

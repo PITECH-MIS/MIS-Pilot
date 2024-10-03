@@ -1,6 +1,7 @@
 #ifndef MOTORDEBUGGER_H
 #define MOTORDEBUGGER_H
 
+#include <QMainWindow>
 #include <QWidget>
 #include "iFOC/motor.h"
 
@@ -8,19 +9,19 @@ namespace Ui {
 class MotorDebugger;
 }
 
-class MotorDebugger : public QWidget
+class MotorDebugger : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MotorDebugger(QMap<QString, QSharedPointer<Motor>>& map, QWidget *parent = nullptr);
+    explicit MotorDebugger(QHash<QString, QSharedPointer<Motor>>& hashMap, QWidget *parent = nullptr);
     ~MotorDebugger();
 public slots:
     void showWindow();
     void updateState();
 private slots:
     void onSelectMotorSN();
-    void onChangeMotorEnable();
+    void onChangeMotorEnable(Qt::CheckState state);
     void onSelectMotorMode();
     void onChangeMotorTarget();
     void onChangeMotorCurrLimit();
@@ -31,8 +32,8 @@ signals:
 private:
     void setTargetSpinBoxesEnabled(bool en_torque, bool en_speed, bool en_pos, bool en_currLimit);
     Ui::MotorDebugger *ui;
-    QMap<QString, QSharedPointer<Motor>>& motorMap;
-    QMap<QString, Motor::Mode> motorModeNames;
+    QHash<QString, QSharedPointer<Motor>>& motorHashMap;
+    QMap<Motor::Mode, QString> motorModeNames;
     QSharedPointer<Motor> currentDbgMotor = nullptr;
 };
 

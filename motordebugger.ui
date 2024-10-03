@@ -1,377 +1,485 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MotorDebugger</class>
- <widget class="QWidget" name="MotorDebugger">
+ <widget class="QMainWindow" name="MotorDebugger">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>399</width>
-    <height>388</height>
+    <width>401</width>
+    <height>391</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>MotorDebugger</string>
   </property>
-  <widget class="QWidget" name="gridLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>401</width>
-     <height>391</height>
-    </rect>
-   </property>
-   <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,0">
-    <property name="sizeConstraint">
-     <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="gridLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>402</width>
+      <height>391</height>
+     </rect>
     </property>
-    <item row="2" column="0">
-     <widget class="QGroupBox" name="groupBox_3">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>230</height>
-       </size>
-      </property>
-      <property name="title">
-       <string>Motor State</string>
-      </property>
-      <widget class="QWidget" name="formLayoutWidget_4">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>20</y>
-         <width>201</width>
-         <height>176</height>
-        </rect>
+    <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,0">
+     <property name="sizeConstraint">
+      <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+     </property>
+     <item row="2" column="0">
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <layout class="QFormLayout" name="formLayout_4">
-        <property name="verticalSpacing">
-         <number>4</number>
+       <property name="minimumSize">
+        <size>
+         <width>400</width>
+         <height>190</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>400</width>
+         <height>190</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Motor State</string>
+       </property>
+       <widget class="QWidget" name="horizontalLayoutWidget_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>20</y>
+          <width>401</width>
+          <height>212</height>
+         </rect>
         </property>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_8">
-          <property name="text">
-           <string>SN</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="motorStateSNEdit"/>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>ErrorCode</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="motorStateErrorCodeEdit"/>
-        </item>
-        <item row="0" column="0">
-         <widget class="QRadioButton" name="motorStateIsAliveButton">
-          <property name="mouseTracking">
-           <bool>false</bool>
-          </property>
-          <property name="focusPolicy">
-           <enum>Qt::FocusPolicy::NoFocus</enum>
-          </property>
-          <property name="text">
-           <string>IsAlive</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <layout class="QFormLayout" name="formLayout_14">
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="motorStateEnabledButton">
-            <property name="text">
-             <string>Enabled</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QSlider" name="motorStateModeSlider">
-            <property name="maximum">
-             <number>3</number>
-            </property>
-            <property name="pageStep">
-             <number>1</number>
-            </property>
-            <property name="tracking">
-             <bool>false</bool>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
-            </property>
-            <property name="tickPosition">
-             <enum>QSlider::TickPosition::TicksBelow</enum>
-            </property>
-            <property name="tickInterval">
-             <number>1</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_18">
-          <property name="text">
-           <string>Limiter</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_19">
-          <property name="text">
-           <string>Vbus (V)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="motorStateLimiterEdit"/>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_20">
-          <property name="text">
-           <string>Ibus (A)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLineEdit" name="motorStateVBusEdit"/>
-        </item>
-        <item row="5" column="1">
-         <widget class="QLineEdit" name="motorStateIBusEdit"/>
-        </item>
-       </layout>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="spacing">
+          <number>3</number>
+         </property>
+         <item>
+          <layout class="QFormLayout" name="formLayout_4">
+           <property name="verticalSpacing">
+            <number>4</number>
+           </property>
+           <property name="leftMargin">
+            <number>8</number>
+           </property>
+           <property name="rightMargin">
+            <number>8</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QRadioButton" name="motorStateIsAliveButton">
+             <property name="mouseTracking">
+              <bool>false</bool>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::FocusPolicy::NoFocus</enum>
+             </property>
+             <property name="text">
+              <string>IsAlive</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <layout class="QFormLayout" name="formLayout_14">
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="motorStateEnabledButton">
+               <property name="mouseTracking">
+                <bool>false</bool>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::FocusPolicy::NoFocus</enum>
+               </property>
+               <property name="text">
+                <string>Enabled</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSlider" name="motorStateModeSlider">
+               <property name="focusPolicy">
+                <enum>Qt::FocusPolicy::NoFocus</enum>
+               </property>
+               <property name="contextMenuPolicy">
+                <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+               </property>
+               <property name="maximum">
+                <number>3</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="tracking">
+                <bool>false</bool>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TickPosition::TicksBelow</enum>
+               </property>
+               <property name="tickInterval">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>SN</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="motorStateSNEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>ErrorCode</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="motorStateErrorCodeEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_18">
+             <property name="text">
+              <string>Limiter</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="motorStateLimiterEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_19">
+             <property name="text">
+              <string>Vbus (V)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLineEdit" name="motorStateVBusEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_20">
+             <property name="text">
+              <string>Ibus (A)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QLineEdit" name="motorStateIBusEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QFormLayout" name="formLayout_13">
+           <property name="verticalSpacing">
+            <number>4</number>
+           </property>
+           <property name="leftMargin">
+            <number>8</number>
+           </property>
+           <property name="topMargin">
+            <number>5</number>
+           </property>
+           <property name="rightMargin">
+            <number>8</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_21">
+             <property name="text">
+              <string>Real Iq (A)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="motorStateIqEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_22">
+             <property name="text">
+              <string>Real Id (A)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="motorStateIdEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_23">
+             <property name="text">
+              <string>Est. V (RPM)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="motorStateEstSpeedEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_24">
+             <property name="text">
+              <string>Est.Angle (deg)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="motorStateEstAngleEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_25">
+             <property name="text">
+              <string>CurrLimit (A)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLineEdit" name="motorStateCurrLimitEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_26">
+             <property name="text">
+              <string>MCUTemp (°C)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QLineEdit" name="motorStateMCUTempEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
       </widget>
-      <widget class="QWidget" name="formLayoutWidget_5">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>20</y>
-         <width>191</width>
-         <height>171</height>
-        </rect>
+     </item>
+     <item row="0" column="0">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <layout class="QFormLayout" name="formLayout_13">
-        <property name="verticalSpacing">
-         <number>4</number>
+       <property name="minimumSize">
+        <size>
+         <width>400</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>400</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Motor Control</string>
+       </property>
+       <widget class="QWidget" name="horizontalLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>-1</x>
+          <y>20</y>
+          <width>401</width>
+          <height>31</height>
+         </rect>
         </property>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_21">
-          <property name="text">
-           <string>Real Iq (A)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="motorStateIqEdit"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_22">
-          <property name="text">
-           <string>Real Id (A)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="motorStateIdEdit"/>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_23">
-          <property name="text">
-           <string>Est. V (RPM)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="motorStateEstSpeedEdit"/>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_24">
-          <property name="text">
-           <string>Est.Angle (deg)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="motorStateEstAngleEdit"/>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_25">
-          <property name="text">
-           <string>CurrLimit (A)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLineEdit" name="motorStateCurrLimitEdit"/>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_26">
-          <property name="text">
-           <string>MCUTemp (°C)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QLineEdit" name="motorStateMCUTempEdit"/>
-        </item>
-       </layout>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="leftMargin">
+          <number>8</number>
+         </property>
+         <item>
+          <layout class="QFormLayout" name="formLayout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>SN:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="motorSNComboBox">
+             <property name="placeholderText">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QFormLayout" name="formLayout_3">
+           <item row="0" column="0">
+            <widget class="QCheckBox" name="motorEnabledCheckBox">
+             <property name="text">
+              <string>Enabled</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="motorModeComboBox">
+             <property name="placeholderText">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
       </widget>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QGroupBox" name="groupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>390</width>
-        <height>50</height>
-       </size>
-      </property>
-      <property name="title">
-       <string>Motor Control</string>
-      </property>
-      <widget class="QWidget" name="horizontalLayoutWidget">
-       <property name="geometry">
-        <rect>
-         <x>-1</x>
-         <y>20</y>
-         <width>391</width>
-         <height>31</height>
-        </rect>
+     </item>
+     <item row="1" column="0">
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <layout class="QFormLayout" name="formLayout">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>SN:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="motorSNComboBox">
-            <property name="placeholderText">
-             <string>Serial Number</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QFormLayout" name="formLayout_3">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="motorEnabledCheckBox">
-            <property name="text">
-             <string>Enabled</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="motorModeComboBox">
-            <property name="placeholderText">
-             <string>Motor Mode</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QGroupBox" name="groupBox_2">
-      <property name="maximumSize">
-       <size>
-        <width>390</width>
-        <height>130</height>
-       </size>
-      </property>
-      <property name="title">
-       <string>Motor Target</string>
-      </property>
-      <widget class="QWidget" name="formLayoutWidget_2">
-       <property name="geometry">
-        <rect>
-         <x>-1</x>
-         <y>19</y>
-         <width>391</width>
-         <height>120</height>
-        </rect>
+       <property name="minimumSize">
+        <size>
+         <width>400</width>
+         <height>130</height>
+        </size>
        </property>
-       <layout class="QFormLayout" name="formLayout_2">
-        <property name="verticalSpacing">
-         <number>3</number>
+       <property name="maximumSize">
+        <size>
+         <width>400</width>
+         <height>130</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Motor Target</string>
+       </property>
+       <widget class="QWidget" name="formLayoutWidget_2">
+        <property name="geometry">
+         <rect>
+          <x>-1</x>
+          <y>19</y>
+          <width>391</width>
+          <height>120</height>
+         </rect>
         </property>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Current Limit</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Set Torque (Iq, A)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Set Speed (RPM)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Set Absolute Position (deg)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QDoubleSpinBox" name="motorTargetTorqueSpinBox">
-          <property name="singleStep">
-           <double>0.050000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QDoubleSpinBox" name="motorTargetCurrLimitSpinBox">
-          <property name="singleStep">
-           <double>0.100000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QDoubleSpinBox" name="motorTargetPosSpinBox"/>
-        </item>
-        <item row="2" column="1">
-         <widget class="QDoubleSpinBox" name="motorTargetSpeedSpinBox"/>
-        </item>
-       </layout>
+        <layout class="QFormLayout" name="formLayout_2">
+         <property name="verticalSpacing">
+          <number>3</number>
+         </property>
+         <property name="leftMargin">
+          <number>8</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Current Limit</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Set Torque (Iq, A)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Set Speed (RPM)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Set Absolute Position (deg)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QDoubleSpinBox" name="motorTargetTorqueSpinBox">
+           <property name="singleStep">
+            <double>0.050000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QDoubleSpinBox" name="motorTargetCurrLimitSpinBox">
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QDoubleSpinBox" name="motorTargetPosSpinBox"/>
+         </item>
+         <item row="2" column="1">
+          <widget class="QDoubleSpinBox" name="motorTargetSpeedSpinBox"/>
+         </item>
+        </layout>
+       </widget>
       </widget>
-     </widget>
-    </item>
-   </layout>
+     </item>
+    </layout>
+   </widget>
   </widget>
  </widget>
  <resources/>

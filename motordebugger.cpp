@@ -2,15 +2,15 @@
 #include "ui_motordebugger.h"
 #include <QCollator>
 
-MotorDebugger::MotorDebugger(QMap<QString, QSharedPointer<Motor>>& map, QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::MotorDebugger), motorMap(map)
+MotorDebugger::MotorDebugger(QHash<QString, QSharedPointer<Motor>>& hashMap, QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MotorDebugger), motorHashMap(hashMap)
 {
-    motorModeNames["Torque Mode"] = Motor::MODE_TORQUE;
-    motorModeNames["Speed Mode"] = Motor::MODE_SPEED;
-    motorModeNames["Traj. Mode"] = Motor::MODE_TRAJECTORY;
+    motorModeNames[Motor::MODE_TORQUE] = "Torque Mode";
+    motorModeNames[Motor::MODE_SPEED] = "Speed Mode";
+    motorModeNames[Motor::MODE_TRAJECTORY] = "Traj. Mode";
     ui->setupUi(this);
-    ui->motorModeComboBox->addItems(motorModeNames.keys());
+    ui->motorModeComboBox->addItems(motorModeNames.values());
     setTargetSpinBoxesEnabled(false, false, false, false);
     connect(ui->motorSNComboBox, &QComboBox::currentIndexChanged, this, &MotorDebugger::onSelectMotorSN);
     connect(ui->motorEnabledCheckBox, &QCheckBox::checkStateChanged, this, &MotorDebugger::onChangeMotorEnable);
@@ -25,26 +25,30 @@ void MotorDebugger::showWindow()
 {
     currentDbgMotor.clear();
     ui->motorSNComboBox->clear();
-    auto snList = motorMap.keys();
+    auto snList = motorHashMap.keys();
     QCollator collator;
     collator.setNumericMode(true);
     std::sort(snList.begin(), snList.end(), collator);
-    for(auto i = motorMap.constKeyValueBegin(); i != motorMap.constKeyValueEnd(); ++i)
-    {
-        ui->motorSNComboBox->addItem(i->first);
-    }
+    ui->motorSNComboBox->addItems(snList);
     if(snList.size() > 0) onSelectMotorSN();
+    this->setWindowFlag(Qt::WindowStaysOnTopHint);
+    if(this->parentWidget())
+    {
+        auto parentX = this->parentWidget()->x();
+        auto parentY = this->parentWidget()->y();
+        this->move(parentX + this->parentWidget()->width(), parentY);
+    }
     this->show();
 }
 
 void MotorDebugger::onSelectMotorSN()
 {
-    currentDbgMotor = motorMap.value(ui->motorSNComboBox->currentText());
+    currentDbgMotor = motorHashMap.value(ui->motorSNComboBox->currentText());
     if(currentDbgMotor)
     {
         ui->motorEnabledCheckBox->setChecked(currentDbgMotor->getState());
         Motor::Mode motorMode = currentDbgMotor->getMode();
-        ui->motorModeComboBox->setCurrentText(motorModeNames.key(motorMode, "Invalid Mode"));
+        ui->motorModeComboBox->setCurrentText(motorModeNames.value(motorMode, "Invalid Mode"));
         ui->motorTargetCurrLimitSpinBox->setValue(currentDbgMotor->getCurrentLimit());
         ui->motorTargetTorqueSpinBox->setValue(0.0f);
         float curr_spd = currentDbgMotor->getSpeed();
@@ -59,14 +63,20 @@ void MotorDebugger::onSelectMotorSN()
     else emit errorMessage("Debug target motor not exists");
 }
 
-void MotorDebugger::onChangeMotorEnable()
+void MotorDebugger::onChangeMotorEnable(Qt::CheckState state)
 {
-    if(!(currentDbgMotor && currentDbgMotor->setState((Motor::State)ui->motorEnabledCheckBox->isChecked()))) emit errorMessage("Error");
+    if(!(currentDbgMotor && currentDbgMotor->setState((Motor::State)ui->motorEnabledCheckBox->isChecked())))
+    {
+        emit errorMessage("Error");
+        disconnect(ui->motorEnabledCheckBox, &QCheckBox::checkStateChanged, this, &MotorDebugger::onChangeMotorEnable);
+        ui->motorEnabledCheckBox->setCheckState(state == Qt::Unchecked ? Qt::Checked : Qt::Unchecked);
+        connect(ui->motorEnabledCheckBox, &QCheckBox::checkStateChanged, this, &MotorDebugger::onChangeMotorEnable);
+    }
 }
 
 void MotorDebugger::onSelectMotorMode()
 {
-    Motor::Mode setMode = motorModeNames.value(ui->motorModeComboBox->currentText(), Motor::Mode::MODE_TORQUE);
+    Motor::Mode setMode = motorModeNames.key(ui->motorModeComboBox->currentText(), Motor::Mode::MODE_TORQUE);
     if(!(currentDbgMotor && currentDbgMotor->setMode(setMode))) emit errorMessage("Error");
 }
 
