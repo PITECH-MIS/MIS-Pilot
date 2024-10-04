@@ -1,5 +1,6 @@
 #include "ECATWrapper.h"
 #include "utils.h"
+#include <QSet>
 
 ECATWrapper::ECATWrapper() {}
 
@@ -158,6 +159,7 @@ void ECATWrapper::closeConnection()
 void ECATWrapper::checkStateLoop()
 {
     // emit onStateChanged();
+    static QSet<int> lostSlaveSet;
     int currentgroup = 0; // TODO: for later use
     if(expectedState == EC_STATE_OPERATIONAL && ((realWKC < expectedWKC) || ec_group[currentgroup].docheckstate))
     {
@@ -199,7 +201,16 @@ void ECATWrapper::checkStateLoop()
                     {
                         ec_slave[slave].islost = TRUE;
                         emit errorMessage(QString::asprintf("Slave #%d lost", slave));
+                        lostSlaveSet.insert(slave);
+                        if(lostSlaveSet.size() >= ec_slavecount)
+                        {
+                            emit errorMessage("All slave(s) lost, resetting state to INIT");
+                            lostSlaveSet.clear();
+                            closeConnection();
+                            break;
+                        }
                     }
+                    else lostSlaveSet.clear();
                 }
             }
             if(ec_slave[slave].islost)
@@ -210,7 +221,12 @@ void ECATWrapper::checkStateLoop()
                     {
                         ec_slave[slave].islost = FALSE;
                         emit infoMessage(QString::asprintf("Slave #%d recovered", slave));
+                        if(lostSlaveSet.contains(slave)) lostSlaveSet.remove(slave);
                     }
+                    // else
+                    // {
+                    //     emit debugMessage(QString::asprintf("Trying to recover slave #%d", slave));
+                    // }
                 }
                 else
                 {
@@ -221,6 +237,7 @@ void ECATWrapper::checkStateLoop()
         }
         if(!ec_group[currentgroup].docheckstate) emit infoMessage("All slaves resumed OP state");
     }
+    else lostSlaveSet.clear();
 }
 
 bool ECATWrapper::parseSlaveXML(QFile &xmlFile)

@@ -2,7 +2,7 @@
 #include "ui_MotorDebugger.h"
 #include <QCollator>
 
-MotorDebugger::MotorDebugger(QHash<QString, QSharedPointer<Motor>>& hashMap, QWidget *parent)
+MotorDebugger::MotorDebugger(QHash<QString, Motor*>& hashMap, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MotorDebugger), motorHashMap(hashMap)
 {
@@ -23,7 +23,7 @@ MotorDebugger::MotorDebugger(QHash<QString, QSharedPointer<Motor>>& hashMap, QWi
 
 void MotorDebugger::showWindow()
 {
-    currentDbgMotor.clear();
+    currentDbgMotor = nullptr;
     ui->motorSNComboBox->clear();
     auto snList = motorHashMap.keys();
     QCollator collator;

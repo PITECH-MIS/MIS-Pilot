@@ -42,7 +42,7 @@ private slots:
 private:
     void closeEvent(QCloseEvent *e);
     void ParseStateViewModel();
-    void AppendDescToItem(QString desc, int row, QSharedPointer<QStandardItem>& parent);
+    void AppendDescToItem(QString desc, int row, QStandardItem *parent);
     QStandardItemModel *stateViewModel;
     Ui::MainWindow *ui;
     ControllerWindow *controllerWindow = nullptr;

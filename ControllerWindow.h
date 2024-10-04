@@ -39,7 +39,7 @@ private:
     Ui::ControllerWindow *ui;
     MotorDebugger* debuggerWindow = nullptr;
     QSet<QString> motorSNSet;
-    QHash<QString, QSharedPointer<Motor>> motorHashMap;
+    QHash<QString, Motor*> motorHashMap;
     QString currentPath;
 };
 

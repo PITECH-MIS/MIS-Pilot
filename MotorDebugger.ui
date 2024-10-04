@@ -88,6 +88,9 @@
              <property name="checkable">
               <bool>true</bool>
              </property>
+             <property name="autoExclusive">
+              <bool>false</bool>
+             </property>
             </widget>
            </item>
            <item row="0" column="1">
@@ -102,6 +105,9 @@
                </property>
                <property name="text">
                 <string>Enabled</string>
+               </property>
+               <property name="autoExclusive">
+                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -555,6 +561,12 @@
          </item>
          <item row="1" column="1">
           <widget class="QDoubleSpinBox" name="motorTargetTorqueSpinBox">
+           <property name="minimum">
+            <double>-2.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>2.000000000000000</double>
+           </property>
            <property name="singleStep">
             <double>0.050000000000000</double>
            </property>
@@ -562,16 +574,39 @@
          </item>
          <item row="0" column="1">
           <widget class="QDoubleSpinBox" name="motorTargetCurrLimitSpinBox">
+           <property name="maximum">
+            <double>3.000000000000000</double>
+           </property>
            <property name="singleStep">
             <double>0.100000000000000</double>
            </property>
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QDoubleSpinBox" name="motorTargetPosSpinBox"/>
+          <widget class="QDoubleSpinBox" name="motorTargetPosSpinBox">
+           <property name="minimum">
+            <double>-72000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>72000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>15.000000000000000</double>
+           </property>
+          </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QDoubleSpinBox" name="motorTargetSpeedSpinBox"/>
+          <widget class="QDoubleSpinBox" name="motorTargetSpeedSpinBox">
+           <property name="minimum">
+            <double>-200.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>200.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>10.000000000000000</double>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>

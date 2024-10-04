@@ -29,10 +29,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->enterControllerButton->setEnabled(true);
 #endif
     updateEthList();
-    QJoysticks *QJoy = QJoysticks::getInstance();
-    for(int i = 0; i < QJoy->deviceNames().size(); i++) joysticks.insert(QJoy->deviceNames().at(i), QJoy->inputDevices().at(i));
-    onDebugMsg(QString::asprintf("Detected %d joystick(s): ", joysticks.size()));
-    for(auto i = joysticks.constKeyValueBegin(); i != joysticks.constKeyValueEnd(); ++i) onDebugMsg(i->first);
+    QJoysticks* QJoy = QJoysticks::getInstance();
+    QJoy->updateInterfaces();
     connect(ui->con_pushButton, &QPushButton::clicked, this, &MainWindow::onClickConnect);
     connect(&wrapper, &ECATWrapper::errorMessage, this, &MainWindow::onErrorMsg);
     connect(&wrapper, &ECATWrapper::infoMessage, this, &MainWindow::onInfoMsg);
@@ -52,6 +50,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::onEnableController()
 {
+    QJoysticks* QJoy = QJoysticks::getInstance();
+    QJoy->updateInterfaces();
+    for(int i = 0; i < QJoy->deviceNames().size(); i++) joysticks.insert(QJoy->deviceNames().at(i), QJoy->inputDevices().at(i));
+    onDebugMsg(QString::asprintf("Detected %d joystick(s): ", joysticks.size()));
+    for(auto i = joysticks.constKeyValueBegin(); i != joysticks.constKeyValueEnd(); ++i) onDebugMsg(i->first);
     controllerWindow = new ControllerWindow(wrapper, joysticks, this);
     connect(controllerWindow, &ControllerWindow::errorMessage, this, &MainWindow::onErrorMsg);
     connect(controllerWindow, &ControllerWindow::infoMessage, this, &MainWindow::onInfoMsg);
@@ -134,7 +137,12 @@ void MainWindow::onECATStateChanged()
     statusBarStateLabel->setText("State: " + wrapper.getExpectedStateName() + " ");
     statusBarWkcLabel->setText(QString::asprintf("WKC: %d/%d ", wrapper.getRealWKC(), wrapper.getExpectedWKC()));
     statusBarSlaveCountLabel->setText(QString::asprintf("Slave(s): %d ", wrapper.getSlaveCount()));
-    ParseStateViewModel();
+    static uint8_t timer_100ms = 0;
+    if(timer_100ms++ >= 99)
+    {
+        ParseStateViewModel();
+        timer_100ms = 0;
+    }
 }
 
 void MainWindow::ParseStateViewModel()
@@ -142,27 +150,27 @@ void MainWindow::ParseStateViewModel()
     bool newItem = wrapper.input_vector.size() > stateViewModel->rowCount();
     for(int i = 0; i < wrapper.input_vector.size(); i++)
     {
-        QSharedPointer<QStandardItem> item;
-        if(stateViewModel->rowCount() <= i) item = QSharedPointer<QStandardItem>(new QStandardItem);
-        else item = QSharedPointer<QStandardItem>(stateViewModel->item(i));
+        QStandardItem *item;
+        if(stateViewModel->rowCount() <= i) item = new QStandardItem;
+        else item = stateViewModel->item(i);
         item->setColumnCount(2);
         item->setText(QString::asprintf("Slave #%d", i + 1));
         AppendDescToItem(QString::asprintf("MotorCount: %d", wrapper.input_vector.at(i)->Interface_State.MotorCount), 0, item);
         AppendDescToItem(QString::asprintf("MCUTemp: %d", wrapper.input_vector.at(i)->Interface_State.MCUTemp), 1, item);
         AppendDescToItem(QString::asprintf("VBus: %d", wrapper.input_vector.at(i)->Interface_State.Vbus), 2, item);
         AppendDescToItem(QString::asprintf("FPS: %d", wrapper.input_vector.at(i)->Interface_State.FramesPerSec), 3, item);
-        stateViewModel->setItem(i, item.get());
+        stateViewModel->setItem(i, item);
     }
     if(newItem) ui->stateTreeView->expandAll();
 }
 
-void MainWindow::AppendDescToItem(QString desc, int row, QSharedPointer<QStandardItem>& parent)
+void MainWindow::AppendDescToItem(QString desc, int row, QStandardItem *parent)
 {
-    QSharedPointer<QStandardItem> item;
-    if(parent->rowCount() <= row) item = QSharedPointer<QStandardItem>(new QStandardItem);
-    else item = QSharedPointer<QStandardItem>(parent->takeChild(row));
+    QStandardItem *item;
+    if(parent->rowCount() <= row) item = new QStandardItem;
+    else item = parent->takeChild(row);
     item->setText(desc);
-    parent->setChild(row, item.get());
+    parent->setChild(row, item);
 }
 
 void MainWindow::onTextBrowserCustomContextMenu(const QPoint &pos)

@@ -39,7 +39,7 @@ void ControllerWindow::showWindow()
     {
         emit debugMessage("Find motor SN: " + i);
         uint8_t limiter_index = 0;
-        QSharedPointer<Motor> motor = QSharedPointer<Motor>(new Motor(i.toUInt(), limiter_index));
+        Motor *motor = new Motor(i.toUInt(), limiter_index);
         if(motor->findMotorInVector(wrapper.input_vector, wrapper.output_vector))
         {
             motor->resetState();
@@ -130,22 +130,27 @@ void GetColorWheel(uint8_t pos, uint8_t *r, uint8_t *g, uint8_t *b);
 
 void ControllerWindow::controlLoop()
 {
-    static uint8_t j = 0;
-    j++;
-    uint8_t r, g, b;
-    GetColorWheel(j, &r, &g, &b);
-    for(auto &i : wrapper.output_vector)
-    {
-        i->Interface_Set.LEDState = 1;
-        i->Interface_Set.LEDR = r;
-        i->Interface_Set.LEDG = g;
-        i->Interface_Set.LEDB = b;
-    }
     for(auto i = motorHashMap.constKeyValueBegin(); i != motorHashMap.constKeyValueEnd(); ++i)
     {
         i->second->applyMotorConfig();
     }
-    if(debuggerWindow) debuggerWindow->updateState();
+    static uint16_t timer_100ms = 0;
+    if(timer_100ms++ >= 99)
+    {
+        if(debuggerWindow) debuggerWindow->updateState();
+        static uint8_t j = 0;
+        j++;
+        uint8_t r, g, b;
+        GetColorWheel(j, &r, &g, &b);
+        for(auto &i : wrapper.output_vector)
+        {
+            i->Interface_Set.LEDState = 1;
+            i->Interface_Set.LEDR = r;
+            i->Interface_Set.LEDG = g;
+            i->Interface_Set.LEDB = b;
+        }
+        timer_100ms = 0;
+    }
 }
 
 void ControllerWindow::onEnableMotorDebugger()
