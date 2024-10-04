@@ -41,6 +41,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->selectConfigPathButton, &QPushButton::clicked, this, &MainWindow::onSelectXMLPath);
     connect(ui->parseConfigXmlButton, &QPushButton::clicked, this, &MainWindow::onParseXML);
     connect(ui->enterControllerButton, &QPushButton::clicked, this, &MainWindow::onEnableController);
+    ui->textBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->textBrowser, &QTextBrowser::customContextMenuRequested, this, &MainWindow::onTextBrowserCustomContextMenu);
 }
 
 MainWindow::~MainWindow()
@@ -50,20 +52,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::onEnableController()
 {
-    if(!controllerWindow)
-    {
-        controllerWindow = new ControllerWindow(wrapper, joysticks, this);
-        connect(controllerWindow, &ControllerWindow::closed, this, &MainWindow::onDisableController);
-        connect(controllerWindow, &ControllerWindow::errorMessage, this, &MainWindow::onErrorMsg);
-        connect(controllerWindow, &ControllerWindow::infoMessage, this, &MainWindow::onInfoMsg);
-        connect(controllerWindow, &ControllerWindow::debugMessage, this, &MainWindow::onDebugMsg);
-        controllerWindow->showWindow();
-    }
-}
-
-void MainWindow::onDisableController()
-{
-    controllerWindow = nullptr;
+    controllerWindow = new ControllerWindow(wrapper, joysticks, this);
+    connect(controllerWindow, &ControllerWindow::errorMessage, this, &MainWindow::onErrorMsg);
+    connect(controllerWindow, &ControllerWindow::infoMessage, this, &MainWindow::onInfoMsg);
+    connect(controllerWindow, &ControllerWindow::debugMessage, this, &MainWindow::onDebugMsg);
+    controllerWindow->setAttribute(Qt::WA_DeleteOnClose);
+    controllerWindow->showWindow();
 }
 
 void MainWindow::onSelectXMLPath()
@@ -148,27 +142,37 @@ void MainWindow::ParseStateViewModel()
     bool newItem = wrapper.input_vector.size() > stateViewModel->rowCount();
     for(int i = 0; i < wrapper.input_vector.size(); i++)
     {
-        QStandardItem *item;
-        if(stateViewModel->rowCount() <= i) item = new QStandardItem;
-        else item = stateViewModel->item(i);
+        QSharedPointer<QStandardItem> item;
+        if(stateViewModel->rowCount() <= i) item = QSharedPointer<QStandardItem>(new QStandardItem);
+        else item = QSharedPointer<QStandardItem>(stateViewModel->item(i));
         item->setColumnCount(2);
         item->setText(QString::asprintf("Slave #%d", i + 1));
         AppendDescToItem(QString::asprintf("MotorCount: %d", wrapper.input_vector.at(i)->Interface_State.MotorCount), 0, item);
         AppendDescToItem(QString::asprintf("MCUTemp: %d", wrapper.input_vector.at(i)->Interface_State.MCUTemp), 1, item);
         AppendDescToItem(QString::asprintf("VBus: %d", wrapper.input_vector.at(i)->Interface_State.Vbus), 2, item);
         AppendDescToItem(QString::asprintf("FPS: %d", wrapper.input_vector.at(i)->Interface_State.FramesPerSec), 3, item);
-        stateViewModel->setItem(i, item);
+        stateViewModel->setItem(i, item.get());
     }
     if(newItem) ui->stateTreeView->expandAll();
 }
 
-void MainWindow::AppendDescToItem(QString desc, int row, QStandardItem *parent)
+void MainWindow::AppendDescToItem(QString desc, int row, QSharedPointer<QStandardItem>& parent)
 {
-    QStandardItem *item;
-    if(parent->rowCount() <= row) item = new QStandardItem;
-    else item = parent->takeChild(row);
+    QSharedPointer<QStandardItem> item;
+    if(parent->rowCount() <= row) item = QSharedPointer<QStandardItem>(new QStandardItem);
+    else item = QSharedPointer<QStandardItem>(parent->takeChild(row));
     item->setText(desc);
-    parent->setChild(row, item);
+    parent->setChild(row, item.get());
+}
+
+void MainWindow::onTextBrowserCustomContextMenu(const QPoint &pos)
+{
+    QScopedPointer<QMenu> pMenu(ui->textBrowser->createStandardContextMenu());
+    QScopedPointer<QAction> pAction(new QAction("Clear", this));
+    if(ui->textBrowser->toPlainText().size() == 0) pAction->setEnabled(false);
+    connect(pAction.get(), &QAction::triggered, ui->textBrowser, &QTextBrowser::clear);
+    pMenu->addAction(pAction.get());
+    pMenu->exec(ui->textBrowser->mapToGlobal(pos));
 }
 
 void MainWindow::onErrorMsg(QString s)

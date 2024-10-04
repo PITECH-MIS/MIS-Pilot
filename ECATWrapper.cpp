@@ -313,5 +313,6 @@ size_t ECATWrapper::getEthInfo(QMap<QString, QString>& dest)
         }
         adapter = adapter->next;
     }
+    delete adapter;
     return dest.size();
 }

@@ -27,7 +27,6 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void closeEvent(QCloseEvent *e);
     ECATWrapper wrapper;
 private slots:
     void onClickConnect(void);
@@ -39,10 +38,11 @@ private slots:
     void onSelectXMLPath();
     void onParseXML();
     void onEnableController();
-    void onDisableController();
+    void onTextBrowserCustomContextMenu(const QPoint &pos);
 private:
+    void closeEvent(QCloseEvent *e);
     void ParseStateViewModel();
-    void AppendDescToItem(QString desc, int row, QStandardItem *parent);
+    void AppendDescToItem(QString desc, int row, QSharedPointer<QStandardItem>& parent);
     QStandardItemModel *stateViewModel;
     Ui::MainWindow *ui;
     ControllerWindow *controllerWindow = nullptr;
