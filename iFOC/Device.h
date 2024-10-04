@@ -1,17 +1,22 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#include "Equipment.h"
+#include "Equipment6DoF.h"
 #include <QPair>
 #include <QVector>
 #include <QString>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QFile>
 
 class Device
 {
 public:
     Device();
 private:
-    QVector<QPair<QString, QSharedPointer<Equipment>>> equipmentVector;
+    bool parseJsonFromFile(const QString& absPath);
+    QVector<QPair<QString, QSharedPointer<Equipment6DoF>>> equipmentVector;
 };
 
 #endif // DEVICE_H

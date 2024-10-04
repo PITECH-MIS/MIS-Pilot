@@ -1,12 +1,12 @@
-#ifndef ACTUATORSET_H
-#define ACTUATORSET_H
+#ifndef ACTUATOR3DOF_H
+#define ACTUATOR3DOF_H
 
 #include "Motor.h"
 
-class ActuatorSet
+class Actuator3DoF
 {
 public:
-    ActuatorSet();
+    Actuator3DoF();
 
 private:
     QSharedPointer<Motor> motorRotation;
@@ -14,4 +14,4 @@ private:
     QSharedPointer<Motor> motorLinear;
 };
 
-#endif // ACTUATORSET_H
+#endif // ACTUATOR3DOF_H

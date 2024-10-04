@@ -31,9 +31,9 @@ SOURCES += \
     Kinematics/KinematicsBase.cpp \
     MainWindow.cpp \
     MotorDebugger.cpp \
-    iFOC/ActuatorSet.cpp \
+    iFOC/Actuator3DoF.cpp \
     iFOC/Device.cpp \
-    iFOC/Equipment.cpp \
+    iFOC/Equipment6DoF.cpp \
     iFOC/Motor.cpp \
     main.cpp \
     utils.cpp
@@ -46,9 +46,9 @@ HEADERS += \
     Kinematics/KinematicsBase.h \
     MainWindow.h \
     MotorDebugger.h \
-    iFOC/ActuatorSet.h \
+    iFOC/Actuator3DoF.h \
     iFOC/Device.h \
-    iFOC/Equipment.h \
+    iFOC/Equipment6DoF.h \
     iFOC/Motor.h \
     utils.h \
     utypes.h
