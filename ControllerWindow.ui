@@ -250,7 +250,7 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuLoadDestFiles">
+   <widget class="QMenu" name="menuLoadDescFiles">
     <property name="title">
      <string>Load Desc. files</string>
     </property>
@@ -260,7 +260,7 @@
      <string>Debugger</string>
     </property>
    </widget>
-   <addaction name="menuLoadDestFiles"/>
+   <addaction name="menuLoadDescFiles"/>
    <addaction name="menuDebugger"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

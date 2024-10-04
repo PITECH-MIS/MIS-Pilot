@@ -22,7 +22,6 @@ public:
     ~ControllerWindow();
     ECATWrapper& wrapper;
     QMap<QString, QJoystickDevice*>& joysticks;
-    void closeEvent(QCloseEvent *event) override;
 public slots:
     void showWindow();
     void controlLoop();
@@ -30,17 +29,18 @@ private slots:
     void onPOVEvent(const QJoystickPOVEvent &event);
     void onAxisEvent(const QJoystickAxisEvent &event);
     void onButtonEvent(const QJoystickButtonEvent &event);
+    void onSelectDescJSONPath();
     void onEnableMotorDebugger();
 signals:
     void debugMessage(QString msg);
     void infoMessage(QString msg);
     void errorMessage(QString msg);
-    void closed();
 private:
     Ui::ControllerWindow *ui;
     MotorDebugger* debuggerWindow = nullptr;
     QSet<QString> motorSNSet;
     QHash<QString, QSharedPointer<Motor>> motorHashMap;
+    QString currentPath;
 };
 
 #endif // CONTROLLERWINDOW_H

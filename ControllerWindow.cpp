@@ -1,15 +1,19 @@
 #include "ControllerWindow.h"
 #include "ui_ControllerWindow.h"
+#include <QFileDialog>
+#include <QDir>
 
 ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice*>& j, QWidget *parent)
     : QMainWindow(parent), wrapper(w), joysticks(j)
     , ui(new Ui::ControllerWindow)
 {
+    currentPath = QCoreApplication::applicationDirPath();
     ui->setupUi(this);
     connect(QJoysticks::getInstance(), &QJoysticks::POVEvent, this, &ControllerWindow::onPOVEvent);
     connect(QJoysticks::getInstance(), &QJoysticks::axisEvent, this, &ControllerWindow::onAxisEvent);
     connect(QJoysticks::getInstance(), &QJoysticks::buttonEvent, this, &ControllerWindow::onButtonEvent);
     connect(ui->menuDebugger, &QMenu::aboutToShow, this, &ControllerWindow::onEnableMotorDebugger);
+    connect(ui->menuLoadDescFiles, &QMenu::aboutToShow, this, &ControllerWindow::onSelectDescJSONPath);
 }
 
 void ControllerWindow::showWindow()
@@ -46,6 +50,32 @@ void ControllerWindow::showWindow()
         else emit errorMessage("Error mapping motor SN:" + i);
     }
     this->show();
+}
+
+void ControllerWindow::onSelectDescJSONPath()
+{
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setNameFilter(tr("Device Descriptions (*.json)"));
+    dialog.setViewMode(QFileDialog::Detail);
+    QDir descDir(currentPath);
+    for(uint8_t i = 0; i < 4; i++)
+    {
+        QDir wantedDescDir(descDir.filePath("DeviceDescriptions"));
+        if(wantedDescDir.exists())
+        {
+            descDir = wantedDescDir;
+            break;
+        }
+        QStringList lst = descDir.entryList(QStringList() << "*.json", QDir::Files);
+        if(lst.size() > 0) break;
+        descDir.cdUp();
+    }
+    dialog.setDirectory(descDir);
+    if(dialog.exec())
+    {
+        // configXMLPath = dialog.selectedFiles().at(0);
+    }
 }
 
 void ControllerWindow::onPOVEvent(const QJoystickPOVEvent &event)
@@ -96,6 +126,42 @@ void ControllerWindow::onButtonEvent(const QJoystickButtonEvent &event)
     emit infoMessage(event.joystick->name + " (Button): " + QString::asprintf("button=%d, pressed=%d", event.button, event.pressed));
 }
 
+void GetColorWheel(uint8_t pos, uint8_t *r, uint8_t *g, uint8_t *b);
+
+void ControllerWindow::controlLoop()
+{
+    static uint8_t j = 0;
+    j++;
+    uint8_t r, g, b;
+    GetColorWheel(j, &r, &g, &b);
+    for(auto &i : wrapper.output_vector)
+    {
+        i->Interface_Set.LEDState = 1;
+        i->Interface_Set.LEDR = r;
+        i->Interface_Set.LEDG = g;
+        i->Interface_Set.LEDB = b;
+    }
+    for(auto i = motorHashMap.constKeyValueBegin(); i != motorHashMap.constKeyValueEnd(); ++i)
+    {
+        i->second->applyMotorConfig();
+    }
+    if(debuggerWindow) debuggerWindow->updateState();
+}
+
+void ControllerWindow::onEnableMotorDebugger()
+{
+    debuggerWindow = new MotorDebugger(motorHashMap, this);
+    connect(debuggerWindow, &MotorDebugger::debugMessage, this, &ControllerWindow::debugMessage);
+    connect(debuggerWindow, &MotorDebugger::errorMessage, this, &ControllerWindow::errorMessage);
+    connect(debuggerWindow, &MotorDebugger::infoMessage, this, &ControllerWindow::infoMessage);
+    debuggerWindow->setAttribute(Qt::WA_DeleteOnClose);
+    debuggerWindow->showWindow();
+}
+
+ControllerWindow::~ControllerWindow()
+{
+    delete ui;
+}
 
 void GetColorWheel(uint8_t pos, uint8_t *r, uint8_t *g, uint8_t *b)
 {
@@ -118,46 +184,4 @@ void GetColorWheel(uint8_t pos, uint8_t *r, uint8_t *g, uint8_t *b)
     *r = 0;
     *g = pos * 3;
     *b = 255 - *g;
-}
-
-void ControllerWindow::controlLoop()
-{
-    static uint8_t j = 0;
-    j++;
-    uint8_t r, g, b;
-    GetColorWheel(j, &r, &g, &b);
-    for(auto &i : wrapper.output_vector)
-    {
-        i->Interface_Set.LEDState = 1;
-        i->Interface_Set.LEDR = r;
-        i->Interface_Set.LEDG = g;
-        i->Interface_Set.LEDB = b;
-    }
-    for(auto i = motorHashMap.constKeyValueBegin(); i != motorHashMap.constKeyValueEnd(); ++i)
-    {
-        i->second->applyMotorConfig();
-    }
-}
-
-void ControllerWindow::onEnableMotorDebugger()
-{
-    if(!debuggerWindow)
-    {
-        debuggerWindow = new MotorDebugger(motorHashMap, this);
-        connect(debuggerWindow, &MotorDebugger::debugMessage, this, &ControllerWindow::debugMessage);
-        connect(debuggerWindow, &MotorDebugger::errorMessage, this, &ControllerWindow::errorMessage);
-        connect(debuggerWindow, &MotorDebugger::infoMessage, this, &ControllerWindow::infoMessage);
-        debuggerWindow->showWindow();
-    }
-}
-
-ControllerWindow::~ControllerWindow()
-{
-    delete ui;
-}
-
-void ControllerWindow::closeEvent(QCloseEvent *event)
-{
-    emit closed();
-    QWidget::closeEvent(event);
 }
