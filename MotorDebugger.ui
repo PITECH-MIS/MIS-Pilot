@@ -534,7 +534,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Current Limit</string>
+            <string>Current Limit (Iq/Id, A)</string>
            </property>
           </widget>
          </item>
@@ -548,7 +548,7 @@
          <item row="2" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Set Speed (RPM)</string>
+            <string>Set Speed (output, RPM)</string>
            </property>
           </widget>
          </item>

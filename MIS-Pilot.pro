@@ -31,7 +31,9 @@ SOURCES += \
     Kinematics/KinematicsBase.cpp \
     MainWindow.cpp \
     MotorDebugger.cpp \
+    RobotArm/RobotArmWrapper.cpp \
     iFOC/Actuator3DoF.cpp \
+    iFOC/ActuatorWorker.cpp \
     iFOC/Device.cpp \
     iFOC/Equipment6DoF.cpp \
     iFOC/Motor.cpp \
@@ -46,7 +48,9 @@ HEADERS += \
     Kinematics/KinematicsBase.h \
     MainWindow.h \
     MotorDebugger.h \
+    RobotArm/RobotArmWrapper.h \
     iFOC/Actuator3DoF.h \
+    iFOC/ActuatorWorker.h \
     iFOC/Device.h \
     iFOC/Equipment6DoF.h \
     iFOC/Motor.h \

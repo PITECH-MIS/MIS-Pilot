@@ -59,6 +59,9 @@ void MainWindow::onEnableController()
     connect(controllerWindow, &ControllerWindow::errorMessage, this, &MainWindow::onErrorMsg);
     connect(controllerWindow, &ControllerWindow::infoMessage, this, &MainWindow::onInfoMsg);
     connect(controllerWindow, &ControllerWindow::debugMessage, this, &MainWindow::onDebugMsg);
+    connect(controllerWindow, &ControllerWindow::onCloseWindow, this, [this]() {
+        if(this->controllerWindow) this->controllerWindow = nullptr;
+    });
     controllerWindow->setAttribute(Qt::WA_DeleteOnClose);
     controllerWindow->showWindow();
 }
@@ -118,28 +121,28 @@ void MainWindow::onClickConnect(void)
 void MainWindow::onECATStateChanged()
 {
     uint16_t current_state = wrapper.getExpectedState();
-    if(current_state == EC_STATE_OPERATIONAL)
-    {
-        if(controllerWindow && (wrapper.getExpectedWKC() == wrapper.getRealWKC())) controllerWindow->controlLoop();
-        ui->con_pushButton->setText(QString::fromUtf8("Disconnect"));
-#ifndef DEBUG_ENVIRONMENT
-        ui->enterControllerButton->setEnabled(true);
-#endif
-    }
-    else
-    {
-        stateViewModel->clear();
-        ui->con_pushButton->setText(QString::fromUtf8("Connect"));
-#ifndef DEBUG_ENVIRONMENT
-        ui->enterControllerButton->setEnabled(false);
-#endif
-    }
-    statusBarStateLabel->setText("State: " + wrapper.getExpectedStateName() + " ");
-    statusBarWkcLabel->setText(QString::asprintf("WKC: %d/%d ", wrapper.getRealWKC(), wrapper.getExpectedWKC()));
-    statusBarSlaveCountLabel->setText(QString::asprintf("Slave(s): %d ", wrapper.getSlaveCount()));
+    if(controllerWindow && current_state == EC_STATE_OPERATIONAL && (wrapper.getExpectedWKC() == wrapper.getRealWKC())) controllerWindow->controlLoop();
     static uint8_t timer_100ms = 0;
-    if(timer_100ms++ >= 99)
+    if(timer_100ms++ >= 99 || current_state != EC_STATE_OPERATIONAL)
     {
+        if(current_state == EC_STATE_OPERATIONAL)
+        {
+            ui->con_pushButton->setText(QString::fromUtf8("Disconnect"));
+#ifndef DEBUG_ENVIRONMENT
+            ui->enterControllerButton->setEnabled(true);
+#endif
+        }
+        else
+        {
+            stateViewModel->clear();
+            ui->con_pushButton->setText(QString::fromUtf8("Connect"));
+#ifndef DEBUG_ENVIRONMENT
+            ui->enterControllerButton->setEnabled(false);
+#endif
+        }
+        statusBarStateLabel->setText("State: " + wrapper.getExpectedStateName() + " ");
+        statusBarWkcLabel->setText(QString::asprintf("WKC: %d/%d ", wrapper.getRealWKC(), wrapper.getExpectedWKC()));
+        statusBarSlaveCountLabel->setText(QString::asprintf("Slave(s): %d ", wrapper.getSlaveCount()));
         ParseStateViewModel();
         timer_100ms = 0;
     }
@@ -201,8 +204,5 @@ void MainWindow::onInfoMsg(QString s)
 
 void MainWindow::onDebugMsg(QString s)
 {
-    QDateTime currentDt = QDateTime::currentDateTime();
-    QString result = "[" + currentDt.toString("yyyy-MM-dd hh:mm:ss.zzz") + "] [DEBUG] " + s;
-    qDebug() << result;
-    // ui->textBrowser->append(result);
+    qDebugMessage(s);
 }

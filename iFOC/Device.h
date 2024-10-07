@@ -2,21 +2,24 @@
 #define DEVICE_H
 
 #include "Equipment6DoF.h"
-#include <QPair>
-#include <QVector>
 #include <QString>
 #include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
 #include <QFile>
 
 class Device
 {
 public:
-    Device();
+    Device() {};
+    ~Device();
+    // copy of hashmap, enabling removing motor pointers that are already assigned.
+    bool parseJsonFromFile(const QString& absPath, QHash<QString, QSharedPointer<Motor>> hash);
+    QString& deviceName();
+    QWeakPointer<Equipment6DoF> getEquipmentByName(QString name);
+    QStringList equipmentNames();
+    int availbleEquipmentCount();
 private:
-    bool parseJsonFromFile(const QString& absPath);
-    QVector<QPair<QString, QSharedPointer<Equipment6DoF>>> equipmentVector;
+    QString name = "";
+    QHash<QString, QSharedPointer<Equipment6DoF>> equipmentHashMap;
 };
 
 #endif // DEVICE_H

@@ -1,8 +1,15 @@
 #include "ECATWrapper.h"
-#include "utils.h"
 #include <QSet>
+#include <QDebug>
 
-ECATWrapper::ECATWrapper() {}
+ECATWrapper::ECATWrapper()
+{
+    memset(IOMap, 0, sizeof(IOMap));
+}
+ECATWrapper::~ECATWrapper()
+{
+    qDebugMessage("ECATWrapper destroyed");
+}
 
 void ECATWrapper::pdoWorkerLoop()
 {
@@ -19,6 +26,7 @@ void ECATWrapper::initEth(QString& name)
 
 void ECATWrapper::run()
 {
+    memset(IOMap, 0, sizeof(IOMap));
     if(pdoTimer == nullptr)
     {
         pdoTimer = new QTimer();
@@ -69,7 +77,7 @@ void ECATWrapper::run()
             emit infoMessage("Requesting OP state");
             ec_slave[0].state = EC_STATE_OPERATIONAL;
             expectedState = EC_STATE_OPERATIONAL;
-            emit onStateChanged();
+            // emit onStateChanged();
             pdoWorkerLoop();
             pdoTimer->start(1);
             ec_writestate(0);
@@ -148,7 +156,7 @@ void ECATWrapper::closeConnection()
     ec_writestate(0);
     expectedState = EC_STATE_INIT;
     // ec_close();
-    ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTRET);
+    ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTRET3);
     realWKC = 0;
     emit onStateChanged();
     input_vector.clear();

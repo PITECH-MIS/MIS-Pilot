@@ -9,6 +9,7 @@
 #include "MotorDebugger.h"
 #include "ECATWrapper.h"
 #include "iFOC/Motor.h"
+#include "iFOC/Device.h"
 
 namespace Ui {
 class ControllerWindow;
@@ -31,15 +32,23 @@ private slots:
     void onButtonEvent(const QJoystickButtonEvent &event);
     void onSelectDescJSONPath();
     void onEnableMotorDebugger();
+    void onSelectDevice();
+    void onSelectEquipment();
+    void onSelectActuator();
 signals:
     void debugMessage(QString msg);
     void infoMessage(QString msg);
     void errorMessage(QString msg);
+    void onCloseWindow();
 private:
+    void updatePanelStatus();
+    void contextMenuEvent(QContextMenuEvent *event) final;
     Ui::ControllerWindow *ui;
     MotorDebugger* debuggerWindow = nullptr;
+    QHash<QString, QSharedPointer<Device>> deviceHashMap;
     QSet<QString> motorSNSet;
-    QHash<QString, Motor*> motorHashMap;
+    QHash<QString, QSharedPointer<Motor>> motorHashMap;
+    QSharedPointer<Actuator3DoF> panelActuator;
     QString currentPath;
 };
 

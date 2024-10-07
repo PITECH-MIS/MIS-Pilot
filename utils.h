@@ -4,5 +4,6 @@
 #include "qobject.h"
 
 bool isUsableEth(QString& origin);
+void qDebugMessage(QString msg);
 
 #endif // UTILS_H

@@ -11,12 +11,16 @@
 #include <inttypes.h>
 #include "ethercat.h"
 #include "utypes.h"
+#include "utils.h"
+#include <QMutex>
+#include <QMutexLocker>
 
 class ECATWrapper : public QThread
 {
     Q_OBJECT
 public:
     ECATWrapper();
+    ~ECATWrapper();
     bool parseSlaveXML(QFile &xmlFile);
     void initEth(QString& name);
     void closeConnection();

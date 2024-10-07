@@ -6,6 +6,8 @@
 #include <QList>
 #include <QSharedPointer>
 
+#define _constrain(v,low,high) ((v)<(low)?(low):((v)>(high)?(high):(v)))
+
 #pragma pack(push, 1)
 typedef struct motor_state_t
 {
@@ -61,11 +63,13 @@ public:
 
     Motor(uint32_t _SN) : SN(_SN) {};
     Motor(uint32_t _SN, uint8_t _limit) : SN(_SN), limiter_index(_limit) {};
+    ~Motor();
     bool findMotorInVector(QVector<slave_inputs_t*>& input, QVector<slave_outputs_t*>& output);
     void resetState();
     bool setMode(Motor::Mode mode);
     bool setState(Motor::State state);
     bool setSpeed(float rpm);
+    bool setRawAbsAngle(float deg);
     bool setTrajAbsAngle(float deg);
     bool setCurrentLimit(float limit);
     bool setTorque(float Iq);

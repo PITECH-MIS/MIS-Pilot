@@ -14,6 +14,18 @@ ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice
     connect(QJoysticks::getInstance(), &QJoysticks::buttonEvent, this, &ControllerWindow::onButtonEvent);
     connect(ui->menuDebugger, &QMenu::aboutToShow, this, &ControllerWindow::onEnableMotorDebugger);
     connect(ui->menuLoadDescFiles, &QMenu::aboutToShow, this, &ControllerWindow::onSelectDescJSONPath);
+    connect(ui->deviceSelectComboBox, &QComboBox::currentIndexChanged, this, &ControllerWindow::onSelectDevice);
+    connect(ui->equipmentSelectComboBox, &QComboBox::currentIndexChanged, this, &ControllerWindow::onSelectEquipment);
+    connect(ui->actuatorSelectComboBox, &QComboBox::currentIndexChanged, this, &ControllerWindow::onSelectActuator);
+    connect(ui->panelRotationSpinBox, &QDoubleSpinBox::valueChanged, this, [this](){
+        if(this->panelActuator) this->panelActuator->setRotationDegAbs(ui->panelRotationSpinBox->value());
+    });
+    connect(ui->panelPushPullSpinBox, &QDoubleSpinBox::valueChanged, this, [this](){
+        if(this->panelActuator) this->panelActuator->setPushPullDegAbs(ui->panelPushPullSpinBox->value());
+    });
+    connect(ui->panelLinearSpinBox, &QDoubleSpinBox::valueChanged, this, [this](){
+        if(this->panelActuator) this->panelActuator->setLinearDegAbs(ui->panelLinearSpinBox->value());
+    });
 }
 
 void ControllerWindow::showWindow()
@@ -37,19 +49,58 @@ void ControllerWindow::showWindow()
     emit infoMessage(QString::asprintf("Find %d motor(s) on EtherCAT Bus", motorSNSet.size()));
     for(const auto &i : std::as_const(motorSNSet))
     {
-        emit debugMessage("Find motor SN: " + i);
+        // emit debugMessage("Find motor SN: " + i);
         uint8_t limiter_index = 0;
-        Motor *motor = new Motor(i.toUInt(), limiter_index);
+        QSharedPointer<Motor> motor = QSharedPointer<Motor>(new Motor(i.toUInt(), limiter_index));
         if(motor->findMotorInVector(wrapper.input_vector, wrapper.output_vector))
         {
             motor->resetState();
-            motor->setCurrentLimit(0.5f);
             motorHashMap.insert(i, motor);
             emit debugMessage("Successfully mapped motor SN: " + i);
         }
         else emit errorMessage("Error mapping motor SN:" + i);
     }
     this->show();
+}
+
+void ControllerWindow::onSelectDevice()
+{
+    ui->equipmentSelectComboBox->clear();
+    QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
+    ui->equipmentSelectComboBox->addItems(dev.lock()->equipmentNames());
+}
+
+void ControllerWindow::onSelectEquipment()
+{
+    ui->actuatorSelectComboBox->clear();
+    QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
+    QWeakPointer<Equipment6DoF> eq(dev.lock()->getEquipmentByName(ui->equipmentSelectComboBox->currentText()));
+    if(!eq.lock()->getProximal().isNull()) ui->actuatorSelectComboBox->addItem("Proximal");
+    if(!eq.lock()->getDistal().isNull()) ui->actuatorSelectComboBox->addItem("Distal");
+}
+
+void ControllerWindow::onSelectActuator()
+{
+    QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
+    QWeakPointer<Equipment6DoF> eq(dev.lock()->getEquipmentByName(ui->equipmentSelectComboBox->currentText()));
+    if(ui->actuatorSelectComboBox->currentText() == "Proximal")
+    {
+        panelActuator = eq.lock()->getProximal();
+    }
+    else if(ui->actuatorSelectComboBox->currentText() == "Distal")
+    {
+        panelActuator = eq.lock()->getDistal();
+    }
+}
+
+void ControllerWindow::updatePanelStatus()
+{
+    if(!panelActuator.isNull())
+    {
+        ui->panelRotationLineEdit->setText(QString::number(panelActuator->getRotationState()));
+        ui->panelPushPullLineEdit->setText(QString::number(panelActuator->getPushPullState()));
+        ui->panelLinearLineEdit->setText(QString::number(panelActuator->getLinearState()));
+    }
 }
 
 void ControllerWindow::onSelectDescJSONPath()
@@ -74,8 +125,27 @@ void ControllerWindow::onSelectDescJSONPath()
     dialog.setDirectory(descDir);
     if(dialog.exec())
     {
-        // configXMLPath = dialog.selectedFiles().at(0);
+        QString path = dialog.selectedFiles().at(0);
+        QSharedPointer<Device> dev = QSharedPointer<Device>(new Device);
+        // if(dev->parseJsonFromFile(path, motorHashMap))
+        // {
+        //     deviceList.insert(dev);
+        // }
+        ui->deviceSelectComboBox->clear();
+        dev->parseJsonFromFile(path, motorHashMap);
+        if(dev->availbleEquipmentCount() > 0)
+        {
+            deviceHashMap.insert(dev->deviceName(), dev);
+            ui->deviceSelectComboBox->addItem(dev->deviceName());
+            emit infoMessage("Parsed Device: " + dev->deviceName() + QString::asprintf(" with %d equipment(s)", dev->availbleEquipmentCount()));
+        }
+        else emit errorMessage("Parsed Device: " + dev->deviceName() + "with no available equipment, deleting");
     }
+}
+
+void ControllerWindow::contextMenuEvent(QContextMenuEvent *event)
+{
+    qDebugMessage(QString::asprintf("QContextMenuEvent fired at (%d, %d)", event->x(), event->y()));
 }
 
 void ControllerWindow::onPOVEvent(const QJoystickPOVEvent &event)
@@ -132,23 +202,24 @@ void ControllerWindow::controlLoop()
 {
     for(auto i = motorHashMap.constKeyValueBegin(); i != motorHashMap.constKeyValueEnd(); ++i)
     {
-        i->second->applyMotorConfig();
+        i->second.get()->applyMotorConfig();
     }
-    static uint16_t timer_100ms = 0;
+    static uint8_t timer_100ms = 0;
     if(timer_100ms++ >= 99)
     {
         if(debuggerWindow) debuggerWindow->updateState();
-        static uint8_t j = 0;
-        j++;
-        uint8_t r, g, b;
-        GetColorWheel(j, &r, &g, &b);
-        for(auto &i : wrapper.output_vector)
-        {
-            i->Interface_Set.LEDState = 1;
-            i->Interface_Set.LEDR = r;
-            i->Interface_Set.LEDG = g;
-            i->Interface_Set.LEDB = b;
-        }
+        if(panelActuator) updatePanelStatus();
+        // static uint8_t j = 0;
+        // j++;
+        // uint8_t r, g, b;
+        // GetColorWheel(j, &r, &g, &b);
+        // for(auto &i : wrapper.output_vector)
+        // {
+        //     i->Interface_Set.LEDState = 1;
+        //     i->Interface_Set.LEDR = r;
+        //     i->Interface_Set.LEDG = g;
+        //     i->Interface_Set.LEDB = b;
+        // }
         timer_100ms = 0;
     }
 }
@@ -159,13 +230,18 @@ void ControllerWindow::onEnableMotorDebugger()
     connect(debuggerWindow, &MotorDebugger::debugMessage, this, &ControllerWindow::debugMessage);
     connect(debuggerWindow, &MotorDebugger::errorMessage, this, &ControllerWindow::errorMessage);
     connect(debuggerWindow, &MotorDebugger::infoMessage, this, &ControllerWindow::infoMessage);
+    connect(debuggerWindow, &MotorDebugger::onCloseWindow, this, [this](){
+        if(this->debuggerWindow) this->debuggerWindow = nullptr;
+    });
     debuggerWindow->setAttribute(Qt::WA_DeleteOnClose);
     debuggerWindow->showWindow();
 }
 
 ControllerWindow::~ControllerWindow()
 {
+    emit debugMessage("ControllerWindow destroyed");
     delete ui;
+    emit onCloseWindow();
 }
 
 void GetColorWheel(uint8_t pos, uint8_t *r, uint8_t *g, uint8_t *b)

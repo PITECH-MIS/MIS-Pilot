@@ -14,7 +14,7 @@ class MotorDebugger : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MotorDebugger(QHash<QString, Motor*>& hashMap, QWidget *parent = nullptr);
+    explicit MotorDebugger(QHash<QString, QSharedPointer<Motor>>& hashMap, QWidget *parent = nullptr);
     ~MotorDebugger();
 public slots:
     void showWindow();
@@ -29,12 +29,13 @@ signals:
     void debugMessage(QString msg);
     void infoMessage(QString msg);
     void errorMessage(QString msg);
+    void onCloseWindow();
 private:
     void setTargetSpinBoxesEnabled(bool en_torque, bool en_speed, bool en_pos, bool en_currLimit);
     Ui::MotorDebugger *ui;
-    QHash<QString, Motor*>& motorHashMap;
+    QHash<QString, QSharedPointer<Motor>>& motorHashMap;
     QMap<Motor::Mode, QString> motorModeNames;
-    Motor *currentDbgMotor = nullptr;
+    QSharedPointer<Motor> currentDbgMotor = nullptr;
 };
 
 #endif // MOTORDEBUGGER_H

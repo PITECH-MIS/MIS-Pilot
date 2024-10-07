@@ -2,7 +2,7 @@
 #include "ui_MotorDebugger.h"
 #include <QCollator>
 
-MotorDebugger::MotorDebugger(QHash<QString, Motor*>& hashMap, QWidget *parent)
+MotorDebugger::MotorDebugger(QHash<QString, QSharedPointer<Motor>>& hashMap, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MotorDebugger), motorHashMap(hashMap)
 {
@@ -12,7 +12,6 @@ MotorDebugger::MotorDebugger(QHash<QString, Motor*>& hashMap, QWidget *parent)
     ui->setupUi(this);
     ui->motorModeComboBox->addItems(motorModeNames.values());
     setTargetSpinBoxesEnabled(false, false, false, false);
-    connect(ui->motorSNComboBox, &QComboBox::currentIndexChanged, this, &MotorDebugger::onSelectMotorSN);
     connect(ui->motorEnabledCheckBox, &QCheckBox::checkStateChanged, this, &MotorDebugger::onChangeMotorEnable);
     connect(ui->motorModeComboBox, &QComboBox::currentIndexChanged, this, &MotorDebugger::onSelectMotorMode);
     connect(ui->motorTargetCurrLimitSpinBox, &QDoubleSpinBox::valueChanged, this, &MotorDebugger::onChangeMotorCurrLimit);
@@ -30,6 +29,7 @@ void MotorDebugger::showWindow()
     collator.setNumericMode(true);
     std::sort(snList.begin(), snList.end(), collator);
     ui->motorSNComboBox->addItems(snList);
+    connect(ui->motorSNComboBox, &QComboBox::currentIndexChanged, this, &MotorDebugger::onSelectMotorSN);
     if(snList.size() > 0) onSelectMotorSN();
     this->setWindowFlag(Qt::WindowStaysOnTopHint);
     if(this->parentWidget())
@@ -156,5 +156,7 @@ void MotorDebugger::setTargetSpinBoxesEnabled(bool en_torque, bool en_speed, boo
 
 MotorDebugger::~MotorDebugger()
 {
+    emit debugMessage("MotorDebugger destroyed");
     delete ui;
+    emit onCloseWindow();
 }

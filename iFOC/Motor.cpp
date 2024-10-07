@@ -2,6 +2,11 @@
 
 // Motor::Motor(uint32_t _SN) {}
 
+Motor::~Motor()
+{
+    qDebugMessage("Motor SN: " + QString::number(SN) + " destroyed");
+}
+
 bool Motor::findMotorInVector(QVector<slave_inputs_t*>& input, QVector<slave_outputs_t*>& output)
 {
     if(input.size() != output.size()) return false;
@@ -56,6 +61,13 @@ bool Motor::setSpeed(float rpm)
 {
     if(!checkAlive()) return false;
     set.SetSpeed = rpm;
+    return true;
+}
+
+bool Motor::setRawAbsAngle(float deg)
+{
+    if(!checkAlive()) return false;
+    set.SetRawAngle = deg;
     return true;
 }
 
