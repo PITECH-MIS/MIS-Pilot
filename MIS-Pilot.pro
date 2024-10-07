@@ -6,6 +6,7 @@ CONFIG += c++17
 
 soem += $$PWD/SOEM
 qjoysticks += $$PWD/QJoysticks
+xcore += $$PWD/RobotArm/xCore/
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -22,6 +23,10 @@ LIBS += \
     $${soem}/lib/soem.lib \
     $${soem}/lib/wpcap/Lib/x64/Packet.lib \
     $${soem}/lib/wpcap/Lib/x64/wpcap.lib \
+#    $${xcore}/lib/win64/xMateModel.lib \
+#    $${xcore}/lib/win64/xCoreSDK.lib \
+#    $${xcore}/lib/win64/xCoreSDK_static.lib \
+#    $${xcore}/lib/win64/xCoreSDK.dll \
 
 SOURCES += \
     $$PWD/JoypadWidget/joypad.cpp \
@@ -48,6 +53,14 @@ HEADERS += \
     MainWindow.h \
     MotorDebugger.h \
     RobotArm/RobotArmWrapper.h \
+    RobotArm/xCore/Inc/base.h \
+    RobotArm/xCore/Inc/data_types.h \
+    RobotArm/xCore/Inc/exception.h \
+    RobotArm/xCore/Inc/model.h \
+    RobotArm/xCore/Inc/motion_control_rt.h \
+    RobotArm/xCore/Inc/planner.h \
+    RobotArm/xCore/Inc/robot.h \
+    RobotArm/xCore/Inc/utility.h \
     iFOC/Actuator3DoF.h \
     iFOC/Device.h \
     iFOC/Equipment6DoF.h \
@@ -73,3 +86,6 @@ win32: LIBS += -L$$PWD/soem/wpcap/Lib/x64/ -lwpcap
 win32:!win32-g++: PRE_TARGETDEPS += $$PWD/soem/wpcap/Lib/x64/wpcap.lib
 
 include ($${qjoysticks}/QJoysticks.pri)
+
+RESOURCES += \
+    Resources/resources.qrc

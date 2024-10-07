@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     currentPath = QCoreApplication::applicationDirPath();
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":/image/logo.png"));
     statusBarStateLabel = new QLabel(this);
     statusBarWkcLabel = new QLabel(this);
     statusBarSlaveCountLabel = new QLabel(this);
