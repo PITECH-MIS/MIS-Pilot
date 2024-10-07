@@ -18,7 +18,7 @@
                 },
                 "Linear": {
                     "motor_sn": 4225469057,
-                    "limiter_idx": 0,
+                    "limiter_idx": 2,
                     "current_limit": 0.5
                 }
             },
@@ -28,17 +28,17 @@
                 "linear_abs_angle_limit": 3600,
                 "Rotation": {
                     "motor_sn": 4279984531,
-                    "limiter_idx": 0,
+                    "limiter_idx": 1,
                     "current_limit": 0.5
                 },
                 "PushPull": {
                     "motor_sn": 4279984532,
-                    "limiter_idx": 0,
+                    "limiter_idx": 2,
                     "current_limit": 0.5
                 },
                 "Linear": {
                     "motor_sn": 4225469058,
-                    "limiter_idx": 0,
+                    "limiter_idx": 1,
                     "current_limit": 0.5
                 }
             }
@@ -70,12 +70,12 @@
                 "linear_abs_angle_limit": 3600,
                 "Rotation": {
                     "motor_sn": 4212860422,
-                    "limiter_idx": 0,
+                    "limiter_idx": 1,
                     "current_limit": 0.5
                 },
                 "PushPull": {
                     "motor_sn": 4212860423,
-                    "limiter_idx": 0,
+                    "limiter_idx": 2,
                     "current_limit": 0.5
                 },
                 "Linear": {
@@ -102,7 +102,7 @@
                 },
                 "Linear": {
                     "motor_sn": 4252734490,
-                    "limiter_idx": 0,
+                    "limiter_idx": 1,
                     "current_limit": 0.5
                 }
             },
@@ -112,17 +112,17 @@
                 "linear_abs_angle_limit": 3600,
                 "Rotation": {
                     "motor_sn": 4189814536,
-                    "limiter_idx": 0,
+                    "limiter_idx": 1,
                     "current_limit": 0.5
                 },
                 "PushPull": {
                     "motor_sn": 4189814537,
-                    "limiter_idx": 0,
+                    "limiter_idx": 2,
                     "current_limit": 0.5
                 },
                 "Linear": {
                     "motor_sn": 4252734491,
-                    "limiter_idx": 0,
+                    "limiter_idx": 2,
                     "current_limit": 0.5
                 }
             }

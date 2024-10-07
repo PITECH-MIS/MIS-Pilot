@@ -26,6 +26,9 @@ ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice
     connect(ui->panelLinearSpinBox, &QDoubleSpinBox::valueChanged, this, [this](){
         if(this->panelActuator) this->panelActuator->setLinearDegAbs(ui->panelLinearSpinBox->value());
     });
+    connect(ui->panelLinearAlignButton, &QPushButton::clicked, this, [this](){
+        if(this->panelActuator) this->panelActuator->beginLinearHoming();
+    });
 }
 
 void ControllerWindow::showWindow()
@@ -98,8 +101,19 @@ void ControllerWindow::updatePanelStatus()
     if(!panelActuator.isNull())
     {
         ui->panelRotationLineEdit->setText(QString::number(panelActuator->getRotationState()));
+        ui->panelRotationIqEdit->setText(QString::number(panelActuator->motorRotation.first->getIq()));
+        ui->panelRotationLimiterActivatedRadioButton->setChecked(panelActuator->motorRotation.first->isLimiterActivated());
+        ui->panelRotationLimiterHasActivatedRadioButton->setChecked(panelActuator->motorRotation.first->hasLimiterActivated());
+
         ui->panelPushPullLineEdit->setText(QString::number(panelActuator->getPushPullState()));
+        ui->panelPushPullIqEdit->setText(QString::number(panelActuator->motorPushPull.first->getIq()));
+        ui->panelPushPullLimiterActivatedRadioButton->setChecked(panelActuator->motorPushPull.first->isLimiterActivated());
+        ui->panelPushPullLimiterHasActivatedRadioButton->setChecked(panelActuator->motorPushPull.first->hasLimiterActivated());
+
         ui->panelLinearLineEdit->setText(QString::number(panelActuator->getLinearState()));
+        ui->panelLinearIqEdit->setText(QString::number(panelActuator->motorLinear.first->getIq()));
+        ui->panelLinearLimiterActivatedRadioButton->setChecked(panelActuator->motorLinear.first->isLimiterActivated());
+        ui->panelLinearLimiterHasActivatedRadioButton->setChecked(panelActuator->motorLinear.first->hasLimiterActivated());
     }
 }
 

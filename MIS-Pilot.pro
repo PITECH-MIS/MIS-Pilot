@@ -33,7 +33,6 @@ SOURCES += \
     MotorDebugger.cpp \
     RobotArm/RobotArmWrapper.cpp \
     iFOC/Actuator3DoF.cpp \
-    iFOC/ActuatorWorker.cpp \
     iFOC/Device.cpp \
     iFOC/Equipment6DoF.cpp \
     iFOC/Motor.cpp \
@@ -50,7 +49,6 @@ HEADERS += \
     MotorDebugger.h \
     RobotArm/RobotArmWrapper.h \
     iFOC/Actuator3DoF.h \
-    iFOC/ActuatorWorker.h \
     iFOC/Device.h \
     iFOC/Equipment6DoF.h \
     iFOC/Motor.h \
@@ -64,6 +62,7 @@ FORMS += \
 
 QT += xml
 QT += core
+QT += concurrent
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

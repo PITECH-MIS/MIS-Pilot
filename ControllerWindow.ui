@@ -32,220 +32,12 @@
    <string>Controller</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="gridLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>270</y>
-      <width>223</width>
-      <height>299</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <property name="bottomMargin">
-      <number>5</number>
-     </property>
-     <property name="verticalSpacing">
-      <number>10</number>
-     </property>
-     <item row="3" column="0">
-      <widget class="QSlider" name="leftJoyHorizontalSlider">
-       <property name="focusPolicy">
-        <enum>Qt::FocusPolicy::NoFocus</enum>
-       </property>
-       <property name="minimum">
-        <number>-100</number>
-       </property>
-       <property name="maximum">
-        <number>100</number>
-       </property>
-       <property name="tracking">
-        <bool>false</bool>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QComboBox" name="leftJoyComboBox">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::FocusPolicy::NoFocus</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QSlider" name="leftJoyVerticalSlider">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="minimum">
-        <number>-100</number>
-       </property>
-       <property name="maximum">
-        <number>100</number>
-       </property>
-       <property name="tracking">
-        <bool>false</bool>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Orientation::Vertical</enum>
-       </property>
-       <property name="tickPosition">
-        <enum>QSlider::TickPosition::NoTicks</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="JoyPad" name="leftJoyPad" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>200</width>
-         <height>200</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>200</width>
-         <height>200</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Left Joystick</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="gridLayoutWidget_2">
-    <property name="geometry">
-     <rect>
-      <x>540</x>
-      <y>270</y>
-      <width>223</width>
-      <height>299</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_3">
-     <property name="bottomMargin">
-      <number>5</number>
-     </property>
-     <property name="verticalSpacing">
-      <number>10</number>
-     </property>
-     <item row="3" column="0">
-      <widget class="QSlider" name="rightJoyHorizontalSlider">
-       <property name="focusPolicy">
-        <enum>Qt::FocusPolicy::NoFocus</enum>
-       </property>
-       <property name="minimum">
-        <number>-100</number>
-       </property>
-       <property name="maximum">
-        <number>100</number>
-       </property>
-       <property name="tracking">
-        <bool>false</bool>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QComboBox" name="rightJoyComboBox">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::FocusPolicy::NoFocus</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QSlider" name="rightJoyVerticalSlider">
-       <property name="minimum">
-        <number>-100</number>
-       </property>
-       <property name="maximum">
-        <number>100</number>
-       </property>
-       <property name="tracking">
-        <bool>false</bool>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Orientation::Vertical</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="JoyPad" name="rightJoyPad" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>200</width>
-         <height>200</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>200</width>
-         <height>200</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Right Joystick</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>0</y>
-      <width>771</width>
+      <width>781</width>
       <height>271</height>
      </rect>
     </property>
@@ -260,8 +52,8 @@
          <rect>
           <x>0</x>
           <y>20</y>
-          <width>771</width>
-          <height>161</height>
+          <width>781</width>
+          <height>241</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -307,7 +99,7 @@
                <rect>
                 <x>0</x>
                 <y>10</y>
-                <width>241</width>
+                <width>251</width>
                 <height>51</height>
                </rect>
               </property>
@@ -372,7 +164,7 @@
                <rect>
                 <x>0</x>
                 <y>10</y>
-                <width>241</width>
+                <width>251</width>
                 <height>51</height>
                </rect>
               </property>
@@ -500,7 +292,7 @@
                   <x>0</x>
                   <y>20</y>
                   <width>251</width>
-                  <height>61</height>
+                  <height>141</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -539,6 +331,9 @@
                      <property name="contextMenuPolicy">
                       <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
                      </property>
+                     <property name="text">
+                      <string>0</string>
+                     </property>
                      <property name="readOnly">
                       <bool>true</bool>
                      </property>
@@ -562,6 +357,112 @@
                    </property>
                   </widget>
                  </item>
+                 <item>
+                  <layout class="QFormLayout" name="formLayout_7">
+                   <item row="2" column="0">
+                    <widget class="QRadioButton" name="panelPushPullIsAlignedRadioButton">
+                     <property name="focusPolicy">
+                      <enum>Qt::FocusPolicy::NoFocus</enum>
+                     </property>
+                     <property name="contextMenuPolicy">
+                      <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                     </property>
+                     <property name="text">
+                      <string>Aligned</string>
+                     </property>
+                     <property name="autoExclusive">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="1">
+                    <widget class="QPushButton" name="panelPushPullAlignButton">
+                     <property name="text">
+                      <string>Go Home</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QRadioButton" name="panelPushPullLimiterActivatedRadioButton">
+                     <property name="minimumSize">
+                      <size>
+                       <width>115</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>115</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="mouseTracking">
+                      <bool>false</bool>
+                     </property>
+                     <property name="focusPolicy">
+                      <enum>Qt::FocusPolicy::NoFocus</enum>
+                     </property>
+                     <property name="contextMenuPolicy">
+                      <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                     </property>
+                     <property name="text">
+                      <string>Limiter Activated</string>
+                     </property>
+                     <property name="checkable">
+                      <bool>true</bool>
+                     </property>
+                     <property name="autoExclusive">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QRadioButton" name="panelPushPullLimiterHasActivatedRadioButton">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="focusPolicy">
+                      <enum>Qt::FocusPolicy::NoFocus</enum>
+                     </property>
+                     <property name="contextMenuPolicy">
+                      <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                     </property>
+                     <property name="text">
+                      <string>HasActivated</string>
+                     </property>
+                     <property name="autoExclusive">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_9">
+                     <property name="text">
+                      <string>Current (Iq, A)</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QLineEdit" name="panelPushPullIqEdit">
+                     <property name="mouseTracking">
+                      <bool>false</bool>
+                     </property>
+                     <property name="focusPolicy">
+                      <enum>Qt::FocusPolicy::NoFocus</enum>
+                     </property>
+                     <property name="contextMenuPolicy">
+                      <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
                 </layout>
                </widget>
               </widget>
@@ -583,7 +484,7 @@
                   <x>0</x>
                   <y>20</y>
                   <width>251</width>
-                  <height>61</height>
+                  <height>141</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -622,6 +523,9 @@
                      <property name="contextMenuPolicy">
                       <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
                      </property>
+                     <property name="text">
+                      <string>0</string>
+                     </property>
                      <property name="readOnly">
                       <bool>true</bool>
                      </property>
@@ -648,6 +552,124 @@
                    </property>
                   </widget>
                  </item>
+                 <item>
+                  <layout class="QFormLayout" name="formLayout_2">
+                   <item row="2" column="0">
+                    <widget class="QRadioButton" name="panelRotationIsAlignedRadioButton">
+                     <property name="focusPolicy">
+                      <enum>Qt::FocusPolicy::NoFocus</enum>
+                     </property>
+                     <property name="contextMenuPolicy">
+                      <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                     </property>
+                     <property name="text">
+                      <string>Aligned</string>
+                     </property>
+                     <property name="autoExclusive">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="1">
+                    <widget class="QPushButton" name="panelRotationAlignButton">
+                     <property name="text">
+                      <string>Go Home</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QRadioButton" name="panelRotationLimiterActivatedRadioButton">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>115</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>115</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="mouseTracking">
+                      <bool>false</bool>
+                     </property>
+                     <property name="focusPolicy">
+                      <enum>Qt::FocusPolicy::NoFocus</enum>
+                     </property>
+                     <property name="contextMenuPolicy">
+                      <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                     </property>
+                     <property name="text">
+                      <string>Limiter Activated</string>
+                     </property>
+                     <property name="checkable">
+                      <bool>true</bool>
+                     </property>
+                     <property name="autoExclusive">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QRadioButton" name="panelRotationLimiterHasActivatedRadioButton">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="focusPolicy">
+                      <enum>Qt::FocusPolicy::NoFocus</enum>
+                     </property>
+                     <property name="contextMenuPolicy">
+                      <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                     </property>
+                     <property name="text">
+                      <string>HasActivated</string>
+                     </property>
+                     <property name="autoExclusive">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_4">
+                     <property name="text">
+                      <string>Current (Iq, A)</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QLineEdit" name="panelRotationIqEdit">
+                     <property name="mouseTracking">
+                      <bool>false</bool>
+                     </property>
+                     <property name="focusPolicy">
+                      <enum>Qt::FocusPolicy::NoFocus</enum>
+                     </property>
+                     <property name="contextMenuPolicy">
+                      <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
                 </layout>
                </widget>
               </widget>
@@ -663,7 +685,7 @@
                   <x>0</x>
                   <y>20</y>
                   <width>251</width>
-                  <height>61</height>
+                  <height>141</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -702,6 +724,9 @@
                      <property name="contextMenuPolicy">
                       <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
                      </property>
+                     <property name="text">
+                      <string>0</string>
+                     </property>
                      <property name="readOnly">
                       <bool>true</bool>
                      </property>
@@ -728,6 +753,106 @@
                    </property>
                   </widget>
                  </item>
+                 <item>
+                  <layout class="QFormLayout" name="formLayout_8">
+                   <item row="2" column="0">
+                    <widget class="QRadioButton" name="panelLinearIsAlignedRadioButton">
+                     <property name="focusPolicy">
+                      <enum>Qt::FocusPolicy::NoFocus</enum>
+                     </property>
+                     <property name="contextMenuPolicy">
+                      <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                     </property>
+                     <property name="text">
+                      <string>Aligned</string>
+                     </property>
+                     <property name="autoExclusive">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="1">
+                    <widget class="QPushButton" name="panelLinearAlignButton">
+                     <property name="text">
+                      <string>Go Home</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QRadioButton" name="panelLinearLimiterActivatedRadioButton">
+                     <property name="minimumSize">
+                      <size>
+                       <width>115</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>115</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="mouseTracking">
+                      <bool>false</bool>
+                     </property>
+                     <property name="focusPolicy">
+                      <enum>Qt::FocusPolicy::NoFocus</enum>
+                     </property>
+                     <property name="contextMenuPolicy">
+                      <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                     </property>
+                     <property name="text">
+                      <string>Limiter Activated</string>
+                     </property>
+                     <property name="checkable">
+                      <bool>true</bool>
+                     </property>
+                     <property name="autoExclusive">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QRadioButton" name="panelLinearLimiterHasActivatedRadioButton">
+                     <property name="focusPolicy">
+                      <enum>Qt::FocusPolicy::NoFocus</enum>
+                     </property>
+                     <property name="contextMenuPolicy">
+                      <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                     </property>
+                     <property name="text">
+                      <string>HasActivated</string>
+                     </property>
+                     <property name="autoExclusive">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_10">
+                     <property name="text">
+                      <string>Current (Iq, A)</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QLineEdit" name="panelLinearIqEdit">
+                     <property name="mouseTracking">
+                      <bool>false</bool>
+                     </property>
+                     <property name="focusPolicy">
+                      <enum>Qt::FocusPolicy::NoFocus</enum>
+                     </property>
+                     <property name="contextMenuPolicy">
+                      <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
                 </layout>
                </widget>
               </widget>
@@ -740,21 +865,231 @@
        </widget>
       </widget>
      </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>329</y>
+      <width>781</width>
+      <height>241</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,0,1">
+     <property name="leftMargin">
+      <number>5</number>
+     </property>
+     <property name="rightMargin">
+      <number>5</number>
+     </property>
      <item>
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Orientation::Vertical</enum>
+      <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0">
+       <property name="sizeConstraint">
+        <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
        </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Policy::Fixed</enum>
+       <property name="bottomMargin">
+        <number>5</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>10</number>
+       </property>
+       <item row="3" column="0">
+        <widget class="QSlider" name="leftJoyHorizontalSlider">
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
+         <property name="minimum">
+          <number>-100</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="tracking">
+          <bool>false</bool>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QComboBox" name="leftJoyComboBox">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QSlider" name="leftJoyVerticalSlider">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="minimum">
+          <number>-100</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="tracking">
+          <bool>false</bool>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="tickPosition">
+          <enum>QSlider::TickPosition::NoTicks</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="JoyPad" name="leftJoyPad" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>150</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>150</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Left Joystick</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>20</width>
-         <height>80</height>
+         <width>450</width>
+         <height>20</height>
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <property name="bottomMargin">
+        <number>5</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>10</number>
+       </property>
+       <item row="3" column="0">
+        <widget class="QSlider" name="rightJoyHorizontalSlider">
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
+         <property name="minimum">
+          <number>-100</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="tracking">
+          <bool>false</bool>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QComboBox" name="rightJoyComboBox">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QSlider" name="rightJoyVerticalSlider">
+         <property name="minimum">
+          <number>-100</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="tracking">
+          <bool>false</bool>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="JoyPad" name="rightJoyPad" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>150</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>150</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Right Joystick</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>

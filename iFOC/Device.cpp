@@ -57,7 +57,9 @@ QWeakPointer<Equipment6DoF> Device::getEquipmentByName(QString name)
 
 QStringList Device::equipmentNames()
 {
-    return equipmentHashMap.keys();
+    QStringList raw = equipmentHashMap.keys();
+    raw.sort(Qt::CaseInsensitive);
+    return raw;
 }
 
 QString& Device::deviceName()

@@ -91,9 +91,9 @@ public:
     uint8_t getRawLimiterState();
     bool checkAlive();
     void applyMotorConfig();
+    uint8_t limiter_index = 0;
 private:
     uint32_t SN = 0;
-    uint8_t limiter_index = 0;
     motor_state_t *state_ptr = nullptr;
     motor_set_t set;
     motor_set_t *set_ptr = nullptr;

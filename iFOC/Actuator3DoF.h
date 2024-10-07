@@ -2,11 +2,18 @@
 #define ACTUATOR3DOF_H
 
 #include "Motor.h"
-#include "ActuatorWorker.h"
 #include <QHash>
 #include <QJsonObject>
 #include <QPair>
-#include <QThread>
+#include <QFuture>
+#include <QtConcurrent>
+
+typedef struct motor_config_t
+{
+    uint8_t limiter_idx;
+    float current_limit;
+    float abs_pos_offset;
+}motor_config_t;
 
 class Actuator3DoF : public QObject
 {
@@ -21,26 +28,25 @@ public:
     void setRotationDegAbs(float deg);
     void setPushPullDegAbs(float deg);
     void setLinearDegAbs(float deg);
+    void beginLinearHoming();
+    bool getLinearHomingState();
     QString actuatorName();
-private slots:
-    void onWorkerDone();
-signals:
-    bool appendTaskList(QVector<actuator_worker_task_t>& taskList);
-private:
-    bool init();
-    QString name;
     QPair<QSharedPointer<Motor>, motor_config_t> motorRotation;
     QPair<QSharedPointer<Motor>, motor_config_t> motorPushPull;
     QPair<QSharedPointer<Motor>, motor_config_t> motorLinear;
+private:
+    friend void setRotationDegAbs_impl(Actuator3DoF* act, float deg);
+    friend void setPushPullDegAbs_impl(Actuator3DoF* act, float deg);
+    friend void setLinearDegAbs_impl(Actuator3DoF* act, float deg);
+    friend void initMotor_impl(Actuator3DoF* act);
+    bool init();
+    QString name;
     QPair<float, float> rotation_limit;
     QPair<float, float> pushpull_limit;
     QPair<float, float> linear_limit;
     float rotation_deg = 0.0f;
     float pushpull_deg = 0.0f;
     float linear_motion_deg = 0.0f;
-    QThread *workerThread = nullptr;
-    ActuatorWorker *worker = nullptr;
-    QVector<actuator_worker_task_t> workerTaskList;
 };
 
 #endif // ACTUATOR3DOF_H
