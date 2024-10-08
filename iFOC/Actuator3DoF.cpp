@@ -210,33 +210,28 @@ void Actuator3DoF::beginLinearHoming()
 {
     if(motorLinear.second.limiter_idx > 0)
     {
-        QFuture<void> future = QtConcurrent::run(linearHoming_impl, this);
-        while(!future.isFinished()) QApplication::processEvents(QEventLoop::AllEvents, 100);
+        spawnTask(linearHoming_impl, this);
     }
 }
 
 void Actuator3DoF::setPushPullDegAbs(float deg)
 {
-    QFuture<void> future = QtConcurrent::run(setPushPullDegAbs_impl, this, deg);
-    while(!future.isFinished()) QApplication::processEvents(QEventLoop::AllEvents, 100);
+    spawnTask(setPushPullDegAbs_impl, this, deg);
 }
 
 void Actuator3DoF::setLinearDegAbs(float deg)
 {
-    QFuture<void> future = QtConcurrent::run(setLinearDegAbs_impl, this, deg);
-    while(!future.isFinished()) QApplication::processEvents(QEventLoop::AllEvents, 100);
+    spawnTask(setLinearDegAbs_impl, this, deg);
 }
 
 void Actuator3DoF::setRotationDegAbs(float deg)
 {
-    QFuture<void> future = QtConcurrent::run(setRotationDegAbs_impl, this, deg);
-    while(!future.isFinished()) QApplication::processEvents(QEventLoop::AllEvents, 100);
+    spawnTask(setRotationDegAbs_impl, this, deg);
 }
 
 bool Actuator3DoF::init()
 {
-    QFuture<void> future = QtConcurrent::run(initMotor_impl, this);
-    while(!future.isFinished()) QApplication::processEvents(QEventLoop::AllEvents, 100);
+    spawnTask(initMotor_impl, this);
     return true;
 }
 

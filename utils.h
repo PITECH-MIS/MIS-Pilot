@@ -2,8 +2,18 @@
 #define UTILS_H
 
 #include "qobject.h"
+#include <QFuture>
+#include <QtConcurrent>
+#include <QApplication>
 
 bool isUsableEth(QString& origin);
 void qDebugMessage(QString msg);
+template <class Function, class ...Args>
+void spawnTask(Function &&f, Args &&...args)
+{
+    QFuture<void> future = QtConcurrent::run(std::forward<Function>(f),
+                                             std::forward<Args>(args)...);
+    while(!future.isFinished()) QApplication::processEvents(QEventLoop::AllEvents, 100);
+}
 
 #endif // UTILS_H

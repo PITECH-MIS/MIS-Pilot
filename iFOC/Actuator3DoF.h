@@ -5,8 +5,6 @@
 #include <QHash>
 #include <QJsonObject>
 #include <QPair>
-#include <QFuture>
-#include <QtConcurrent>
 
 typedef struct motor_config_t
 {
