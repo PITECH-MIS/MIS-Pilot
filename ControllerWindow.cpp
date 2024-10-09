@@ -2,6 +2,7 @@
 #include "ui_ControllerWindow.h"
 #include <QFileDialog>
 #include <QDir>
+#include <QMessageBox>
 
 ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice*>& j, QWidget *parent)
     : QMainWindow(parent), wrapper(w), joysticks(j)
@@ -18,16 +19,22 @@ ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice
     connect(ui->equipmentSelectComboBox, &QComboBox::currentIndexChanged, this, &ControllerWindow::onSelectEquipment);
     connect(ui->actuatorSelectComboBox, &QComboBox::currentIndexChanged, this, &ControllerWindow::onSelectActuator);
     connect(ui->panelRotationSpinBox, &QDoubleSpinBox::valueChanged, this, [this](){
-        if(this->panelActuator) this->panelActuator->setRotationDegAbs(ui->panelRotationSpinBox->value());
+        if(panelActuator) panelActuator->setRotationDegAbs(ui->panelRotationSpinBox->value());
     });
     connect(ui->panelPushPullSpinBox, &QDoubleSpinBox::valueChanged, this, [this](){
-        if(this->panelActuator) this->panelActuator->setPushPullDegAbs(ui->panelPushPullSpinBox->value());
+        if(panelActuator) panelActuator->setPushPullDegAbs(ui->panelPushPullSpinBox->value());
     });
     connect(ui->panelLinearSpinBox, &QDoubleSpinBox::valueChanged, this, [this](){
-        if(this->panelActuator) this->panelActuator->setLinearDegAbs(ui->panelLinearSpinBox->value());
+        if(panelActuator) panelActuator->setLinearDegAbs(ui->panelLinearSpinBox->value());
     });
     connect(ui->panelLinearAlignButton, &QPushButton::clicked, this, [this](){
-        if(this->panelActuator) this->panelActuator->beginLinearHoming();
+        if(panelActuator) panelActuator->beginLinearHoming();
+    });
+    connect(ui->panelRotationAlignButton, &QPushButton::clicked, this, [this](){
+        if(panelActuator) panelActuator->beginRotationHoming();
+    });
+    connect(ui->panelPushPullAlignButton, &QPushButton::clicked, this, [this](){
+        if(panelActuator) panelActuator->beginPushPullHoming();
     });
 }
 
@@ -44,6 +51,8 @@ void ControllerWindow::showWindow()
     {
         ui->leftJoyPad->isVirtualJoystick = true;
         ui->rightJoyPad->isVirtualJoystick = true;
+        ui->leftJoyComboBox->setEnabled(false);
+        ui->rightJoyComboBox->setEnabled(false);
         emit infoMessage("No physics joysticks found, now the left/right joysticks behave virtually");
     }
     motorSNSet.clear();
@@ -94,6 +103,36 @@ void ControllerWindow::onSelectActuator()
     {
         panelActuator = eq.lock()->getDistal();
     }
+    if(panelActuator)
+    {
+        ui->deviceSelectComboBox->setEnabled(true);
+        ui->equipmentSelectComboBox->setEnabled(true);
+        ui->actuatorSelectComboBox->setEnabled(true);
+
+        ui->panelRotationAlignButton->setEnabled(true);
+        ui->panelRotationLimiterActivatedRadioButton->setEnabled(true);
+        ui->panelRotationLimiterHasActivatedRadioButton->setEnabled(true);
+        ui->panelRotationReadyRadioButton->setEnabled(true);
+        ui->panelRotationIqEdit->setEnabled(true);
+        ui->panelRotationLineEdit->setEnabled(true);
+        ui->panelRotationSpinBox->setEnabled(true);
+
+        ui->panelPushPullAlignButton->setEnabled(true);
+        ui->panelPushPullLimiterActivatedRadioButton->setEnabled(true);
+        ui->panelPushPullLimiterHasActivatedRadioButton->setEnabled(true);
+        ui->panelPushPullReadyRadioButton->setEnabled(true);
+        ui->panelPushPullIqEdit->setEnabled(true);
+        ui->panelPushPullLineEdit->setEnabled(true);
+        ui->panelPushPullSpinBox->setEnabled(true);
+
+        ui->panelLinearAlignButton->setEnabled(true);
+        ui->panelLinearLimiterActivatedRadioButton->setEnabled(true);
+        ui->panelLinearLimiterHasActivatedRadioButton->setEnabled(true);
+        ui->panelLinearReadyRadioButton->setEnabled(true);
+        ui->panelLinearIqEdit->setEnabled(true);
+        ui->panelLinearLineEdit->setEnabled(true);
+        ui->panelLinearSpinBox->setEnabled(true);
+    }
 }
 
 void ControllerWindow::updatePanelStatus()
@@ -104,16 +143,19 @@ void ControllerWindow::updatePanelStatus()
         ui->panelRotationIqEdit->setText(QString::number(panelActuator->motorRotation.first->getIq()));
         ui->panelRotationLimiterActivatedRadioButton->setChecked(panelActuator->motorRotation.first->isLimiterActivated());
         ui->panelRotationLimiterHasActivatedRadioButton->setChecked(panelActuator->motorRotation.first->hasLimiterActivated());
+        ui->panelRotationReadyRadioButton->setChecked(panelActuator->rotation_ready);
 
         ui->panelPushPullLineEdit->setText(QString::number(panelActuator->getPushPullState()));
         ui->panelPushPullIqEdit->setText(QString::number(panelActuator->motorPushPull.first->getIq()));
         ui->panelPushPullLimiterActivatedRadioButton->setChecked(panelActuator->motorPushPull.first->isLimiterActivated());
         ui->panelPushPullLimiterHasActivatedRadioButton->setChecked(panelActuator->motorPushPull.first->hasLimiterActivated());
+        ui->panelPushPullReadyRadioButton->setChecked(panelActuator->pushpull_ready);
 
         ui->panelLinearLineEdit->setText(QString::number(panelActuator->getLinearState()));
         ui->panelLinearIqEdit->setText(QString::number(panelActuator->motorLinear.first->getIq()));
         ui->panelLinearLimiterActivatedRadioButton->setChecked(panelActuator->motorLinear.first->isLimiterActivated());
         ui->panelLinearLimiterHasActivatedRadioButton->setChecked(panelActuator->motorLinear.first->hasLimiterActivated());
+        ui->panelLinearReadyRadioButton->setChecked(panelActuator->linear_ready);
     }
 }
 
@@ -124,8 +166,9 @@ void ControllerWindow::onSelectDescJSONPath()
     dialog.setNameFilter(tr("Device Descriptions (*.json)"));
     dialog.setViewMode(QFileDialog::Detail);
     QDir descDir(currentPath);
-    for(uint8_t i = 0; i < 4; i++)
+    for(uint8_t i = 0; i < 4; i++) // maximum recurse 4 layers of directory
     {
+        QApplication::processEvents(QEventLoop::AllEvents, 100);
         QDir wantedDescDir(descDir.filePath("DeviceDescriptions"));
         if(wantedDescDir.exists())
         {
@@ -139,12 +182,9 @@ void ControllerWindow::onSelectDescJSONPath()
     dialog.setDirectory(descDir);
     if(dialog.exec())
     {
+        QApplication::processEvents(QEventLoop::AllEvents, 100);
         QString path = dialog.selectedFiles().at(0);
         QSharedPointer<Device> dev = QSharedPointer<Device>(new Device);
-        // if(dev->parseJsonFromFile(path, motorHashMap))
-        // {
-        //     deviceList.insert(dev);
-        // }
         ui->deviceSelectComboBox->clear();
         dev->parseJsonFromFile(path, motorHashMap);
         if(dev->availbleEquipmentCount() > 0)
@@ -153,13 +193,24 @@ void ControllerWindow::onSelectDescJSONPath()
             ui->deviceSelectComboBox->addItem(dev->deviceName());
             emit infoMessage("Parsed Device: " + dev->deviceName() + QString::asprintf(" with %d equipment(s)", dev->availbleEquipmentCount()));
         }
-        else emit errorMessage("Parsed Device: " + dev->deviceName() + "with no available equipment, deleting");
+        else emit errorMessage("Parsed Device: " + dev->deviceName() + " with no available equipment, deleting");
     }
 }
 
 void ControllerWindow::contextMenuEvent(QContextMenuEvent *event)
 {
     qDebugMessage(QString::asprintf("QContextMenuEvent fired at (%d, %d)", event->x(), event->y()));
+    if(ui->rotationGroupBox->underMouse())
+    {
+        QScopedPointer<QMenu> pMenu(new QMenu());
+        QScopedPointer<QAction> pAction(new QAction("Rotation Calibrate...", this));
+        if(!this->panelActuator) pAction->setEnabled(false);
+        connect(pAction.get(), &QAction::triggered, this, [this](){
+            if(panelActuator) panelActuator->beginRotationCalibrate();
+        });
+        pMenu->addAction(pAction.get());
+        pMenu->exec(event->globalPos());
+    }
 }
 
 void ControllerWindow::onPOVEvent(const QJoystickPOVEvent &event)
@@ -245,7 +296,7 @@ void ControllerWindow::onEnableMotorDebugger()
     connect(debuggerWindow, &MotorDebugger::errorMessage, this, &ControllerWindow::errorMessage);
     connect(debuggerWindow, &MotorDebugger::infoMessage, this, &ControllerWindow::infoMessage);
     connect(debuggerWindow, &MotorDebugger::onCloseWindow, this, [this](){
-        if(this->debuggerWindow) this->debuggerWindow = nullptr;
+        if(debuggerWindow) debuggerWindow = nullptr;
     });
     debuggerWindow->setAttribute(Qt::WA_DeleteOnClose);
     debuggerWindow->showWindow();

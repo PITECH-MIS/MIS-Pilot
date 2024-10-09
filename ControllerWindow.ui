@@ -118,6 +118,9 @@
                </property>
                <item>
                 <widget class="QComboBox" name="actuatorSelectComboBox">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -183,6 +186,9 @@
                </property>
                <item>
                 <widget class="QComboBox" name="equipmentSelectComboBox">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -248,6 +254,9 @@
                </property>
                <item>
                 <widget class="QComboBox" name="deviceSelectComboBox">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -282,7 +291,7 @@
               <number>4</number>
              </property>
              <item row="0" column="1">
-              <widget class="QGroupBox" name="groupBox_7">
+              <widget class="QGroupBox" name="pushPullGroupBox">
                <property name="title">
                 <string>PushPull DoF</string>
                </property>
@@ -316,6 +325,9 @@
                    </item>
                    <item row="0" column="1">
                     <widget class="QLineEdit" name="panelPushPullLineEdit">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                        <horstretch>0</horstretch>
@@ -343,6 +355,9 @@
                  </item>
                  <item>
                   <widget class="QDoubleSpinBox" name="panelPushPullSpinBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                      <horstretch>0</horstretch>
@@ -360,7 +375,10 @@
                  <item>
                   <layout class="QFormLayout" name="formLayout_7">
                    <item row="2" column="0">
-                    <widget class="QRadioButton" name="panelPushPullIsAlignedRadioButton">
+                    <widget class="QRadioButton" name="panelPushPullReadyRadioButton">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="focusPolicy">
                       <enum>Qt::FocusPolicy::NoFocus</enum>
                      </property>
@@ -368,7 +386,7 @@
                       <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
                      </property>
                      <property name="text">
-                      <string>Aligned</string>
+                      <string>Ready</string>
                      </property>
                      <property name="autoExclusive">
                       <bool>false</bool>
@@ -377,6 +395,9 @@
                    </item>
                    <item row="2" column="1">
                     <widget class="QPushButton" name="panelPushPullAlignButton">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="text">
                       <string>Go Home</string>
                      </property>
@@ -384,6 +405,9 @@
                    </item>
                    <item row="0" column="0">
                     <widget class="QRadioButton" name="panelPushPullLimiterActivatedRadioButton">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="minimumSize">
                       <size>
                        <width>115</width>
@@ -418,6 +442,9 @@
                    </item>
                    <item row="0" column="1">
                     <widget class="QRadioButton" name="panelPushPullLimiterHasActivatedRadioButton">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -447,6 +474,9 @@
                    </item>
                    <item row="1" column="1">
                     <widget class="QLineEdit" name="panelPushPullIqEdit">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="mouseTracking">
                       <bool>false</bool>
                      </property>
@@ -468,7 +498,7 @@
               </widget>
              </item>
              <item row="0" column="0">
-              <widget class="QGroupBox" name="groupBox_6">
+              <widget class="QGroupBox" name="rotationGroupBox">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -508,6 +538,9 @@
                    </item>
                    <item row="0" column="1">
                     <widget class="QLineEdit" name="panelRotationLineEdit">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                        <horstretch>0</horstretch>
@@ -535,6 +568,9 @@
                  </item>
                  <item>
                   <widget class="QDoubleSpinBox" name="panelRotationSpinBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                      <horstretch>0</horstretch>
@@ -555,7 +591,10 @@
                  <item>
                   <layout class="QFormLayout" name="formLayout_2">
                    <item row="2" column="0">
-                    <widget class="QRadioButton" name="panelRotationIsAlignedRadioButton">
+                    <widget class="QRadioButton" name="panelRotationReadyRadioButton">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="focusPolicy">
                       <enum>Qt::FocusPolicy::NoFocus</enum>
                      </property>
@@ -563,7 +602,7 @@
                       <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
                      </property>
                      <property name="text">
-                      <string>Aligned</string>
+                      <string>Ready</string>
                      </property>
                      <property name="autoExclusive">
                       <bool>false</bool>
@@ -572,6 +611,9 @@
                    </item>
                    <item row="2" column="1">
                     <widget class="QPushButton" name="panelRotationAlignButton">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="text">
                       <string>Go Home</string>
                      </property>
@@ -579,6 +621,9 @@
                    </item>
                    <item row="0" column="0">
                     <widget class="QRadioButton" name="panelRotationLimiterActivatedRadioButton">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -619,6 +664,9 @@
                    </item>
                    <item row="0" column="1">
                     <widget class="QRadioButton" name="panelRotationLimiterHasActivatedRadioButton">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -654,6 +702,9 @@
                    </item>
                    <item row="1" column="1">
                     <widget class="QLineEdit" name="panelRotationIqEdit">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="mouseTracking">
                       <bool>false</bool>
                      </property>
@@ -675,7 +726,7 @@
               </widget>
              </item>
              <item row="0" column="2">
-              <widget class="QGroupBox" name="groupBox_8">
+              <widget class="QGroupBox" name="linearGroupBox">
                <property name="title">
                 <string>Linear Motion DoF</string>
                </property>
@@ -709,6 +760,9 @@
                    </item>
                    <item row="0" column="1">
                     <widget class="QLineEdit" name="panelLinearLineEdit">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                        <horstretch>0</horstretch>
@@ -736,6 +790,9 @@
                  </item>
                  <item>
                   <widget class="QDoubleSpinBox" name="panelLinearSpinBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                      <horstretch>0</horstretch>
@@ -756,7 +813,10 @@
                  <item>
                   <layout class="QFormLayout" name="formLayout_8">
                    <item row="2" column="0">
-                    <widget class="QRadioButton" name="panelLinearIsAlignedRadioButton">
+                    <widget class="QRadioButton" name="panelLinearReadyRadioButton">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="focusPolicy">
                       <enum>Qt::FocusPolicy::NoFocus</enum>
                      </property>
@@ -764,7 +824,7 @@
                       <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
                      </property>
                      <property name="text">
-                      <string>Aligned</string>
+                      <string>Ready</string>
                      </property>
                      <property name="autoExclusive">
                       <bool>false</bool>
@@ -773,6 +833,9 @@
                    </item>
                    <item row="2" column="1">
                     <widget class="QPushButton" name="panelLinearAlignButton">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="text">
                       <string>Go Home</string>
                      </property>
@@ -780,6 +843,9 @@
                    </item>
                    <item row="0" column="0">
                     <widget class="QRadioButton" name="panelLinearLimiterActivatedRadioButton">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="minimumSize">
                       <size>
                        <width>115</width>
@@ -814,6 +880,9 @@
                    </item>
                    <item row="0" column="1">
                     <widget class="QRadioButton" name="panelLinearLimiterHasActivatedRadioButton">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="focusPolicy">
                       <enum>Qt::FocusPolicy::NoFocus</enum>
                      </property>
@@ -837,6 +906,9 @@
                    </item>
                    <item row="1" column="1">
                     <widget class="QLineEdit" name="panelLinearIqEdit">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="mouseTracking">
                       <bool>false</bool>
                      </property>
