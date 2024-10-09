@@ -33,10 +33,10 @@ MainWindow::MainWindow(QWidget *parent)
     QJoysticks* QJoy = QJoysticks::getInstance();
     QJoy->updateInterfaces();
     connect(ui->con_pushButton, &QPushButton::clicked, this, &MainWindow::onClickConnect);
-    connect(&wrapper, &ECATWrapper::errorMessage, this, &MainWindow::onErrorMsg);
-    connect(&wrapper, &ECATWrapper::infoMessage, this, &MainWindow::onInfoMsg);
-    connect(&wrapper, &ECATWrapper::debugMessage, this, &MainWindow::onDebugMsg);
-    connect(&wrapper, &ECATWrapper::onStateChanged, this, &MainWindow::onECATStateChanged);
+    connect(&wrapper, &ECATWrapper::errorMessage, this, &MainWindow::onErrorMsg, Qt::QueuedConnection);
+    connect(&wrapper, &ECATWrapper::infoMessage, this, &MainWindow::onInfoMsg, Qt::QueuedConnection);
+    connect(&wrapper, &ECATWrapper::debugMessage, this, &MainWindow::onDebugMsg, Qt::QueuedConnection);
+    connect(&wrapper, &ECATWrapper::onStateChanged, this, &MainWindow::onECATStateChanged, Qt::QueuedConnection);
     connect(ui->selectConfigPathButton, &QPushButton::clicked, this, &MainWindow::onSelectXMLPath);
     connect(ui->parseConfigXmlButton, &QPushButton::clicked, this, &MainWindow::onParseXML);
     connect(ui->enterControllerButton, &QPushButton::clicked, this, &MainWindow::onEnableController);
@@ -61,7 +61,7 @@ void MainWindow::onEnableController()
     connect(controllerWindow, &ControllerWindow::infoMessage, this, &MainWindow::onInfoMsg);
     connect(controllerWindow, &ControllerWindow::debugMessage, this, &MainWindow::onDebugMsg);
     connect(controllerWindow, &ControllerWindow::onCloseWindow, this, [this]() {
-        if(this->controllerWindow) this->controllerWindow = nullptr;
+        if(controllerWindow) controllerWindow = nullptr;
     });
     controllerWindow->setAttribute(Qt::WA_DeleteOnClose);
     controllerWindow->showWindow();
@@ -117,6 +117,8 @@ void MainWindow::onClickConnect(void)
 {
     if(wrapper.getExpectedState() != EC_STATE_OPERATIONAL) wrapper.initEth(ethInfo[ui->eth_comboBox->currentText()]);
     else wrapper.closeConnection();
+    // robotArm = new RobotArmWrapper;
+    // robotArm->init();
 }
 
 void MainWindow::onECATStateChanged()

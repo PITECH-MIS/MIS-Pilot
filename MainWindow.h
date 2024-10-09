@@ -12,6 +12,7 @@
 #include <QStandardItemModel>
 
 #include "ECATWrapper.h"
+#include "RobotArm/RobotArmWrapper.h"
 #include "ControllerWindow.h"
 
 QT_BEGIN_NAMESPACE
@@ -46,6 +47,7 @@ private:
     QStandardItemModel *stateViewModel;
     Ui::MainWindow *ui;
     ControllerWindow *controllerWindow = nullptr;
+    RobotArmWrapper *robotArm;
     QLabel *statusBarStateLabel;
     QLabel *statusBarWkcLabel;
     QLabel *statusBarSlaveCountLabel;
