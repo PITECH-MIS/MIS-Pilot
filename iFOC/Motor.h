@@ -7,6 +7,9 @@
 #include <QSharedPointer>
 
 #define _constrain(v,low,high) ((v)<(low)?(low):((v)>(high)?(high):(v)))
+#define PI2 6.283185307179586476925286766559f
+#define DEG2RAD(degree) ((float)(degree) * 0.01745329251994329576923690768489f)
+#define RAD2DEG(radian) ((float)(radian) * 57.295779513082320876798154814105f)
 
 #pragma pack(push, 1)
 typedef struct motor_state_t
@@ -69,7 +72,6 @@ public:
     bool setMode(Motor::Mode mode);
     bool setState(Motor::State state);
     bool setSpeed(float rpm);
-    bool setRawAbsAngle(float deg);
     bool setTrajAbsAngle(float deg);
     bool setCurrentLimit(float limit);
     bool setTorque(float Iq);
@@ -91,14 +93,18 @@ public:
     uint8_t getRawLimiterState();
     bool checkAlive();
     void applyMotorConfig();
-    uint8_t limiter_index = 0;
 private:
     uint32_t SN = 0;
+public:
+    uint8_t limiter_index = 0;
+private:
     motor_state_t *state_ptr = nullptr;
     motor_set_t set;
     motor_set_t *set_ptr = nullptr;
 };
 
 QSet<QString> getMotorSN(QVector<slave_inputs_t*>& input_vector);
+float normalizeRad(float radian);
+float getIncAngleByRPM(float rpm, float dt);
 
 #endif // MOTOR_H

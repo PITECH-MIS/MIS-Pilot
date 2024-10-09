@@ -9,12 +9,13 @@
                 "Rotation": {
                     "motor_sn": 4185641871,
                     "limiter_idx": 1,
-                    "current_limit": 0.5
+                    "limiter_offset": 109.615,
+                    "current_limit": 0.8
                 },
                 "PushPull": {
                     "motor_sn": 4185641872,
                     "limiter_idx": 2,
-                    "current_limit": 0.5
+                    "current_limit": 0.8
                 },
                 "Linear": {
                     "motor_sn": 4225469057,
@@ -29,12 +30,13 @@
                 "Rotation": {
                     "motor_sn": 4279984531,
                     "limiter_idx": 1,
-                    "current_limit": 0.5
+                    "limiter_offset": -23.95,
+                    "current_limit": 0.8
                 },
                 "PushPull": {
                     "motor_sn": 4279984532,
                     "limiter_idx": 2,
-                    "current_limit": 0.5
+                    "current_limit": 0.8
                 },
                 "Linear": {
                     "motor_sn": 4225469058,
@@ -51,12 +53,13 @@
                 "Rotation": {
                     "motor_sn": 3170866564,
                     "limiter_idx": 1,
-                    "current_limit": 0.5
+                    "limiter_offset": 140.325,
+                    "current_limit": 0.8
                 },
                 "PushPull": {
                     "motor_sn": 3170866565,
                     "limiter_idx": 2,
-                    "current_limit": 0.5
+                    "current_limit": 0.8
                 },
                 "Linear": {
                     "motor_sn": 2950615774,
@@ -71,12 +74,13 @@
                 "Rotation": {
                     "motor_sn": 4212860422,
                     "limiter_idx": 1,
-                    "current_limit": 0.5
+                    "limiter_offset": 115.96,
+                    "current_limit": 0.8
                 },
                 "PushPull": {
                     "motor_sn": 4212860423,
                     "limiter_idx": 2,
-                    "current_limit": 0.5
+                    "current_limit": 0.8
                 },
                 "Linear": {
                     "motor_sn": 2950615775,
@@ -93,12 +97,13 @@
                 "Rotation": {
                     "motor_sn": 4192142763,
                     "limiter_idx": 2,
-                    "current_limit": 0.5
+                    "limiter_offset": 140.225,
+                    "current_limit": 0.8
                 },
                 "PushPull": {
                     "motor_sn": 4192142764,
                     "limiter_idx": 1,
-                    "current_limit": 0.5
+                    "current_limit": 0.8
                 },
                 "Linear": {
                     "motor_sn": 4252734490,
@@ -113,12 +118,13 @@
                 "Rotation": {
                     "motor_sn": 4189814536,
                     "limiter_idx": 1,
-                    "current_limit": 0.5
+                    "limiter_offset": 92.805,
+                    "current_limit": 0.8
                 },
                 "PushPull": {
                     "motor_sn": 4189814537,
                     "limiter_idx": 2,
-                    "current_limit": 0.5
+                    "current_limit": 0.8
                 },
                 "Linear": {
                     "motor_sn": 4252734491,

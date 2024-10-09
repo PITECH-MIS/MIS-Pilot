@@ -64,13 +64,6 @@ bool Motor::setSpeed(float rpm)
     return true;
 }
 
-bool Motor::setRawAbsAngle(float deg)
-{
-    if(!checkAlive()) return false;
-    set.SetRawAngle = deg;
-    return true;
-}
-
 bool Motor::setTrajAbsAngle(float deg)
 {
     if(!checkAlive()) return false;
@@ -211,4 +204,15 @@ QSet<QString> getMotorSN(QVector<slave_inputs_t*>& input_vector)
         }
     }
     return result;
+}
+
+float normalizeRad(float radian)
+{
+    float a = fmodf(radian, PI2);
+    return a >= 0 ? a : (a + PI2);
+}
+
+float getIncAngleByRPM(float rpm, float dt)
+{
+    return (rpm / 60.0f) * 360.0f * dt;
 }

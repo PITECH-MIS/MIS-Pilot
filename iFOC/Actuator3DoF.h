@@ -11,6 +11,7 @@ typedef struct motor_config_t
     uint8_t limiter_idx;
     float current_limit;
     float abs_pos_offset;
+    float limiter_pos_offset;
 }motor_config_t;
 
 class Actuator3DoF : public QObject
@@ -27,16 +28,18 @@ public:
     void setPushPullDegAbs(float deg);
     void setLinearDegAbs(float deg);
     void beginLinearHoming();
+    void beginRotationCalibrate();
+    void beginRotationHoming();
+    void beginPushPullHoming();
     bool getLinearHomingState();
     QString actuatorName();
     QPair<QSharedPointer<Motor>, motor_config_t> motorRotation;
     QPair<QSharedPointer<Motor>, motor_config_t> motorPushPull;
     QPair<QSharedPointer<Motor>, motor_config_t> motorLinear;
+    bool rotation_ready = false;
+    bool pushpull_ready = false;
+    bool linear_ready = false;
 private:
-    friend void setRotationDegAbs_impl(Actuator3DoF* act, float deg);
-    friend void setPushPullDegAbs_impl(Actuator3DoF* act, float deg);
-    friend void setLinearDegAbs_impl(Actuator3DoF* act, float deg);
-    friend void initMotor_impl(Actuator3DoF* act);
     bool init();
     QString name;
     QPair<float, float> rotation_limit;
