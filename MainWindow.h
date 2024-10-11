@@ -14,6 +14,7 @@
 #include "ECATWrapper.h"
 #include "RobotArm/RobotArmWrapper.h"
 #include "ControllerWindow.h"
+#include "TrayIcon.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -44,6 +45,7 @@ private:
     void closeEvent(QCloseEvent *e);
     void ParseStateViewModel();
     void AppendDescToItem(QString desc, int row, QStandardItem *parent);
+    TrayIcon *tray;
     QStandardItemModel *stateViewModel;
     Ui::MainWindow *ui;
     ControllerWindow *controllerWindow = nullptr;

@@ -11,7 +11,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     currentPath = QCoreApplication::applicationDirPath();
     ui->setupUi(this);
-    this->setWindowIcon(QIcon(":/image/logo.png"));
+    this->setToolTip("MIS-Pilot");
+    QIcon icon = QIcon(":/image/logo.png");
+    tray = new TrayIcon(icon, this);
+    this->setWindowIcon(icon);
     statusBarStateLabel = new QLabel(this);
     statusBarWkcLabel = new QLabel(this);
     statusBarSlaveCountLabel = new QLabel(this);
@@ -95,7 +98,7 @@ void MainWindow::onParseXML()
 
 void MainWindow::closeEvent(QCloseEvent *e)
 {
-    QMessageBox msgBox;
+    QMessageBox msgBox(this);
     msgBox.setText("Warning");
     msgBox.setText("State = " + wrapper.getExpectedStateName() + ", do you want to exit now?");
     msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
@@ -191,6 +194,7 @@ void MainWindow::onTextBrowserCustomContextMenu(const QPoint &pos)
 
 void MainWindow::onErrorMsg(QString s)
 {
+    tray->errorMessage(s);
     QDateTime currentDt = QDateTime::currentDateTime();
     QString result = "[" + currentDt.toString("yyyy-MM-dd hh:mm:ss.zzz") + "] [ERROR] " + s;
     qDebug() << result;
