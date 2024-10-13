@@ -5,7 +5,7 @@ TrayIcon::TrayIcon(QIcon& icon, QWidget *parent)
 {
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setIcon(icon);
-    if(parent) trayIcon->setToolTip(parent->toolTip());
+    if(parent) trayIcon->setToolTip(parent->whatsThis());
     trayIcon->show();
 }
 
