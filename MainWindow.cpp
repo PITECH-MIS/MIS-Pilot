@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     currentPath = QCoreApplication::applicationDirPath();
     ui->setupUi(this);
-    this->setToolTip("MIS-Pilot");
+    this->setWhatsThis("MIS-Pilot");
     QIcon icon = QIcon(":/image/logo.png");
     tray = new TrayIcon(icon, this);
     this->setWindowIcon(icon);
@@ -185,7 +185,7 @@ void MainWindow::AppendDescToItem(QString desc, int row, QStandardItem *parent)
 void MainWindow::onTextBrowserCustomContextMenu(const QPoint &pos)
 {
     QScopedPointer<QMenu> pMenu(ui->textBrowser->createStandardContextMenu());
-    QScopedPointer<QAction> pAction(new QAction("Clear", this));
+    QScopedPointer<QAction> pAction(new QAction("Clear", pMenu.get()));
     if(ui->textBrowser->toPlainText().size() == 0) pAction->setEnabled(false);
     connect(pAction.get(), &QAction::triggered, ui->textBrowser, &QTextBrowser::clear);
     pMenu->addAction(pAction.get());
