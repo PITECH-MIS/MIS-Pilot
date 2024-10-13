@@ -2,7 +2,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++17
+CONFIG += c++20
 
 soem += $$PWD/SOEM
 qjoysticks += $$PWD/QJoysticks
@@ -23,7 +23,7 @@ LIBS += \
     $${soem}/lib/soem.lib \
     $${soem}/lib/wpcap/Lib/x64/Packet.lib \
     $${soem}/lib/wpcap/Lib/x64/wpcap.lib \
-    $${xcore}/lib/win64/xMateModel.lib \
+    $${xcore}/lib/win64/xMateModeld.lib \
     $${xcore}/lib/win64/xCoreSDK.lib \
     $${xcore}/lib/win64/xCoreSDK_static.lib \
     # $${xcore}/lib/win64/xCoreSDK.dll \
@@ -36,6 +36,7 @@ SOURCES += \
     MainWindow.cpp \
     MotorDebugger.cpp \
     RobotArm/RobotArmWrapper.cpp \
+    TrayIcon.cpp \
     iFOC/Actuator3DoF.cpp \
     iFOC/Device.cpp \
     iFOC/Equipment6DoF.cpp \
@@ -436,6 +437,7 @@ HEADERS += \
     RobotArm/xCore/Inc/planner.h \
     RobotArm/xCore/Inc/robot.h \
     RobotArm/xCore/Inc/utility.h \
+    TrayIcon.h \
     iFOC/Actuator3DoF.h \
     iFOC/Device.h \
     iFOC/Equipment6DoF.h \
