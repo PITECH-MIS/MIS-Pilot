@@ -15,6 +15,9 @@ private:
     uint8_t getXYDimension(Point3D &a);
     float lastProxAngle = 0.0f;
     float lastDistAngle = 0.0f;
+
+    uint8_t lastProxDimension = 0;
+    uint8_t lastDistDimension = 0;
 };
 
 #endif // KINEMATICSATAN2_H

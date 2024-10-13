@@ -2,6 +2,8 @@
 #include <cmath>
 #include "../iFOC/Motor.h"
 
+#define PUSHPULL_DEADZONE_MM 0.5
+
 // float KinematicsAtan2::getXYAngle(Point3D& a, Point3D& b)
 // {
 //     return acosf((a.x * b.x + a.y * b.y) / (sqrtf(a.x * a.x + b.x * b.x) * sqrtf(a.y * a.y + b.y * b.y)));
@@ -53,31 +55,40 @@ void KinematicsAtan2::calculate(Point3D& prox, Point3D& dist)
     //     sign = -1.0f;
     // }
     float at = normalizeRad(atan2f(prox.y, prox.x));
-    float diff = at - lastProxAngle;
-    if(diff > 0.0f) while(diff >= PI) diff -= PI2;
-    else while(diff <= -PI) diff += PI2;
-    proximal_act.rotation_angle += diff;
-    lastProxAngle = at;
-
     if(proximal_params && std::abs(proximal_act.pull) > proximal_params->max_abs_pushpull)
     {
         prox.x = cosf(at) * proximal_params->max_abs_pushpull;
         prox.y = sinf(at) * proximal_params->max_abs_pushpull;
     }
     proximal_act.pull = sqrtf((prox.x * prox.x) + (prox.y * prox.y));
+    if(std::abs(proximal_act.pull) <= PUSHPULL_DEADZONE_MM) proximal_act.pull = 0.0f;
 
-    at = normalizeRad(atan2f(dist.y, dist.x));
-    diff = at - lastDistAngle;
+    float diff = at - lastProxAngle;
     if(diff > 0.0f) while(diff >= PI) diff -= PI2;
     else while(diff <= -PI) diff += PI2;
-    distal_act.rotation_angle += diff;
-    lastDistAngle = at;
+    proximal_act.rotation_angle += diff;
+    lastProxAngle = at;
 
+    // uint8_t proxDimension = getXYDimension(prox);
+    // if(proxDimension != lastProxDimension)
+    // {
+    //     qDebugMessage(QString::asprintf("Dim changed, last: %d, now: %d", lastProxDimension, proxDimension));
+    //     lastProxDimension = proxDimension;
+    // }
+
+
+    at = normalizeRad(atan2f(dist.y, dist.x));
     if(distal_params && std::abs(distal_act.pull) > distal_params->max_abs_pushpull)
     {
         dist.x = cosf(at) * distal_params->max_abs_pushpull;
         dist.y = sinf(at) * distal_params->max_abs_pushpull;
     }
     distal_act.pull = sqrtf((dist.x * dist.x) + (dist.y * dist.y));
+    if(std::abs(distal_act.pull) <= PUSHPULL_DEADZONE_MM) distal_act.pull = 0.0f;
 
+    diff = at - lastDistAngle;
+    if(diff > 0.0f) while(diff >= PI) diff -= PI2;
+    else while(diff <= -PI) diff += PI2;
+    distal_act.rotation_angle += diff;
+    lastDistAngle = at;
 }

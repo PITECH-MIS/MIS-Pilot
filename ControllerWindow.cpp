@@ -62,7 +62,7 @@ void ControllerWindow::updateControlCoord()
         timeElapsed = ((float)speedTimer.elapsed()) / 1000.0f;
         speedTimer.restart();
     }
-    float multiplier_left = (float)ui->leftSpeedSlider->value() * 0.1f;
+    float multiplier_left = (float)ui->leftSpeedSlider->value() * 0.25f;
     leftProxCoord.x += ui->leftJoyPad->x() * timeElapsed * multiplier_left;
     leftProxCoord.y += ui->leftJoyPad->y() * timeElapsed * multiplier_left;
     leftDistCoord.x += leftPOVSpeed.x * timeElapsed * multiplier_left;
@@ -95,7 +95,8 @@ void ControllerWindow::updateControlCoord()
         leftEquipment->setProximalAct(leftKinematics->proximal_act);
         leftEquipment->setDistalAct(leftKinematics->distal_act);
     }
-    float multiplier_right = (float)ui->rightSpeedSlider->value() * 0.1f;
+    // qDebugMessage(QString::asprintf("Prox: p: %.2f, a: %.2f", leftKinematics->proximal_act.pull, RAD2DEG(leftKinematics->proximal_act.rotation_angle)));
+    float multiplier_right = (float)ui->rightSpeedSlider->value() * 0.25f;
     rightProxCoord.x += ui->rightJoyPad->x() * timeElapsed * multiplier_right;
     rightProxCoord.y += ui->rightJoyPad->y() * timeElapsed * multiplier_right;
     rightDistCoord.x += rightPOVSpeed.x * timeElapsed * multiplier_right;
