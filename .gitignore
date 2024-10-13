@@ -1,1 +1,3 @@
 build/**
+RobotArm/xCore/lib/win64/xCoreSDK.pdb
+RobotArm/xCore/lib/win64/xCoreSDK_static.lib
