@@ -3,6 +3,8 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QMessageBox>
+#include <QElapsedTimer>
+#include "Kinematics/KinematicsAtan2.h"
 
 ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice*>& j, QWidget *parent)
     : QMainWindow(parent), wrapper(w), joysticks(j)
@@ -10,6 +12,9 @@ ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice
 {
     currentPath = QCoreApplication::applicationDirPath();
     ui->setupUi(this);
+    speedTimer = new QTimer(this);
+    speedTimer->setTimerType(Qt::CoarseTimer);
+    connect(speedTimer, &QTimer::timeout, this, &ControllerWindow::updateControlCoord);
     connect(QJoysticks::getInstance(), &QJoysticks::POVEvent, this, &ControllerWindow::onPOVEvent);
     connect(QJoysticks::getInstance(), &QJoysticks::axisEvent, this, &ControllerWindow::onAxisEvent);
     connect(QJoysticks::getInstance(), &QJoysticks::buttonEvent, this, &ControllerWindow::onButtonEvent);
@@ -36,6 +41,92 @@ ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice
     connect(ui->panelPushPullAlignButton, &QPushButton::clicked, this, [this](){
         if(panelActuator) panelActuator->beginPushPullHoming();
     });
+    connect(ui->panelPreHomingButton, &QPushButton::clicked, this, [this](){
+        if(panelActuator) panelActuator->beginPreInstallHoming();
+    });
+    connect(ui->panelPostHomingButton, &QPushButton::clicked, this, [this](){
+        if(panelActuator) panelActuator->beginPostInstallHoming();
+    });
+    speedTimer->start(100);
+    leftKinematics = new KinematicsAtan2();
+    rightKinematics = new KinematicsAtan2();
+}
+
+void ControllerWindow::updateControlCoord()
+{
+    static QElapsedTimer speedTimer;
+    float timeElapsed = 0.0f;
+    if(!speedTimer.isValid()) speedTimer.start();
+    else
+    {
+        timeElapsed = ((float)speedTimer.elapsed()) / 1000.0f;
+        speedTimer.restart();
+    }
+    float multiplier_left = (float)ui->leftSpeedSlider->value() * 0.1f;
+    leftProxCoord.x += ui->leftJoyPad->x() * timeElapsed * multiplier_left;
+    leftProxCoord.y += ui->leftJoyPad->y() * timeElapsed * multiplier_left;
+    leftDistCoord.x += leftPOVSpeed.x * timeElapsed * multiplier_left;
+    leftDistCoord.y += leftPOVSpeed.y * timeElapsed * multiplier_left;
+    if(leftEquipment)
+    {
+        leftKinematics->proximal_params = &leftEquipment->getProximal().lock()->kineParams;
+        leftKinematics->distal_params = &leftEquipment->getDistal().lock()->kineParams;
+    }
+    leftKinematics->calculate(leftProxCoord, leftDistCoord);
+    if(leftKinematics->proximal_params)
+    {
+        ui->leftProxCoordJoyPad->setX(leftProxCoord.x / leftKinematics->proximal_params->max_abs_pushpull);
+        ui->leftProxCoordJoyPad->setY(leftProxCoord.y / leftKinematics->proximal_params->max_abs_pushpull);
+    }
+    if(leftKinematics->distal_params)
+    {
+        ui->leftDistCoordJoyPad->setX(leftDistCoord.x / leftKinematics->distal_params->max_abs_pushpull);
+        ui->leftDistCoordJoyPad->setY(leftDistCoord.y / leftKinematics->distal_params->max_abs_pushpull);
+    }
+    ui->leftProxXLineEdit->setText(QString::asprintf("%.3f", leftProxCoord.x));
+    ui->leftProxYLineEdit->setText(QString::asprintf("%.3f", leftProxCoord.y));
+    ui->leftProxLinearLineEdit->setText(QString::asprintf("%.3f", leftProxCoord.z));
+    ui->leftDistXLineEdit->setText(QString::asprintf("%.3f", leftDistCoord.x));
+    ui->leftDistYLineEdit->setText(QString::asprintf("%.3f", leftDistCoord.y));
+    ui->leftDistLinearLineEdit->setText(QString::asprintf("%.3f", leftDistCoord.z));
+    // qDebugMessage(QString::asprintf("Left: angle: %.2f, pull: %.2f", RAD2DEG(leftKinematics->proximal_act.rotation_angle), leftKinematics->proximal_act.pull));
+    if(leftEquipment && leftEquipment->isAllReady())
+    {
+        leftEquipment->setProximalAct(leftKinematics->proximal_act);
+        leftEquipment->setDistalAct(leftKinematics->distal_act);
+    }
+    float multiplier_right = (float)ui->rightSpeedSlider->value() * 0.1f;
+    rightProxCoord.x += ui->rightJoyPad->x() * timeElapsed * multiplier_right;
+    rightProxCoord.y += ui->rightJoyPad->y() * timeElapsed * multiplier_right;
+    rightDistCoord.x += rightPOVSpeed.x * timeElapsed * multiplier_right;
+    rightDistCoord.y += rightPOVSpeed.y * timeElapsed * multiplier_right;
+    if(rightEquipment)
+    {
+        rightKinematics->proximal_params = &rightEquipment->getProximal().lock()->kineParams;
+        rightKinematics->distal_params = &rightEquipment->getDistal().lock()->kineParams;
+    }
+    rightKinematics->calculate(rightProxCoord, rightDistCoord);
+    if(rightKinematics->proximal_params)
+    {
+        ui->rightProxCoordJoyPad->setX(rightProxCoord.x / rightKinematics->proximal_params->max_abs_pushpull);
+        ui->rightProxCoordJoyPad->setY(rightProxCoord.y / rightKinematics->proximal_params->max_abs_pushpull);
+    }
+    if(rightKinematics->distal_params)
+    {
+        ui->rightDistCoordJoyPad->setX(rightDistCoord.x / rightKinematics->distal_params->max_abs_pushpull);
+        ui->rightDistCoordJoyPad->setY(rightDistCoord.y / rightKinematics->distal_params->max_abs_pushpull);
+    }
+    ui->rightProxXLineEdit->setText(QString::asprintf("%.3f", rightProxCoord.x));
+    ui->rightProxYLineEdit->setText(QString::asprintf("%.3f", rightProxCoord.y));
+    ui->rightProxLinearLineEdit->setText(QString::asprintf("%.3f", rightProxCoord.z));
+    ui->rightDistXLineEdit->setText(QString::asprintf("%.3f", rightDistCoord.x));
+    ui->rightDistYLineEdit->setText(QString::asprintf("%.3f", rightDistCoord.y));
+    ui->rightDistLinearLineEdit->setText(QString::asprintf("%.3f", rightDistCoord.z));
+    if(rightEquipment && rightEquipment->isAllReady())
+    {
+        rightEquipment->setProximalAct(rightKinematics->proximal_act);
+        rightEquipment->setDistalAct(rightKinematics->distal_act);
+    }
 }
 
 void ControllerWindow::showWindow()
@@ -51,6 +142,8 @@ void ControllerWindow::showWindow()
     {
         ui->leftJoyPad->isVirtualJoystick = true;
         ui->rightJoyPad->isVirtualJoystick = true;
+        ui->leftAuxJoyPad->isVirtualJoystick = true;
+        ui->rightAuxJoyPad->isVirtualJoystick = true;
         ui->leftJoyComboBox->setEnabled(false);
         ui->rightJoyComboBox->setEnabled(false);
         emit infoMessage("No physics joysticks found, now the left/right joysticks behave virtually");
@@ -95,14 +188,8 @@ void ControllerWindow::onSelectActuator()
 {
     QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
     QWeakPointer<Equipment6DoF> eq(dev.lock()->getEquipmentByName(ui->equipmentSelectComboBox->currentText()));
-    if(ui->actuatorSelectComboBox->currentText() == "Proximal")
-    {
-        panelActuator = eq.lock()->getProximal();
-    }
-    else if(ui->actuatorSelectComboBox->currentText() == "Distal")
-    {
-        panelActuator = eq.lock()->getDistal();
-    }
+    if(ui->actuatorSelectComboBox->currentText() == "Proximal") panelActuator = eq.lock()->getProximal();
+    else if(ui->actuatorSelectComboBox->currentText() == "Distal") panelActuator = eq.lock()->getDistal();
     if(panelActuator)
     {
         ui->deviceSelectComboBox->setEnabled(true);
@@ -116,6 +203,7 @@ void ControllerWindow::onSelectActuator()
         ui->panelRotationIqEdit->setEnabled(true);
         ui->panelRotationLineEdit->setEnabled(true);
         ui->panelRotationSpinBox->setEnabled(true);
+        if(panelActuator->rotation_ready) ui->panelRotationSpinBox->setValue(roundf(panelActuator->getRotationState()));
 
         ui->panelPushPullAlignButton->setEnabled(true);
         ui->panelPushPullLimiterActivatedRadioButton->setEnabled(true);
@@ -124,6 +212,7 @@ void ControllerWindow::onSelectActuator()
         ui->panelPushPullIqEdit->setEnabled(true);
         ui->panelPushPullLineEdit->setEnabled(true);
         ui->panelPushPullSpinBox->setEnabled(true);
+        if(panelActuator->pushpull_ready) ui->panelPushPullSpinBox->setValue(roundf(panelActuator->getPushPullState()));
 
         ui->panelLinearAlignButton->setEnabled(true);
         ui->panelLinearLimiterActivatedRadioButton->setEnabled(true);
@@ -132,6 +221,10 @@ void ControllerWindow::onSelectActuator()
         ui->panelLinearIqEdit->setEnabled(true);
         ui->panelLinearLineEdit->setEnabled(true);
         ui->panelLinearSpinBox->setEnabled(true);
+        if(panelActuator->linear_ready) ui->panelLinearSpinBox->setValue(roundf(panelActuator->getLinearState()));
+
+        ui->panelPreHomingButton->setEnabled(true);
+        ui->panelPostHomingButton->setEnabled(panelActuator->preInstall_ready);
     }
 }
 
@@ -156,6 +249,8 @@ void ControllerWindow::updatePanelStatus()
         ui->panelLinearLimiterActivatedRadioButton->setChecked(panelActuator->motorLinear.first->isLimiterActivated());
         ui->panelLinearLimiterHasActivatedRadioButton->setChecked(panelActuator->motorLinear.first->hasLimiterActivated());
         ui->panelLinearReadyRadioButton->setChecked(panelActuator->linear_ready);
+
+        ui->panelPostHomingButton->setEnabled(panelActuator->preInstall_ready);
     }
 }
 
@@ -165,10 +260,10 @@ void ControllerWindow::onSelectDescJSONPath()
     dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setNameFilter(tr("Device Descriptions (*.json)"));
     dialog.setViewMode(QFileDialog::Detail);
+    dialog.setModal(false);
     QDir descDir(currentPath);
     for(uint8_t i = 0; i < 4; i++) // maximum recurse 4 layers of directory
     {
-        QApplication::processEvents(QEventLoop::AllEvents, 100);
         QDir wantedDescDir(descDir.filePath("DeviceDescriptions"));
         if(wantedDescDir.exists())
         {
@@ -180,13 +275,10 @@ void ControllerWindow::onSelectDescJSONPath()
         descDir.cdUp();
     }
     dialog.setDirectory(descDir);
-    if(dialog.exec())
-    {
-        QApplication::processEvents(QEventLoop::AllEvents, 100);
-        QString path = dialog.selectedFiles().at(0);
+    connect(&dialog, &QFileDialog::fileSelected, this, [this](const QString& file){
         QSharedPointer<Device> dev = QSharedPointer<Device>(new Device);
         ui->deviceSelectComboBox->clear();
-        dev->parseJsonFromFile(path, motorHashMap);
+        dev->parseJsonFromFile(file, motorHashMap);
         if(dev->availbleEquipmentCount() > 0)
         {
             deviceHashMap.insert(dev->deviceName(), dev);
@@ -194,16 +286,67 @@ void ControllerWindow::onSelectDescJSONPath()
             emit infoMessage("Parsed Device: " + dev->deviceName() + QString::asprintf(" with %d equipment(s)", dev->availbleEquipmentCount()));
         }
         else emit errorMessage("Parsed Device: " + dev->deviceName() + " with no available equipment, deleting");
-    }
+    });
+    dialog.open();
+    while(!dialog.isHidden()) QApplication::processEvents();
 }
 
 void ControllerWindow::contextMenuEvent(QContextMenuEvent *event)
 {
+    auto lambda = [this, &event](bool isLeft = true)
+    {
+        QScopedPointer<QMenu> pMenu(new QMenu());
+        QScopedPointer<QAction> pActionRst(new QAction("Reset", pMenu.get()));
+        if((isLeft && leftEquipment) || (!isLeft && rightEquipment))
+        {
+            QAction *pAction = new QAction("Detach", pMenu.get());
+            connect(pAction, &QAction::triggered, this, [this, &isLeft](){
+                if(isLeft) leftEquipment.clear();
+                else rightEquipment.clear();
+            });
+            pMenu->addAction(pAction);
+        }
+        connect(pActionRst.get(), &QAction::triggered, this, [this, &isLeft](){
+            if(isLeft)
+            {
+                leftProxCoord.reset();
+                leftKinematics->proximalReset();
+                leftDistCoord.reset();
+                leftKinematics->distalReset();
+            }
+            else
+            {
+                rightProxCoord.reset();
+                rightKinematics->proximalReset();
+                rightDistCoord.reset();
+                rightKinematics->distalReset();
+            }
+        });
+        pMenu->addAction(pActionRst.get());
+        pMenu->addSeparator();
+        QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
+        if(!dev.isNull())
+        {
+            for(auto &i : dev.lock()->equipmentNames())
+            {
+                QAction *pAction = new QAction(i, pMenu.get());
+                pAction->setCheckable(true);
+                if((isLeft && leftEquipment && leftEquipment->equipmentName() == i) ||
+                    (!isLeft && rightEquipment && rightEquipment->equipmentName() == i)) pAction->setChecked(true);
+                connect(pAction, &QAction::triggered, this, [this, dev, pAction, isLeft](){
+                    if(isLeft) leftEquipment = dev.lock()->getEquipmentByName(pAction->text()).toStrongRef();
+                    else rightEquipment = dev.lock()->getEquipmentByName(pAction->text()).toStrongRef();
+                });
+                pMenu->addAction(pAction);
+            }
+        }
+        pMenu->exec(event->globalPos());
+    };
     qDebugMessage(QString::asprintf("QContextMenuEvent fired at (%d, %d)", event->x(), event->y()));
     if(ui->rotationGroupBox->underMouse())
     {
         QScopedPointer<QMenu> pMenu(new QMenu());
-        QScopedPointer<QAction> pAction(new QAction("Rotation Calibrate...", this));
+        QScopedPointer<QAction> pAction(new QAction("Rotation Calibrate...", pMenu.get()));
         if(!this->panelActuator) pAction->setEnabled(false);
         connect(pAction.get(), &QAction::triggered, this, [this](){
             if(panelActuator) panelActuator->beginRotationCalibrate();
@@ -211,33 +354,90 @@ void ControllerWindow::contextMenuEvent(QContextMenuEvent *event)
         pMenu->addAction(pAction.get());
         pMenu->exec(event->globalPos());
     }
+    else if(ui->leftJoyPad->underMouse()) lambda(true);
+    else if(ui->rightJoyPad->underMouse()) lambda(false);
+}
+
+void mapPOVToSpeed(Vector2D& speed, int angle)
+{
+    speed.x = 0.0f;
+    speed.y = 0.0f;
+    switch(angle)
+    {
+    case 0:
+        speed.y = 1.0f;
+        break;
+    case 45:
+        speed.x = 0.707f;
+        speed.y = 0.707f;
+        break;
+    case 90:
+        speed.x = 1.0f;
+        break;
+    case 135:
+        speed.x = 0.707f;
+        speed.y = -0.707f;
+        break;
+    case 180:
+        speed.y = -1.0f;
+        break;
+    case 225:
+        speed.x = -0.707f;
+        speed.y = -0.707f;
+        break;
+    case 270:
+        speed.x = -1.0f;
+        break;
+    case 315:
+        speed.x = -0.707f;
+        speed.y = 0.707f;
+        break;
+    default: break;
+    }
 }
 
 void ControllerWindow::onPOVEvent(const QJoystickPOVEvent &event)
 {
-    emit infoMessage(event.joystick->name + " (POV): " + QString::asprintf("angle=%d, pov=%d", event.angle, event.pov));
+    // emit infoMessage(event.joystick->name + " (POV): " + QString::asprintf("angle=%d, pov=%d", event.angle, event.pov));
+    if(ui->leftJoyComboBox->currentText() == event.joystick->name)
+    {
+        mapPOVToSpeed(leftPOVSpeed, event.angle);
+        ui->leftAuxJoyPad->setX(leftPOVSpeed.x);
+        ui->leftAuxJoyPad->setY(leftPOVSpeed.y);
+    }
+    if(ui->rightJoyComboBox->currentText() == event.joystick->name)
+    {
+        mapPOVToSpeed(rightPOVSpeed, event.angle);
+        ui->rightAuxJoyPad->setX(rightPOVSpeed.x);
+        ui->rightAuxJoyPad->setY(rightPOVSpeed.y);
+    }
 }
 
 void ControllerWindow::onAxisEvent(const QJoystickAxisEvent &event)
 {
     // emit infoMessage(event.joystick->name + " (Axis): " + QString::asprintf("axis=%d, value=%.3f", event.axis, event.value));
     float value = event.value;
-    // if(event.axis == 0 && event.joystick->name.contains("VKBsim Gladiator EVO L"))
-    // {
-    //     // value = (value + 0.5f) * 2.0f;
-    // }
+    if(std::abs(value) <= 0.05f) value = 0.0f; // deadzone
     if(ui->leftJoyComboBox->currentText() == event.joystick->name)
     {
         if(event.axis == 0)
         {
             ui->leftJoyPad->setX(value);
-            ui->leftJoyHorizontalSlider->setValue(100 * value);
         }
         else if(event.axis == 1)
         {
             value *= -1.0f;
             ui->leftJoyPad->setY(value);
-            ui->leftJoyVerticalSlider->setValue(100 * value);
+        }
+        else if(event.axis == 2)
+        {
+            leftPOVSpeed.x = value;
+            ui->leftAuxJoyPad->setX(leftPOVSpeed.x);
+        }
+        else if(event.axis == 3)
+        {
+            leftPOVSpeed.y = value;
+            ui->leftAuxJoyPad->setY(leftPOVSpeed.y);
         }
     }
     if(ui->rightJoyComboBox->currentText() == event.joystick->name)
@@ -245,13 +445,21 @@ void ControllerWindow::onAxisEvent(const QJoystickAxisEvent &event)
         if(event.axis == 0)
         {
             ui->rightJoyPad->setX(value);
-            ui->rightJoyHorizontalSlider->setValue(100 * value);
         }
         else if(event.axis == 1)
         {
             value *= -1.0f;
             ui->rightJoyPad->setY(value);
-            ui->rightJoyVerticalSlider->setValue(100 * value);
+        }
+        else if(event.axis == 2)
+        {
+            rightPOVSpeed.x = value;
+            ui->rightAuxJoyPad->setX(rightPOVSpeed.x);
+        }
+        else if(event.axis == 3)
+        {
+            rightPOVSpeed.y = value;
+            ui->rightAuxJoyPad->setY(rightPOVSpeed.y);
         }
     }
 }
@@ -260,8 +468,6 @@ void ControllerWindow::onButtonEvent(const QJoystickButtonEvent &event)
 {
     emit infoMessage(event.joystick->name + " (Button): " + QString::asprintf("button=%d, pressed=%d", event.button, event.pressed));
 }
-
-void GetColorWheel(uint8_t pos, uint8_t *r, uint8_t *g, uint8_t *b);
 
 void ControllerWindow::controlLoop()
 {
@@ -274,17 +480,6 @@ void ControllerWindow::controlLoop()
     {
         if(debuggerWindow) debuggerWindow->updateState();
         if(panelActuator) updatePanelStatus();
-        // static uint8_t j = 0;
-        // j++;
-        // uint8_t r, g, b;
-        // GetColorWheel(j, &r, &g, &b);
-        // for(auto &i : wrapper.output_vector)
-        // {
-        //     i->Interface_Set.LEDState = 1;
-        //     i->Interface_Set.LEDR = r;
-        //     i->Interface_Set.LEDG = g;
-        //     i->Interface_Set.LEDB = b;
-        // }
         timer_100ms = 0;
     }
 }
@@ -307,27 +502,4 @@ ControllerWindow::~ControllerWindow()
     emit debugMessage("ControllerWindow destroyed");
     delete ui;
     emit onCloseWindow();
-}
-
-void GetColorWheel(uint8_t pos, uint8_t *r, uint8_t *g, uint8_t *b)
-{
-    if(pos < 85)
-    {
-        *r = pos * 3;
-        *g = 255 - *r;
-        *b = 0;
-        return;
-    }
-    if(pos < 170)
-    {
-        pos -= 85;
-        *g = 0;
-        *b = pos * 3;
-        *r = 255 - *b;
-        return;
-    }
-    pos -= 170;
-    *r = 0;
-    *g = pos * 3;
-    *b = 255 - *g;
 }

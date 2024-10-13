@@ -6,6 +6,7 @@
 #include <QStringList>
 #include <QMap>
 #include <QCloseEvent>
+#include "Kinematics/KinematicsBase.h"
 #include "MotorDebugger.h"
 #include "ECATWrapper.h"
 #include "iFOC/Motor.h"
@@ -42,6 +43,7 @@ signals:
     void onCloseWindow();
 private:
     void updatePanelStatus();
+    void updateControlCoord();
     void contextMenuEvent(QContextMenuEvent *event) final;
     Ui::ControllerWindow *ui;
     MotorDebugger* debuggerWindow = nullptr;
@@ -50,6 +52,17 @@ private:
     QHash<QString, QSharedPointer<Motor>> motorHashMap;
     QSharedPointer<Actuator3DoF> panelActuator;
     QString currentPath;
+    QTimer* speedTimer;
+    QSharedPointer<Equipment6DoF> leftEquipment;
+    QSharedPointer<Equipment6DoF> rightEquipment;
+    KinematicsBase *leftKinematics;
+    KinematicsBase *rightKinematics;
+    Vector2D leftPOVSpeed;
+    Vector2D rightPOVSpeed;
+    Point3D leftProxCoord;
+    Point3D leftDistCoord;
+    Point3D rightProxCoord;
+    Point3D rightDistCoord;
 };
 
 #endif // CONTROLLERWINDOW_H

@@ -7,6 +7,9 @@
 #include <QSharedPointer>
 
 #define _constrain(v,low,high) ((v)<(low)?(low):((v)>(high)?(high):(v)))
+#ifndef PI
+#define PI 3.141592653589793238462643383279f
+#endif
 #define PI2 6.283185307179586476925286766559f
 #define DEG2RAD(degree) ((float)(degree) * 0.01745329251994329576923690768489f)
 #define RAD2DEG(radian) ((float)(radian) * 57.295779513082320876798154814105f)

@@ -5,6 +5,42 @@ Equipment6DoF::~Equipment6DoF()
     qDebugMessage("Equipment6DoF " + name + " destroyed");
 }
 
+bool Equipment6DoF::isAllReady()
+{
+    return (
+            actuatorProximal &&
+               actuatorProximal->linear_ready
+               // && actuatorProximal->rotation_ready
+               // && actuatorProximal->pushpull_ready
+        ) &&
+           (
+            actuatorDistal &&
+               actuatorDistal->linear_ready
+               // && actuatorDistal->rotation_ready
+               // && actuatorDistal->pushpull_ready
+               );
+}
+
+void Equipment6DoF::setProximalAct(actuation_t& act)
+{
+    if(actuatorProximal)
+    {
+        // actuatorProximal->setLinearLength(act.translation);
+        actuatorProximal->setPushPullLength(act.pull);
+        actuatorProximal->setRotationDegAbs(RAD2DEG(act.rotation_angle));
+    }
+}
+
+void Equipment6DoF::setDistalAct(actuation_t& act)
+{
+    if(actuatorDistal)
+    {
+        // actuatorDistal->setLinearLength(act.translation);
+        actuatorDistal->setPushPullLength(act.pull);
+        actuatorDistal->setRotationDegAbs(RAD2DEG(act.rotation_angle));
+    }
+}
+
 bool Equipment6DoF::parseJsonFromObject(const QJsonObject& object, QHash<QString, QSharedPointer<Motor>>& hash)
 {
     int actuatorErrorCount = 0;

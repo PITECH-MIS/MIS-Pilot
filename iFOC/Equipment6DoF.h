@@ -13,6 +13,9 @@ public:
     QString& equipmentName();
     QWeakPointer<Actuator3DoF> getProximal();
     QWeakPointer<Actuator3DoF> getDistal();
+    bool isAllReady();
+    void setProximalAct(actuation_t& act);
+    void setDistalAct(actuation_t& act);
 private:
     QString name;
     QSharedPointer<Actuator3DoF> actuatorProximal = nullptr;
