@@ -5,6 +5,7 @@
 #include <QHash>
 #include <QJsonObject>
 #include <QPair>
+#include "../Kinematics/KinematicsBase.h"
 
 typedef struct motor_config_t
 {
@@ -12,6 +13,7 @@ typedef struct motor_config_t
     float current_limit;
     float abs_pos_offset;
     float limiter_pos_offset;
+    float pitch;                // length(mm) -> round
 }motor_config_t;
 
 class Actuator3DoF : public QObject
@@ -27,11 +29,21 @@ public:
     void setRotationDegAbs(float deg);
     void setPushPullDegAbs(float deg);
     void setLinearDegAbs(float deg);
+    void setPushPullLength(float mm);
+    void setLinearLength(float mm);
     void beginLinearHoming();
     void beginRotationCalibrate();
     void beginRotationHoming();
     void beginPushPullHoming();
+    void beginPreInstallHoming();
+    void beginPostInstallHoming();
+    void setRotationHome();
+    void setPushPullHome();
+    void setLinearHome();
     bool getLinearHomingState();
+    int8_t checkRotationLimit();
+    int8_t checkPushPullLimit();
+    int8_t checkLinearLimit();
     QString actuatorName();
     QPair<QSharedPointer<Motor>, motor_config_t> motorRotation;
     QPair<QSharedPointer<Motor>, motor_config_t> motorPushPull;
@@ -39,6 +51,9 @@ public:
     bool rotation_ready = false;
     bool pushpull_ready = false;
     bool linear_ready = false;
+    bool preInstall_ready = false;
+    bool postInstall_ready = false;
+    kinematics_params_t kineParams;
 private:
     bool init();
     QString name;

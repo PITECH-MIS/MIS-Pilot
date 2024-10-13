@@ -10,11 +10,48 @@ Actuator3DoF::~Actuator3DoF()
     qDebugMessage("Actuator3DoF " + name + " destroyed");
 }
 
+// Pre-Install Homing:
+// a.Rotation Homing (NOT calibrate)
+// b.Linear Homing
+
+void Actuator3DoF::beginPreInstallHoming()
+{
+    preInstall_ready = false;
+    postInstall_ready = false;
+    auto lambda = [this]()
+    {
+        beginRotationHoming();
+        beginLinearHoming();
+        while(!rotation_ready || !linear_ready);
+        // setLinearDegAbs(linear_limit.second);
+        preInstall_ready = true;
+    };
+    spawnTask(lambda);
+}
+
+// Post-Install Homing:
+// a.Linear goes to FORWARD limit
+// b.Rotation(start from 0°) 0~+360~0~-360~0 (PushPull gear also rotates)
+// c.PushPull Homing(start from 0°) 0~+1.5 round~0~-1.5 round~0
+// d.Now all three DoFs should be ready
+
+void Actuator3DoF::beginPostInstallHoming()
+{
+    auto lambda = [this]()
+    {
+        float homing_speed = 20.0f;
+        float abs_rotation_limit = (1.0f * 360.0f);
+
+    };
+    spawnTask(lambda);
+}
+
 void Actuator3DoF::beginLinearHoming()
 {
     if(motorLinear.second.limiter_idx == 0) return;
     auto lambda = [this]()
     {
+        linear_ready = false;
         float homing_speed = 90.0f;
         uint32_t timeout_set_move = 600000;      // 60s
         uint16_t timeout_set_curr_limit = 500;   // 0.5s
@@ -164,58 +201,61 @@ void Actuator3DoF::beginLinearHoming()
     };
     spawnTask(lambda);
 }
-
-// From current state, rotation 2 rounds forward, then another 2 rounds backward
+// If isLimiterActivated() at start, rotate at [-X, X] rounds to find both limiter side, and go to middle
+// else: From current state, rotate X rounds forward, then another X rounds backward to find limiter
+// if(found limiter)
+//    if current_dir == forward, keep searching for X rounds forward until out limiter
+//    else, keep searching for X rounds backward until out limiter
+//    then, go to middle
 void Actuator3DoF::beginPushPullHoming()
 {
     if(motorPushPull.second.limiter_idx == 0) return;
     auto lambda = [this]()
     {
+        pushpull_ready = false;
+        QPair<float, float> original_limit = pushpull_limit;
+        pushpull_limit.first *= 2.0f;
+        pushpull_limit.second *= 2.0f;
         float homing_speed = 20.0f;
-        float abs_rotation_limit = (2.0f * 360.0f);
+        float abs_rotation_limit = (3.5f * 360.0f);
         uint16_t timeout_set_curr_limit = 500;   // 0.5s
         uint16_t timeout_curr_limit = 500;
         float start_pp_deg = getPushPullState();
         float curr_pp_deg = 0.0f;
         float target_pp_deg = start_pp_deg;
-        uint8_t stage = 0; // 0 - forward, 1 - backward, 2 - success
+        bool isSuccess = false;
         float result = 0.0f;
         float limiter_side_1 = 0.0f;
         float limiter_side_2 = 0.0f;
-        bool limiter_state[2] = {false, false}; // [out->in, in->out]
-        bool is_start_inside_limiter = false;
-        bool isSuccess = false;
-        if(motorPushPull.first->isLimiterActivated()) is_start_inside_limiter = true;
-        while(stage != 2)
+        bool limiter_state[2] = {false, false}; // 1: [in->out, in->out], 2: [out->in, in->out]
+        if(motorPushPull.first->isLimiterActivated())
         {
-            if(stage == 0) target_pp_deg += getIncAngleByRPM(homing_speed, 0.001f);
-            else if(stage == 1) target_pp_deg -= getIncAngleByRPM(homing_speed, 0.001f);
-            curr_pp_deg = getPushPullState() - start_pp_deg;
-            if(std::abs(target_pp_deg) >= abs_rotation_limit)
+            uint8_t stage = 0;
+            while(stage != 2)
             {
-                if(stage == 0)
+                if(stage == 0) target_pp_deg += getIncAngleByRPM(homing_speed, 0.001f);
+                else if(stage == 1) target_pp_deg -= getIncAngleByRPM(homing_speed, 0.001f);
+                curr_pp_deg = getPushPullState() - start_pp_deg;
+                if(std::abs(target_pp_deg) >= abs_rotation_limit)
                 {
-                    stage = 1;
+                    if(stage == 0) stage = 1;
+                    else
+                    {
+                        qDebugMessage("Error in pushPullHoming() @ limiterActivated: index not found");
+                        goto CLEAN;
+                    }
                 }
-                else
+                setPushPullDegAbs(target_pp_deg);
+                if(std::abs(motorPushPull.first->getIq()) >= 0.95 * motorPushPull.second.current_limit)
                 {
-                    qDebugMessage("Error in pushPullHoming(): index not found");
-                    goto CLEAN;
+                    timeout_curr_limit -= 1;
+                    if(timeout_curr_limit == 0)
+                    {
+                        qDebugMessage("ERROR: Reached current_limit at pushPullHoming()");
+                        goto CLEAN;
+                    }
                 }
-            }
-            setPushPullDegAbs(target_pp_deg);
-            if(std::abs(motorPushPull.first->getIq()) >= 0.95 * motorPushPull.second.current_limit)
-            {
-                timeout_curr_limit -= 1;
-                if(timeout_curr_limit == 0)
-                {
-                    qDebugMessage("ERROR: Reached current_limit at pushPullHoming()");
-                    goto CLEAN;
-                }
-            }
-            else timeout_curr_limit = timeout_set_curr_limit;
-            if(is_start_inside_limiter) // in->out first, out->in second
-            {
+                else timeout_curr_limit = timeout_set_curr_limit;
                 if(!motorPushPull.first->isLimiterActivated() && !limiter_state[1])
                 {
                     limiter_state[1] = true;
@@ -224,43 +264,140 @@ void Actuator3DoF::beginPushPullHoming()
                 }
                 if(limiter_state[1])
                 {
-                    if(motorPushPull.first->isLimiterActivated() && !limiter_state[0])
+                    if(motorPushPull.first->isLimiterActivated() && !limiter_state[0]) // re-enter
+                    {
+                        limiter_state[0] = true;
+                        // limiter_side_1 = curr_pp_deg;
+                        // break;
+                    }
+                    else if(limiter_state[0])
+                    {
+                        if(!motorPushPull.first->isLimiterActivated()) // out again
+                        {
+                            limiter_side_1 = curr_pp_deg;
+                            break;
+                        }
+                    }
+                }
+                QThread::msleep(1);
+            }
+        }
+        else
+        {
+            uint8_t stage = 0; // 0 - init, 1 - forward searching #1, 2 - forward searching #2, 3 - backward searching #1, 4 - #2
+            float temp = 0.0f;
+            while(true)
+            {
+                curr_pp_deg = getPushPullState() - start_pp_deg;
+                if(std::abs(motorPushPull.first->getIq()) >= 0.95 * motorPushPull.second.current_limit)
+                {
+                    timeout_curr_limit -= 1;
+                    if(timeout_curr_limit == 0)
+                    {
+                        qDebugMessage("ERROR: Reached current_limit at pushPullHoming()");
+                        goto CLEAN;
+                    }
+                }
+                else timeout_curr_limit = timeout_set_curr_limit;
+                if(stage == 0)
+                {
+                    if(motorPushPull.second.limiter_pos_offset >= 0) stage = 1;
+                    else stage = 3;
+                }
+                if(stage == 1)
+                {
+                    target_pp_deg += getIncAngleByRPM(homing_speed, 0.001f);
+                    if(motorPushPull.first->isLimiterActivated() && !limiter_state[0]) // found limiter side, goto forward searching #2
                     {
                         limiter_state[0] = true;
                         limiter_side_1 = curr_pp_deg;
-                        break;
+                        stage = 2;
+                        temp = target_pp_deg;
+                        continue;
+                    }
+                    else if(target_pp_deg >= abs_rotation_limit) // not found, goto backward searching #1
+                    {
+                        if(motorPushPull.second.limiter_pos_offset >= 0)
+                        {
+                            stage = 3;
+                            continue;
+                        }
+                        else
+                        {
+                            qDebugMessage("ERROR: Cannot find two barriers for pushPullHoming limiter");
+                            goto CLEAN;
+                        }
                     }
                 }
-            }
-            else // out->in first, in->out second
-            {
-                if(motorPushPull.first->isLimiterActivated() && !limiter_state[0])
+                else if(stage == 2)
                 {
-                    limiter_state[0] = true;
-                    limiter_side_1 = curr_pp_deg;
-                    // KEEP FORWARD/BACKWARD
-                }
-                if(limiter_state[0])
-                {
-                    if(!motorPushPull.first->isLimiterActivated() && !limiter_state[1])
+                    target_pp_deg += getIncAngleByRPM(homing_speed, 0.001f);
+                    if(!motorPushPull.first->isLimiterActivated() && !limiter_state[1]) // found other side, break
                     {
                         limiter_state[1] = true;
                         limiter_side_2 = curr_pp_deg;
                         break;
                     }
+                    else if(target_pp_deg >= temp + abs_rotation_limit)
+                    {
+                        qDebugMessage("ERROR: can't find other side of limiter at stage 2");
+                        goto CLEAN;
+                    }
                 }
+                else if(stage == 3)
+                {
+                    target_pp_deg -= getIncAngleByRPM(homing_speed, 0.001f);
+                    if(motorPushPull.first->isLimiterActivated() && !limiter_state[0]) // found limiter side, goto backward searching #2
+                    {
+                        limiter_state[0] = true;
+                        limiter_side_1 = curr_pp_deg;
+                        stage = 4;
+                        temp = target_pp_deg;
+                        continue;
+                    }
+                    else if(target_pp_deg <= -abs_rotation_limit) // not found, raise error
+                    {
+                        if(motorPushPull.second.limiter_pos_offset >= 0)
+                        {
+                            qDebugMessage("ERROR: Cannot find two barriers for pushPullHoming limiter");
+                            goto CLEAN;
+                        }
+                        else
+                        {
+                            stage = 1;
+                            continue;
+                        }
+                    }
+                }
+                else if(stage == 4)
+                {
+                    target_pp_deg -= getIncAngleByRPM(homing_speed, 0.001f);
+                    if(!motorPushPull.first->isLimiterActivated() && !limiter_state[1]) // found other side, break
+                    {
+                        limiter_state[1] = true;
+                        limiter_side_2 = curr_pp_deg;
+                        break;
+                    }
+                    else if(target_pp_deg <= temp - abs_rotation_limit)
+                    {
+                        qDebugMessage("ERROR: can't find other side of limiter at stage 4");
+                        goto CLEAN;
+                    }
+                }
+                setPushPullDegAbs(target_pp_deg);
+                QThread::msleep(1);
             }
-            QThread::msleep(1);
         }
         if(!(limiter_state[0] && limiter_state[1]))
         {
             qDebugMessage("ERROR: Cannot find two barriers for pushPullHoming limiter");
             goto CLEAN;
         }
+        // here we have found limiter_side_1/2.
         isSuccess = true;
         result = (limiter_side_1 + limiter_side_2) * 0.5f;
         // result + start_pp_deg;
-        motorPushPull.second.abs_pos_offset += result + start_pp_deg;
+        motorPushPull.second.abs_pos_offset += result + start_pp_deg - motorPushPull.second.limiter_pos_offset;
         setPushPullDegAbs(0.0f);
         pushpull_ready = true;
     CLEAN:
@@ -270,8 +407,36 @@ void Actuator3DoF::beginPushPullHoming()
             motorPushPull.first->setState(Motor::STATE_OFF);
             return;
         }
+        pushpull_limit = original_limit;
     };
     spawnTask(lambda);
+}
+
+void Actuator3DoF::setRotationHome()
+{
+    float current = getRotationState();
+
+}
+
+int8_t Actuator3DoF::checkRotationLimit()
+{
+    if(getRotationState() >= rotation_limit.second * 0.98f) return 1;
+    if(getRotationState() <= rotation_limit.first * 0.98f) return -1;
+    return 0;
+}
+
+int8_t Actuator3DoF::checkPushPullLimit()
+{
+    if(getPushPullState() >= pushpull_limit.second * 0.98f) return 1;
+    if(getPushPullState() <= pushpull_limit.first * 0.98f) return -1;
+    return 0;
+}
+
+int8_t Actuator3DoF::checkLinearLimit()
+{
+    if(getLinearState() >= linear_limit.second * 0.98f) return 1;
+    if(getLinearState() <= linear_limit.first * 0.98f) return -1;
+    return 0;
 }
 
 // Find Rotation limiter position first, then move -limiter_pos_offset
@@ -279,6 +444,7 @@ void Actuator3DoF::beginRotationHoming()
 {
     auto lambda = [this]()
     {
+        rotation_ready = false;
         float homing_speed = 10.0f;
         uint16_t timeout_set_curr_limit = 500;   // 0.5s
         uint16_t timeout_curr_limit = 500;
@@ -405,8 +571,8 @@ void Actuator3DoF::beginRotationCalibrate()
         bool limiter_state[2] = {false, false}; // [out->in, in->out]
         bool is_start_inside_limiter = false;
         bool isSuccess = false;
-        motorRotation.first->setMode(Motor::MODE_TRAJECTORY);
-        motorRotation.first->setState(Motor::STATE_ON);
+        // motorRotation.first->setMode(Motor::MODE_TRAJECTORY);
+        // motorRotation.first->setState(Motor::STATE_ON);
         QThread::msleep(100);
         start_rotation_deg = getRotationState();
         target_rotation_deg = start_rotation_deg;
@@ -414,7 +580,8 @@ void Actuator3DoF::beginRotationCalibrate()
         while(std::abs(curr_rotation_deg) <= 360.0f)
         {
             target_rotation_deg += getIncAngleByRPM(homing_speed, 0.001f);
-            motorRotation.first->setTrajAbsAngle(target_rotation_deg + motorRotation.second.abs_pos_offset);
+            // motorRotation.first->setTrajAbsAngle(target_rotation_deg + motorRotation.second.abs_pos_offset);
+            setRotationDegAbs(target_rotation_deg);
             curr_rotation_deg = getRotationState() - start_rotation_deg;
             if(std::abs(motorRotation.first->getIq()) >= 0.95 * motorRotation.second.current_limit)
             {
@@ -491,16 +658,26 @@ void Actuator3DoF::beginRotationCalibrate()
     spawnTask(lambda);
 }
 
+void Actuator3DoF::setPushPullLength(float mm)
+{
+    if(motorPushPull.second.pitch > 0.0f) setPushPullDegAbs(360.0f * mm / motorPushPull.second.pitch);
+}
+
 void Actuator3DoF::setPushPullDegAbs(float deg)
 {
     auto lambda = [this, &deg]()
     {
         pushpull_deg = _constrain(deg, pushpull_limit.first, pushpull_limit.second);
-        motorPushPull.first->setTrajAbsAngle(rotation_deg + pushpull_deg + motorPushPull.second.abs_pos_offset);
+        motorPushPull.first->setTrajAbsAngle(-rotation_deg + pushpull_deg + motorPushPull.second.abs_pos_offset);
         motorPushPull.first->setMode(Motor::MODE_TRAJECTORY);
         motorPushPull.first->setState(Motor::STATE_ON);
     };
     spawnTask(lambda);
+}
+
+void Actuator3DoF::setLinearLength(float mm)
+{
+    if(motorLinear.second.pitch > 0.0f) setLinearDegAbs(360.0f * mm / motorLinear.second.pitch);
 }
 
 void Actuator3DoF::setLinearDegAbs(float deg)
@@ -521,7 +698,7 @@ void Actuator3DoF::setRotationDegAbs(float deg)
     {
         rotation_deg = _constrain(deg, rotation_limit.first, rotation_limit.second);
         motorRotation.first->setTrajAbsAngle(rotation_deg + motorRotation.second.abs_pos_offset);
-        motorPushPull.first->setTrajAbsAngle(rotation_deg + pushpull_deg + motorPushPull.second.abs_pos_offset);
+        motorPushPull.first->setTrajAbsAngle(-rotation_deg + pushpull_deg + motorPushPull.second.abs_pos_offset);
         motorRotation.first->setMode(Motor::MODE_TRAJECTORY);
         motorPushPull.first->setMode(Motor::MODE_TRAJECTORY);
         motorRotation.first->setState(Motor::STATE_ON);
@@ -559,70 +736,15 @@ bool Actuator3DoF::parseJsonFromObject(const QJsonObject& object, QHash<QString,
     for(auto i = object.constBegin(); i != object.constEnd(); ++i)
     {
         QString key = i.key().toLower();
-        if(i.value().isObject())
-        {
-            QJsonObject motorObject = i.value().toObject();
-            if(key != "rotation" && key != "pushpull" && key != "linear")
-            {
-                qDebugMessage("Received unsupported motor name(supports Rotation/PushPull/Linear): " + i.key());
-                motorErrorCount++;
-                continue;
-            }
-            QString snString = QString::number(motorObject.value("motor_sn").toInteger(-1));
-            if(!hash.contains(snString))
-            {
-                qDebugMessage("Target SN number not found in active motors (-1 if unspecified SN): " + i.key() + ", " + snString);
-                motorErrorCount++;
-                continue;
-            }
-            motor_config_t *cfg_ptr = nullptr;
-            if(key == "rotation")
-            {
-                motorRotation.first = hash.value(snString);
-                cfg_ptr = &motorRotation.second;
-            }
-            else if(key == "pushpull")
-            {
-                motorPushPull.first = hash.value(snString);
-                cfg_ptr = &motorPushPull.second;
-            }
-            else if(key == "linear")
-            {
-                motorLinear.first = hash.value(snString);
-                cfg_ptr = &motorLinear.second;
-            }
-            if(cfg_ptr)
-            {
-                memset(cfg_ptr, 0, sizeof(motor_config_t));
-                cfg_ptr->limiter_idx = motorObject.value("limiter_idx").toInteger(0);
-                cfg_ptr->limiter_pos_offset = motorObject.value("limiter_offset").toDouble(0.0f);
-                if(key == "rotation")
-                {
-                    cfg_ptr->abs_pos_offset = motorRotation.first->getPosDeg();
-                    motorRotation.first->limiter_index = cfg_ptr->limiter_idx;
-                }
-                else if(key == "pushpull")
-                {
-                    cfg_ptr->abs_pos_offset = motorPushPull.first->getPosDeg();
-                    motorPushPull.first->limiter_index = cfg_ptr->limiter_idx;
-                }
-                else if(key == "linear")
-                {
-                    cfg_ptr->abs_pos_offset = motorLinear.first->getPosDeg();
-                    motorLinear.first->limiter_index = cfg_ptr->limiter_idx;
-                }
-                cfg_ptr->current_limit = motorObject.value("current_limit").toDouble(0.5f);
-                qDebugMessage("Motor " + i.key() + QString::asprintf(" limit_idx: %d, curr_lim: %.2f, abs_offset: %.2f",
-                                                                     cfg_ptr->limiter_idx,
-                                                                     cfg_ptr->current_limit,
-                                                                     cfg_ptr->abs_pos_offset));
-            }
-            else qDebugMessage("Unknown Error while parsing motor");
-        }
-        else if(i.value().isDouble())
+        if(i.value().isDouble())
         {
             float target = i.value().toDouble(0.0f);
-            if(key == "rotation_abs_angle_limit")
+            if(key == "OD") kineParams.OD = target;
+            else if(key == "od") kineParams.od = target;
+            else if(key == "ID") kineParams.ID = target;
+            else if(key == "id") kineParams.id = target;
+            else if(key == "length") kineParams.length = target;
+            else if(key == "rotation_abs_angle_limit")
             {
                 target = std::abs(target);
                 rotation_limit = QPair<float, float>(-target, target);
@@ -663,7 +785,70 @@ bool Actuator3DoF::parseJsonFromObject(const QJsonObject& object, QHash<QString,
             }
             else qDebugMessage("Unknown key: " + key);
         }
+        else if(i.value().isObject())
+        {
+            QJsonObject motorObject = i.value().toObject();
+            if(key != "rotation" && key != "pushpull" && key != "linear")
+            {
+                qDebugMessage("Received unsupported motor name(supports Rotation/PushPull/Linear): " + i.key());
+                motorErrorCount++;
+                continue;
+            }
+            QString snString = QString::number(motorObject.value("motor_sn").toInteger(-1));
+            if(!hash.contains(snString))
+            {
+                qDebugMessage("Target SN number not found in active motors (-1 if unspecified SN): " + i.key() + ", " + snString);
+                motorErrorCount++;
+                continue;
+            }
+            motor_config_t *cfg_ptr = nullptr;
+            if(key == "rotation")
+            {
+                motorRotation.first = hash.value(snString);
+                cfg_ptr = &motorRotation.second;
+            }
+            else if(key == "pushpull")
+            {
+                motorPushPull.first = hash.value(snString);
+                cfg_ptr = &motorPushPull.second;
+            }
+            else if(key == "linear")
+            {
+                motorLinear.first = hash.value(snString);
+                cfg_ptr = &motorLinear.second;
+            }
+            if(cfg_ptr)
+            {
+                memset(cfg_ptr, 0, sizeof(motor_config_t));
+                cfg_ptr->limiter_idx = motorObject.value("limiter_idx").toInteger(0);
+                cfg_ptr->limiter_pos_offset = motorObject.value("limiter_offset").toDouble(0.0f);
+                cfg_ptr->pitch = motorObject.value("pitch").toDouble(1.0f);
+                if(key == "rotation")
+                {
+                    cfg_ptr->abs_pos_offset = motorRotation.first->getPosDeg();
+                    motorRotation.first->limiter_index = cfg_ptr->limiter_idx;
+                }
+                else if(key == "pushpull")
+                {
+                    cfg_ptr->abs_pos_offset = motorPushPull.first->getPosDeg();
+                    motorPushPull.first->limiter_index = cfg_ptr->limiter_idx;
+                }
+                else if(key == "linear")
+                {
+                    cfg_ptr->abs_pos_offset = motorLinear.first->getPosDeg();
+                    motorLinear.first->limiter_index = cfg_ptr->limiter_idx;
+                }
+                cfg_ptr->current_limit = motorObject.value("current_limit").toDouble(0.5f);
+                qDebugMessage("Motor " + i.key() + QString::asprintf(" limit_idx: %d, curr_lim: %.2f, abs_offset: %.2f",
+                                                                     cfg_ptr->limiter_idx,
+                                                                     cfg_ptr->current_limit,
+                                                                     cfg_ptr->abs_pos_offset));
+            }
+            else qDebugMessage("Unknown Error while parsing motor");
+        }
     }
+    // degree -> mm
+    kineParams.max_abs_pushpull = motorPushPull.second.pitch * std::min(std::abs(pushpull_limit.first), std::abs(pushpull_limit.second)) / 360.0f;
     if(motorErrorCount > 0) return false;
     else
     {
@@ -683,7 +868,7 @@ float Actuator3DoF::getRotationState()
 float Actuator3DoF::getPushPullState()
 {
     // return pushpull_deg; // desired value
-    return (motorPushPull.first->getPosDeg() - motorPushPull.second.abs_pos_offset - getRotationState());
+    return (motorPushPull.first->getPosDeg() - motorPushPull.second.abs_pos_offset + getRotationState());
 }
 
 float Actuator3DoF::getLinearState()
