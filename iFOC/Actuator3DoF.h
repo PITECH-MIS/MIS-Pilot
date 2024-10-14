@@ -54,6 +54,7 @@ public:
     bool preInstall_ready = false;
     bool postInstall_ready = false;
     kinematics_params_t kineParams;
+    Point3D targetPoint;
 private:
     bool init();
     QString name;

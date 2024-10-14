@@ -41,6 +41,18 @@ void Equipment6DoF::setDistalAct(actuation_t& act)
     }
 }
 
+Point3D* Equipment6DoF::getProximalTarget()
+{
+    if(actuatorProximal) return &actuatorProximal->targetPoint;
+    return nullptr;
+}
+
+Point3D* Equipment6DoF::getDistalTarget()
+{
+    if(actuatorDistal) return &actuatorDistal->targetPoint;
+    return nullptr;
+}
+
 bool Equipment6DoF::parseJsonFromObject(const QJsonObject& object, QHash<QString, QSharedPointer<Motor>>& hash)
 {
     int actuatorErrorCount = 0;

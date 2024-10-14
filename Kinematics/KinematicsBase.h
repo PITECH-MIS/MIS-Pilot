@@ -33,6 +33,8 @@ public:
 typedef class Point3D
 {
 public:
+    Point3D() {};
+    Point3D(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {};
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;

@@ -16,6 +16,9 @@ public:
     bool isAllReady();
     void setProximalAct(actuation_t& act);
     void setDistalAct(actuation_t& act);
+    Point3D* getProximalTarget();
+    Point3D* getDistalTarget();
+    KinematicsBase *kinematics = nullptr;
 private:
     QString name;
     QSharedPointer<Actuator3DoF> actuatorProximal = nullptr;
