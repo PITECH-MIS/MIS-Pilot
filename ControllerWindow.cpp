@@ -48,8 +48,6 @@ ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice
         if(panelActuator) panelActuator->beginPostInstallHoming();
     });
     speedTimer->start(100);
-    leftKinematics = new KinematicsAtan2();
-    rightKinematics = new KinematicsAtan2();
 }
 
 void ControllerWindow::updateControlCoord()
@@ -62,71 +60,151 @@ void ControllerWindow::updateControlCoord()
         timeElapsed = ((float)speedTimer.elapsed()) / 1000.0f;
         speedTimer.restart();
     }
-    float multiplier_left = (float)ui->leftSpeedSlider->value() * 0.25f;
-    leftProxCoord.x += ui->leftJoyPad->x() * timeElapsed * multiplier_left;
-    leftProxCoord.y += ui->leftJoyPad->y() * timeElapsed * multiplier_left;
-    leftDistCoord.x += leftPOVSpeed.x * timeElapsed * multiplier_left;
-    leftDistCoord.y += leftPOVSpeed.y * timeElapsed * multiplier_left;
-    if(leftEquipment)
+    QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
+    if(dev)
     {
-        leftKinematics->proximal_params = &leftEquipment->getProximal().lock()->kineParams;
-        leftKinematics->distal_params = &leftEquipment->getDistal().lock()->kineParams;
-    }
-    leftKinematics->calculate(leftProxCoord, leftDistCoord);
-    if(leftKinematics->proximal_params)
-    {
-        ui->leftProxCoordJoyPad->setX(leftProxCoord.x / leftKinematics->proximal_params->max_abs_pushpull);
-        ui->leftProxCoordJoyPad->setY(leftProxCoord.y / leftKinematics->proximal_params->max_abs_pushpull);
-    }
-    if(leftKinematics->distal_params)
-    {
-        ui->leftDistCoordJoyPad->setX(leftDistCoord.x / leftKinematics->distal_params->max_abs_pushpull);
-        ui->leftDistCoordJoyPad->setY(leftDistCoord.y / leftKinematics->distal_params->max_abs_pushpull);
-    }
-    ui->leftProxXLineEdit->setText(QString::asprintf("%.3f", leftProxCoord.x));
-    ui->leftProxYLineEdit->setText(QString::asprintf("%.3f", leftProxCoord.y));
-    ui->leftProxLinearLineEdit->setText(QString::asprintf("%.3f", leftProxCoord.z));
-    ui->leftDistXLineEdit->setText(QString::asprintf("%.3f", leftDistCoord.x));
-    ui->leftDistYLineEdit->setText(QString::asprintf("%.3f", leftDistCoord.y));
-    ui->leftDistLinearLineEdit->setText(QString::asprintf("%.3f", leftDistCoord.z));
-    // qDebugMessage(QString::asprintf("Left: angle: %.2f, pull: %.2f", RAD2DEG(leftKinematics->proximal_act.rotation_angle), leftKinematics->proximal_act.pull));
-    if(leftEquipment && leftEquipment->isAllReady())
-    {
-        leftEquipment->setProximalAct(leftKinematics->proximal_act);
-        leftEquipment->setDistalAct(leftKinematics->distal_act);
-    }
-    // qDebugMessage(QString::asprintf("Prox: p: %.2f, a: %.2f", leftKinematics->proximal_act.pull, RAD2DEG(leftKinematics->proximal_act.rotation_angle)));
-    float multiplier_right = (float)ui->rightSpeedSlider->value() * 0.25f;
-    rightProxCoord.x += ui->rightJoyPad->x() * timeElapsed * multiplier_right;
-    rightProxCoord.y += ui->rightJoyPad->y() * timeElapsed * multiplier_right;
-    rightDistCoord.x += rightPOVSpeed.x * timeElapsed * multiplier_right;
-    rightDistCoord.y += rightPOVSpeed.y * timeElapsed * multiplier_right;
-    if(rightEquipment)
-    {
-        rightKinematics->proximal_params = &rightEquipment->getProximal().lock()->kineParams;
-        rightKinematics->distal_params = &rightEquipment->getDistal().lock()->kineParams;
-    }
-    rightKinematics->calculate(rightProxCoord, rightDistCoord);
-    if(rightKinematics->proximal_params)
-    {
-        ui->rightProxCoordJoyPad->setX(rightProxCoord.x / rightKinematics->proximal_params->max_abs_pushpull);
-        ui->rightProxCoordJoyPad->setY(rightProxCoord.y / rightKinematics->proximal_params->max_abs_pushpull);
-    }
-    if(rightKinematics->distal_params)
-    {
-        ui->rightDistCoordJoyPad->setX(rightDistCoord.x / rightKinematics->distal_params->max_abs_pushpull);
-        ui->rightDistCoordJoyPad->setY(rightDistCoord.y / rightKinematics->distal_params->max_abs_pushpull);
-    }
-    ui->rightProxXLineEdit->setText(QString::asprintf("%.3f", rightProxCoord.x));
-    ui->rightProxYLineEdit->setText(QString::asprintf("%.3f", rightProxCoord.y));
-    ui->rightProxLinearLineEdit->setText(QString::asprintf("%.3f", rightProxCoord.z));
-    ui->rightDistXLineEdit->setText(QString::asprintf("%.3f", rightDistCoord.x));
-    ui->rightDistYLineEdit->setText(QString::asprintf("%.3f", rightDistCoord.y));
-    ui->rightDistLinearLineEdit->setText(QString::asprintf("%.3f", rightDistCoord.z));
-    if(rightEquipment && rightEquipment->isAllReady())
-    {
-        rightEquipment->setProximalAct(rightKinematics->proximal_act);
-        rightEquipment->setDistalAct(rightKinematics->distal_act);
+        if(!leftEquipmentName.isEmpty())
+        {
+            QSharedPointer<Equipment6DoF> leftEquipment = dev.lock()->getEquipmentByName(leftEquipmentName).lock();
+            if(leftEquipment)
+            {
+                float multiplier_left = (float)ui->leftSpeedSlider->value() * 0.2f;
+                if(!leftEquipment->kinematics) leftEquipment->kinematics = new KinematicsAtan2();
+                if(leftEquipment->getProximalTarget())
+                {
+                    leftEquipment->kinematics->proximal_params = &leftEquipment->getProximal().lock()->kineParams;
+                    leftEquipment->getProximalTarget()->x += ui->leftJoyPad->x() * timeElapsed * multiplier_left;
+                    leftEquipment->getProximalTarget()->y += ui->leftJoyPad->y() * timeElapsed * multiplier_left;
+                    if(leftEquipment->getDistalTarget())
+                    {
+                        leftEquipment->kinematics->distal_params = &leftEquipment->getDistal().lock()->kineParams;
+                        leftEquipment->getDistalTarget()->x += leftPOVSpeed.x * timeElapsed * multiplier_left;
+                        leftEquipment->getDistalTarget()->y += leftPOVSpeed.y * timeElapsed * multiplier_left;
+                        leftEquipment->kinematics->calculate(*leftEquipment->getProximalTarget(), *leftEquipment->getDistalTarget());
+                        ui->leftProxCoordJoyPad->setX(leftEquipment->getProximalTarget()->x / leftEquipment->kinematics->proximal_params->max_abs_pushpull);
+                        ui->leftProxCoordJoyPad->setY(leftEquipment->getProximalTarget()->y / leftEquipment->kinematics->proximal_params->max_abs_pushpull);
+                        if(std::abs(leftEquipment->kinematics->proximal_act.pull / leftEquipment->kinematics->proximal_params->max_abs_pushpull) >= 0.9f) ui->leftProxCoordJoyPad->isWarning = true;
+                        else ui->leftProxCoordJoyPad->isWarning = false;
+                        ui->leftProxLabel->setText(leftEquipment->equipmentName() + " " + leftEquipment->getProximal().lock()->actuatorName());
+                        ui->leftProxPushLineEdit->setText(QString::asprintf("%.3f", leftEquipment->kinematics->proximal_act.pull));
+                        ui->leftProxRotLineEdit->setText(QString::asprintf("%.3f", leftEquipment->kinematics->proximal_act.rotation_angle));
+
+                        ui->leftDistCoordJoyPad->setX(leftEquipment->getDistalTarget()->x / leftEquipment->kinematics->distal_params->max_abs_pushpull);
+                        ui->leftDistCoordJoyPad->setY(leftEquipment->getDistalTarget()->y / leftEquipment->kinematics->distal_params->max_abs_pushpull);
+                        if(std::abs(leftEquipment->kinematics->distal_act.pull / leftEquipment->kinematics->distal_params->max_abs_pushpull) >= 0.9f) ui->leftDistCoordJoyPad->isWarning = true;
+                        else ui->leftDistCoordJoyPad->isWarning = false;
+                        ui->leftDistLabel->setText(leftEquipment->equipmentName() + " " + leftEquipment->getDistal().lock()->actuatorName());
+                        ui->leftDistPushLineEdit->setText(QString::asprintf("%.3f", leftEquipment->kinematics->distal_act.pull));
+                        ui->leftDistRotLineEdit->setText(QString::asprintf("%.3f", leftEquipment->kinematics->distal_act.rotation_angle));
+
+                        ui->leftProxXLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getProximalTarget()->x));
+                        ui->leftProxYLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getProximalTarget()->y));
+                        ui->leftProxLinearLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getProximalTarget()->z));
+                        ui->leftDistXLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getDistalTarget()->x));
+                        ui->leftDistYLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getDistalTarget()->y));
+                        ui->leftDistLinearLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getDistalTarget()->z));
+                        if(leftEquipment->isAllReady())
+                        {
+                            ui->leftReadyLabel->setText("READY");
+                            leftEquipment->setProximalAct(leftEquipment->kinematics->proximal_act);
+                            leftEquipment->setDistalAct(leftEquipment->kinematics->distal_act);
+                        }
+                        else ui->leftReadyLabel->setText("Not Ready");
+                    }
+                }
+            }
+        }
+        else
+        {
+            ui->leftProxCoordJoyPad->setX(0.0f);
+            ui->leftProxCoordJoyPad->setY(0.0f);
+            ui->leftProxLabel->clear();
+            ui->leftProxPushLineEdit->clear();
+            ui->leftProxRotLineEdit->clear();
+            ui->leftDistCoordJoyPad->setX(0.0f);
+            ui->leftDistCoordJoyPad->setY(0.0f);
+            ui->leftDistLabel->clear();
+            ui->leftDistPushLineEdit->clear();
+            ui->leftDistRotLineEdit->clear();
+            ui->leftProxXLineEdit->clear();
+            ui->leftProxYLineEdit->clear();
+            ui->leftProxLinearLineEdit->clear();
+            ui->leftDistXLineEdit->clear();
+            ui->leftDistYLineEdit->clear();
+            ui->leftDistLinearLineEdit->clear();
+            ui->leftReadyLabel->setText("Not Ready");
+        }
+        if(!rightEquipmentName.isEmpty())
+        {
+            QSharedPointer<Equipment6DoF> rightEquipment = dev.lock()->getEquipmentByName(rightEquipmentName).lock();
+            if(rightEquipment)
+            {
+                float multiplier_right = (float)ui->rightSpeedSlider->value() * 0.2f;
+                if(!rightEquipment->kinematics) rightEquipment->kinematics = new KinematicsAtan2();
+                if(rightEquipment->getProximalTarget())
+                {
+                    rightEquipment->kinematics->proximal_params = &rightEquipment->getProximal().lock()->kineParams;
+                    rightEquipment->getProximalTarget()->x += ui->rightJoyPad->x() * timeElapsed * multiplier_right;
+                    rightEquipment->getProximalTarget()->y += ui->rightJoyPad->y() * timeElapsed * multiplier_right;
+                    if(rightEquipment->getDistalTarget())
+                    {
+                        rightEquipment->kinematics->distal_params = &rightEquipment->getDistal().lock()->kineParams;
+                        rightEquipment->getDistalTarget()->x += rightPOVSpeed.x * timeElapsed * multiplier_right;
+                        rightEquipment->getDistalTarget()->y += rightPOVSpeed.y * timeElapsed * multiplier_right;
+                        rightEquipment->kinematics->calculate(*rightEquipment->getProximalTarget(), *rightEquipment->getDistalTarget());
+                        ui->rightProxCoordJoyPad->setX(rightEquipment->getProximalTarget()->x / rightEquipment->kinematics->proximal_params->max_abs_pushpull);
+                        ui->rightProxCoordJoyPad->setY(rightEquipment->getProximalTarget()->y / rightEquipment->kinematics->proximal_params->max_abs_pushpull);
+                        if(std::abs(rightEquipment->kinematics->proximal_act.pull / rightEquipment->kinematics->proximal_params->max_abs_pushpull) >= 0.9f) ui->rightProxCoordJoyPad->isWarning = true;
+                        else ui->rightProxCoordJoyPad->isWarning = false;
+                        ui->rightProxLabel->setText(rightEquipment->equipmentName() + " " + rightEquipment->getProximal().lock()->actuatorName());
+                        ui->rightProxPushLineEdit->setText(QString::asprintf("%.3f", rightEquipment->kinematics->proximal_act.pull));
+                        ui->rightProxRotLineEdit->setText(QString::asprintf("%.3f", RAD2DEG(rightEquipment->kinematics->proximal_act.rotation_angle)));
+
+                        ui->rightDistCoordJoyPad->setX(rightEquipment->getDistalTarget()->x / rightEquipment->kinematics->distal_params->max_abs_pushpull);
+                        ui->rightDistCoordJoyPad->setY(rightEquipment->getDistalTarget()->y / rightEquipment->kinematics->distal_params->max_abs_pushpull);
+                        if(std::abs(rightEquipment->kinematics->distal_act.pull / rightEquipment->kinematics->distal_params->max_abs_pushpull) >= 0.9f) ui->rightDistCoordJoyPad->isWarning = true;
+                        else ui->rightDistCoordJoyPad->isWarning = false;
+                        ui->rightDistLabel->setText(rightEquipment->equipmentName() + " " + rightEquipment->getDistal().lock()->actuatorName());
+                        ui->rightDistPushLineEdit->setText(QString::asprintf("%.3f", rightEquipment->kinematics->distal_act.pull));
+                        ui->rightDistRotLineEdit->setText(QString::asprintf("%.3f", RAD2DEG(rightEquipment->kinematics->distal_act.rotation_angle)));
+
+                        ui->rightProxXLineEdit->setText(QString::asprintf("%.3f", rightEquipment->getProximalTarget()->x));
+                        ui->rightProxYLineEdit->setText(QString::asprintf("%.3f", rightEquipment->getProximalTarget()->y));
+                        ui->rightProxLinearLineEdit->setText(QString::asprintf("%.3f", rightEquipment->getProximalTarget()->z));
+                        ui->rightDistXLineEdit->setText(QString::asprintf("%.3f", rightEquipment->getDistalTarget()->x));
+                        ui->rightDistYLineEdit->setText(QString::asprintf("%.3f", rightEquipment->getDistalTarget()->y));
+                        ui->rightDistLinearLineEdit->setText(QString::asprintf("%.3f", rightEquipment->getDistalTarget()->z));
+                        if(rightEquipment->isAllReady())
+                        {
+                            ui->rightReadyLabel->setText("READY");
+                            rightEquipment->setProximalAct(rightEquipment->kinematics->proximal_act);
+                            rightEquipment->setDistalAct(rightEquipment->kinematics->distal_act);
+                        }
+                        else ui->rightReadyLabel->setText("Not Ready");
+                    }
+                }
+            }
+            else
+            {
+                ui->rightProxCoordJoyPad->setX(0.0f);
+                ui->rightProxCoordJoyPad->setY(0.0f);
+                ui->rightProxLabel->clear();
+                ui->rightProxPushLineEdit->clear();
+                ui->rightProxRotLineEdit->clear();
+                ui->rightDistCoordJoyPad->setX(0.0f);
+                ui->rightDistCoordJoyPad->setY(0.0f);
+                ui->rightDistLabel->clear();
+                ui->rightDistPushLineEdit->clear();
+                ui->rightDistRotLineEdit->clear();
+                ui->rightProxXLineEdit->clear();
+                ui->rightProxYLineEdit->clear();
+                ui->rightProxLinearLineEdit->clear();
+                ui->rightDistXLineEdit->clear();
+                ui->rightDistYLineEdit->clear();
+                ui->rightDistLinearLineEdit->clear();
+                ui->rightReadyLabel->setText("Not Ready");
+            }
+        }
     }
 }
 
@@ -181,8 +259,8 @@ void ControllerWindow::onSelectEquipment()
     ui->actuatorSelectComboBox->clear();
     QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
     QWeakPointer<Equipment6DoF> eq(dev.lock()->getEquipmentByName(ui->equipmentSelectComboBox->currentText()));
-    if(!eq.lock()->getProximal().isNull()) ui->actuatorSelectComboBox->addItem("Proximal");
-    if(!eq.lock()->getDistal().isNull()) ui->actuatorSelectComboBox->addItem("Distal");
+    if(eq.lock()->getProximal()) ui->actuatorSelectComboBox->addItem("Proximal");
+    if(eq.lock()->getDistal()) ui->actuatorSelectComboBox->addItem("Distal");
 }
 
 void ControllerWindow::onSelectActuator()
@@ -296,47 +374,64 @@ void ControllerWindow::contextMenuEvent(QContextMenuEvent *event)
 {
     auto lambda = [this, &event](bool isLeft = true)
     {
-        QScopedPointer<QMenu> pMenu(new QMenu());
+        QScopedPointer<QMenu> pMenu(new QMenu(this));
         QScopedPointer<QAction> pActionRst(new QAction("Reset", pMenu.get()));
-        if((isLeft && leftEquipment) || (!isLeft && rightEquipment))
+        if((isLeft && !leftEquipmentName.isEmpty()) || (!isLeft && !rightEquipmentName.isEmpty()))
         {
             QAction *pAction = new QAction("Detach", pMenu.get());
             connect(pAction, &QAction::triggered, this, [this, &isLeft](){
-                if(isLeft) leftEquipment.clear();
-                else rightEquipment.clear();
+                if(isLeft) leftEquipmentName.clear();
+                else rightEquipmentName.clear();
             });
             pMenu->addAction(pAction);
         }
         connect(pActionRst.get(), &QAction::triggered, this, [this, &isLeft](){
-            if(isLeft)
+            QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
+            if(dev)
             {
-                leftProxCoord.reset();
-                leftKinematics->proximalReset();
-                leftDistCoord.reset();
-                leftKinematics->distalReset();
-            }
-            else
-            {
-                rightProxCoord.reset();
-                rightKinematics->proximalReset();
-                rightDistCoord.reset();
-                rightKinematics->distalReset();
+                if(isLeft)
+                {
+                    auto leftEquipment = dev.lock()->getEquipmentByName(leftEquipmentName).lock();
+                    if(leftEquipment)
+                    {
+                        if(leftEquipment->kinematics)
+                        {
+                            leftEquipment->kinematics->proximalReset();
+                            leftEquipment->kinematics->distalReset();
+                        }
+                        if(leftEquipment->getProximalTarget()) leftEquipment->getProximalTarget()->reset();
+                        if(leftEquipment->getDistalTarget()) leftEquipment->getDistalTarget()->reset();
+                    }
+                }
+                else
+                {
+                    auto rightEquipment = dev.lock()->getEquipmentByName(rightEquipmentName).lock();
+                    if(rightEquipment)
+                    {
+                        if(rightEquipment->kinematics)
+                        {
+                            rightEquipment->kinematics->proximalReset();
+                            rightEquipment->kinematics->distalReset();
+                        }
+                        if(rightEquipment->getProximalTarget()) rightEquipment->getProximalTarget()->reset();
+                        if(rightEquipment->getDistalTarget()) rightEquipment->getDistalTarget()->reset();
+                    }
+                }
             }
         });
         pMenu->addAction(pActionRst.get());
         pMenu->addSeparator();
         QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
-        if(!dev.isNull())
+        if(dev)
         {
-            for(auto &i : dev.lock()->equipmentNames())
+            for(const auto &i : dev.lock()->equipmentNames())
             {
                 QAction *pAction = new QAction(i, pMenu.get());
                 pAction->setCheckable(true);
-                if((isLeft && leftEquipment && leftEquipment->equipmentName() == i) ||
-                    (!isLeft && rightEquipment && rightEquipment->equipmentName() == i)) pAction->setChecked(true);
-                connect(pAction, &QAction::triggered, this, [this, dev, pAction, isLeft](){
-                    if(isLeft) leftEquipment = dev.lock()->getEquipmentByName(pAction->text()).toStrongRef();
-                    else rightEquipment = dev.lock()->getEquipmentByName(pAction->text()).toStrongRef();
+                if((isLeft && leftEquipmentName == i) || (!isLeft && rightEquipmentName == i)) pAction->setChecked(true);
+                connect(pAction, &QAction::triggered, this, [this, pAction, isLeft](){
+                    if(isLeft) leftEquipmentName = pAction->text();
+                    else rightEquipmentName = pAction->text();
                 });
                 pMenu->addAction(pAction);
             }
@@ -346,7 +441,7 @@ void ControllerWindow::contextMenuEvent(QContextMenuEvent *event)
     qDebugMessage(QString::asprintf("QContextMenuEvent fired at (%d, %d)", event->x(), event->y()));
     if(ui->rotationGroupBox->underMouse())
     {
-        QScopedPointer<QMenu> pMenu(new QMenu());
+        QScopedPointer<QMenu> pMenu(new QMenu(this));
         QScopedPointer<QAction> pAction(new QAction("Rotation Calibrate...", pMenu.get()));
         if(!this->panelActuator) pAction->setEnabled(false);
         connect(pAction.get(), &QAction::triggered, this, [this](){

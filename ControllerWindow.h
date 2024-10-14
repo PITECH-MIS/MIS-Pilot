@@ -53,16 +53,12 @@ private:
     QSharedPointer<Actuator3DoF> panelActuator;
     QString currentPath;
     QTimer* speedTimer;
-    QSharedPointer<Equipment6DoF> leftEquipment;
-    QSharedPointer<Equipment6DoF> rightEquipment;
-    KinematicsBase *leftKinematics;
-    KinematicsBase *rightKinematics;
+    // QSharedPointer<Equipment6DoF> leftEquipment;
+    // QSharedPointer<Equipment6DoF> rightEquipment;
+    QString leftEquipmentName = "";
+    QString rightEquipmentName = "";
     Vector2D leftPOVSpeed;
     Vector2D rightPOVSpeed;
-    Point3D leftProxCoord;
-    Point3D leftDistCoord;
-    Point3D rightProxCoord;
-    Point3D rightDistCoord;
 };
 
 #endif // CONTROLLERWINDOW_H
