@@ -188,7 +188,8 @@ void JoyPad::paintEvent(QPaintEvent *event)
     gradient.setCenterRadius(m_bounds.width()*0.7);
     // gradient.setColorAt(0, Qt::transparent);
     gradient.setColorAt(0, QPalette().color(QPalette::Window)); // get Windows background color
-    gradient.setColorAt(1, Qt::gray);
+    if(!isWarning) gradient.setColorAt(1, Qt::gray);
+    else gradient.setColorAt(1, Qt::red);
 
     painter.setPen(QPen(QBrush(Qt::gray), m_bounds.width()* 0.005));
     painter.setBrush(QBrush(gradient));
