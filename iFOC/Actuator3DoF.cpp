@@ -849,6 +849,7 @@ bool Actuator3DoF::parseJsonFromObject(const QJsonObject& object, QHash<QString,
     }
     // degree -> mm
     kineParams.max_abs_pushpull = motorPushPull.second.pitch * std::min(std::abs(pushpull_limit.first), std::abs(pushpull_limit.second)) / 360.0f;
+    kineParams.max_abs_linear = motorLinear.second.pitch * std::min(std::abs(linear_limit.first), std::abs(linear_limit.second)) / 360.0f;
     if(motorErrorCount > 0) return false;
     else
     {

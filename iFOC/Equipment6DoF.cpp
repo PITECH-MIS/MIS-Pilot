@@ -25,7 +25,7 @@ void Equipment6DoF::setProximalAct(actuation_t& act)
 {
     if(actuatorProximal)
     {
-        // actuatorProximal->setLinearLength(act.translation);
+        actuatorProximal->setLinearLength(act.translation);
         actuatorProximal->setPushPullLength(act.pull);
         actuatorProximal->setRotationDegAbs(RAD2DEG(act.rotation_angle));
     }
@@ -35,7 +35,7 @@ void Equipment6DoF::setDistalAct(actuation_t& act)
 {
     if(actuatorDistal)
     {
-        // actuatorDistal->setLinearLength(act.translation);
+        actuatorDistal->setLinearLength(act.translation);
         actuatorDistal->setPushPullLength(act.pull);
         actuatorDistal->setRotationDegAbs(RAD2DEG(act.rotation_angle));
     }

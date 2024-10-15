@@ -69,6 +69,11 @@ void KinematicsAtan2::calculate(Point3D& prox, Point3D& dist)
     proximal_act.rotation_angle += diff;
     lastProxAngle = at;
 
+    if(proximal_params)
+    {
+        proximal_act.translation = _constrain(prox.z, -proximal_params->max_abs_linear, proximal_params->max_abs_linear);
+    }
+
     // uint8_t proxDimension = getXYDimension(prox);
     // if(proxDimension != lastProxDimension)
     // {
@@ -91,4 +96,9 @@ void KinematicsAtan2::calculate(Point3D& prox, Point3D& dist)
     else while(diff <= -PI) diff += PI2;
     distal_act.rotation_angle += diff;
     lastDistAngle = at;
+
+    if(distal_params)
+    {
+        distal_act.translation = _constrain(dist.z, -distal_params->max_abs_linear, distal_params->max_abs_linear);
+    }
 }

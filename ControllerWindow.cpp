@@ -75,19 +75,23 @@ void ControllerWindow::updateControlCoord()
                     leftEquipment->kinematics->proximal_params = &leftEquipment->getProximal().lock()->kineParams;
                     leftEquipment->getProximalTarget()->x += ui->leftJoyPad->x() * timeElapsed * multiplier_left;
                     leftEquipment->getProximalTarget()->y += ui->leftJoyPad->y() * timeElapsed * multiplier_left;
+                    leftEquipment->getProximalTarget()->z += leftProxLinSpeed * timeElapsed * multiplier_left;
                     if(leftEquipment->getDistalTarget())
                     {
                         leftEquipment->kinematics->distal_params = &leftEquipment->getDistal().lock()->kineParams;
                         leftEquipment->getDistalTarget()->x += leftPOVSpeed.x * timeElapsed * multiplier_left;
                         leftEquipment->getDistalTarget()->y += leftPOVSpeed.y * timeElapsed * multiplier_left;
+                        leftEquipment->getDistalTarget()->z += leftDistLinSpeed * timeElapsed * multiplier_left;
                         leftEquipment->kinematics->calculate(*leftEquipment->getProximalTarget(), *leftEquipment->getDistalTarget());
+                        leftEquipment->getProximalTarget()->z = leftEquipment->kinematics->proximal_act.translation;
+                        leftEquipment->getDistalTarget()->z = leftEquipment->kinematics->distal_act.translation;
                         ui->leftProxCoordJoyPad->setX(leftEquipment->getProximalTarget()->x / leftEquipment->kinematics->proximal_params->max_abs_pushpull);
                         ui->leftProxCoordJoyPad->setY(leftEquipment->getProximalTarget()->y / leftEquipment->kinematics->proximal_params->max_abs_pushpull);
                         if(std::abs(leftEquipment->kinematics->proximal_act.pull / leftEquipment->kinematics->proximal_params->max_abs_pushpull) >= 0.9f) ui->leftProxCoordJoyPad->isWarning = true;
                         else ui->leftProxCoordJoyPad->isWarning = false;
                         ui->leftProxLabel->setText(leftEquipment->equipmentName() + " " + leftEquipment->getProximal().lock()->actuatorName());
                         ui->leftProxPushLineEdit->setText(QString::asprintf("%.3f", leftEquipment->kinematics->proximal_act.pull));
-                        ui->leftProxRotLineEdit->setText(QString::asprintf("%.3f", leftEquipment->kinematics->proximal_act.rotation_angle));
+                        ui->leftProxRotLineEdit->setText(QString::asprintf("%.3f", RAD2DEG(leftEquipment->kinematics->proximal_act.rotation_angle)));
 
                         ui->leftDistCoordJoyPad->setX(leftEquipment->getDistalTarget()->x / leftEquipment->kinematics->distal_params->max_abs_pushpull);
                         ui->leftDistCoordJoyPad->setY(leftEquipment->getDistalTarget()->y / leftEquipment->kinematics->distal_params->max_abs_pushpull);
@@ -95,7 +99,7 @@ void ControllerWindow::updateControlCoord()
                         else ui->leftDistCoordJoyPad->isWarning = false;
                         ui->leftDistLabel->setText(leftEquipment->equipmentName() + " " + leftEquipment->getDistal().lock()->actuatorName());
                         ui->leftDistPushLineEdit->setText(QString::asprintf("%.3f", leftEquipment->kinematics->distal_act.pull));
-                        ui->leftDistRotLineEdit->setText(QString::asprintf("%.3f", leftEquipment->kinematics->distal_act.rotation_angle));
+                        ui->leftDistRotLineEdit->setText(QString::asprintf("%.3f", RAD2DEG(leftEquipment->kinematics->distal_act.rotation_angle)));
 
                         ui->leftProxXLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getProximalTarget()->x));
                         ui->leftProxYLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getProximalTarget()->y));
@@ -146,12 +150,16 @@ void ControllerWindow::updateControlCoord()
                     rightEquipment->kinematics->proximal_params = &rightEquipment->getProximal().lock()->kineParams;
                     rightEquipment->getProximalTarget()->x += ui->rightJoyPad->x() * timeElapsed * multiplier_right;
                     rightEquipment->getProximalTarget()->y += ui->rightJoyPad->y() * timeElapsed * multiplier_right;
+                    rightEquipment->getProximalTarget()->z += rightProxLinSpeed * timeElapsed * multiplier_right;
                     if(rightEquipment->getDistalTarget())
                     {
                         rightEquipment->kinematics->distal_params = &rightEquipment->getDistal().lock()->kineParams;
                         rightEquipment->getDistalTarget()->x += rightPOVSpeed.x * timeElapsed * multiplier_right;
                         rightEquipment->getDistalTarget()->y += rightPOVSpeed.y * timeElapsed * multiplier_right;
+                        rightEquipment->getDistalTarget()->z += rightDistLinSpeed * timeElapsed * multiplier_right;
                         rightEquipment->kinematics->calculate(*rightEquipment->getProximalTarget(), *rightEquipment->getDistalTarget());
+                        rightEquipment->getProximalTarget()->z = rightEquipment->kinematics->proximal_act.translation;
+                        rightEquipment->getDistalTarget()->z = rightEquipment->kinematics->distal_act.translation;
                         ui->rightProxCoordJoyPad->setX(rightEquipment->getProximalTarget()->x / rightEquipment->kinematics->proximal_params->max_abs_pushpull);
                         ui->rightProxCoordJoyPad->setY(rightEquipment->getProximalTarget()->y / rightEquipment->kinematics->proximal_params->max_abs_pushpull);
                         if(std::abs(rightEquipment->kinematics->proximal_act.pull / rightEquipment->kinematics->proximal_params->max_abs_pushpull) >= 0.9f) ui->rightProxCoordJoyPad->isWarning = true;
@@ -184,26 +192,26 @@ void ControllerWindow::updateControlCoord()
                     }
                 }
             }
-            else
-            {
-                ui->rightProxCoordJoyPad->setX(0.0f);
-                ui->rightProxCoordJoyPad->setY(0.0f);
-                ui->rightProxLabel->clear();
-                ui->rightProxPushLineEdit->clear();
-                ui->rightProxRotLineEdit->clear();
-                ui->rightDistCoordJoyPad->setX(0.0f);
-                ui->rightDistCoordJoyPad->setY(0.0f);
-                ui->rightDistLabel->clear();
-                ui->rightDistPushLineEdit->clear();
-                ui->rightDistRotLineEdit->clear();
-                ui->rightProxXLineEdit->clear();
-                ui->rightProxYLineEdit->clear();
-                ui->rightProxLinearLineEdit->clear();
-                ui->rightDistXLineEdit->clear();
-                ui->rightDistYLineEdit->clear();
-                ui->rightDistLinearLineEdit->clear();
-                ui->rightReadyLabel->setText("Not Ready");
-            }
+        }
+        else
+        {
+            ui->rightProxCoordJoyPad->setX(0.0f);
+            ui->rightProxCoordJoyPad->setY(0.0f);
+            ui->rightProxLabel->clear();
+            ui->rightProxPushLineEdit->clear();
+            ui->rightProxRotLineEdit->clear();
+            ui->rightDistCoordJoyPad->setX(0.0f);
+            ui->rightDistCoordJoyPad->setY(0.0f);
+            ui->rightDistLabel->clear();
+            ui->rightDistPushLineEdit->clear();
+            ui->rightDistRotLineEdit->clear();
+            ui->rightProxXLineEdit->clear();
+            ui->rightProxYLineEdit->clear();
+            ui->rightProxLinearLineEdit->clear();
+            ui->rightDistXLineEdit->clear();
+            ui->rightDistYLineEdit->clear();
+            ui->rightDistLinearLineEdit->clear();
+            ui->rightReadyLabel->setText("Not Ready");
         }
     }
 }
@@ -333,6 +341,64 @@ void ControllerWindow::updatePanelStatus()
     }
 }
 
+void ControllerWindow::readRecordJson()
+{
+    QFile record(currentPath + "/record.json");
+    if(!record.exists() || !record.open(QIODevice::ReadOnly))
+    {
+        emit infoMessage("No alignment record found");
+        return;
+    }
+    emit infoMessage("Found alignment record: " + record.fileName());
+    QByteArray data = record.readAll();
+    QJsonParseError result;
+    QJsonDocument doc = QJsonDocument::fromJson(data, &result);
+    if(doc.isNull() || !doc.isObject() || result.error != QJsonParseError::NoError)
+    {
+        emit errorMessage("Error while parsing record JSON: " + result.errorString());
+        return;
+    }
+    recordJsonObject = doc.object();
+    for(const auto &i : recordJsonObject.keys())
+    {
+        if(recordJsonObject.value(i).isObject() && deviceHashMap.contains(i))
+        {
+            emit debugMessage("Found matched device: " + i);
+            QWeakPointer<Device> dev(deviceHashMap.value(i));
+            QJsonObject devObj = recordJsonObject.value(i).toObject();
+            for(const auto &j: devObj.keys())
+            {
+                if(devObj.value(j).isObject() && dev.lock()->equipmentNames().contains(j))
+                {
+                    emit debugMessage("Found matched equipment: " + j);
+                    auto equipment = dev.lock()->getEquipmentByName(j).lock();
+                    QJsonObject equipObj = devObj.value(j).toObject();
+                    for(const auto &k : equipObj.keys())
+                    {
+                        if(k.toLower() == "proximal")
+                        {
+                            auto prox = equipment->getProximal().lock();
+                            if(prox)
+                            {
+                                emit debugMessage("Found matched proximal actuator");
+                                QJsonObject actuaObj = equipObj.value(k).toObject();
+
+                            }
+                        }
+                        else if(k.toLower() == "distal")
+                        {
+                            emit debugMessage("Found matched distal actuator");
+                        }
+                        else emit debugMessage("Found unrecognized actuator in equipment record: " + k);
+                    }
+                }
+                else emit debugMessage("Found unrecognized equipment in device record: " + j);
+            }
+        }
+        else emit debugMessage("Found unrecognized device in root record: " + i);
+    }
+}
+
 void ControllerWindow::onSelectDescJSONPath()
 {
     QFileDialog dialog(this);
@@ -365,6 +431,7 @@ void ControllerWindow::onSelectDescJSONPath()
             emit infoMessage("Parsed Device: " + dev->deviceName() + QString::asprintf(" with %d equipment(s)", dev->availbleEquipmentCount()));
         }
         else emit errorMessage("Parsed Device: " + dev->deviceName() + " with no available equipment, deleting");
+        if(deviceHashMap.size() > 0) readRecordJson();
     });
     dialog.open();
     while(!dialog.isHidden()) QApplication::processEvents();
@@ -430,8 +497,14 @@ void ControllerWindow::contextMenuEvent(QContextMenuEvent *event)
                 pAction->setCheckable(true);
                 if((isLeft && leftEquipmentName == i) || (!isLeft && rightEquipmentName == i)) pAction->setChecked(true);
                 connect(pAction, &QAction::triggered, this, [this, pAction, isLeft](){
-                    if(isLeft) leftEquipmentName = pAction->text();
-                    else rightEquipmentName = pAction->text();
+                    if(isLeft)
+                    {
+                        if(pAction->text() != rightEquipmentName) leftEquipmentName = pAction->text();
+                    }
+                    else
+                    {
+                        if(pAction->text() != leftEquipmentName) rightEquipmentName = pAction->text();
+                    }
                 });
                 pMenu->addAction(pAction);
             }
@@ -562,6 +635,136 @@ void ControllerWindow::onAxisEvent(const QJoystickAxisEvent &event)
 
 void ControllerWindow::onButtonEvent(const QJoystickButtonEvent &event)
 {
+    auto lambdaSwitchEquipment = [this, &event](bool isLeft)
+    {
+        if(event.pressed == 0)
+        {
+            QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
+            if(dev)
+            {
+                QString selectEquipName = "";
+                switch(event.button)
+                {
+                case 27: // left
+                    for(const auto &i : dev.lock()->equipmentNames())
+                    {
+                        if(i.contains("Left"))
+                        {
+                            selectEquipName = i;
+                            break;
+                        }
+                    }
+                    break;
+                case 26: // mid
+                    for(const auto &i : dev.lock()->equipmentNames())
+                    {
+                        if(i.contains("Upper"))
+                        {
+                            selectEquipName = i;
+                            break;
+                        }
+                    }
+                    break;
+                case 28: // right
+                    for(const auto &i : dev.lock()->equipmentNames())
+                    {
+                        if(i.contains("Right"))
+                        {
+                            selectEquipName = i;
+                            break;
+                        }
+                    }
+                    break;
+                default: break;
+                }
+                if(dev.lock()->equipmentNames().contains(selectEquipName))
+                {
+                    if(isLeft)
+                    {
+                        if(selectEquipName != rightEquipmentName)
+                        {
+                            if(selectEquipName == leftEquipmentName) leftEquipmentName.clear();
+                            else leftEquipmentName = selectEquipName;
+                        }
+                    }
+                    else
+                    {
+                        if(selectEquipName != leftEquipmentName)
+                        {
+                            if(selectEquipName == rightEquipmentName) rightEquipmentName.clear();
+                            else rightEquipmentName = selectEquipName;
+                        }
+                    }
+                }
+            }
+        }
+    };
+    auto lambdaLinearMotion = [this, &event](bool isLeft)
+    {
+        // button = 20, proximal forward
+        // button = 21, proximal backward 100%
+        // button = 0, proximal backward 100%
+        // button = 1, proximal backward 125%
+        // button = 10, distal forward
+        // button = 12, distal backward
+        if(event.button == 20 || event.button == 21 || event.button == 0 || event.button == 1 || event.button == 10 || event.button == 12)
+        {
+            if(isLeft)
+            {
+                if(event.button == 20 || event.button == 21 || event.button == 0 || event.button == 1)
+                {
+                    if(event.pressed == 0) leftProxLinSpeed = 0.0f;
+                    else
+                    {
+                        if(event.button == 20) leftProxLinSpeed = desiredLinSpeed;
+                        else if(event.button == 0 || event.button == 21) leftProxLinSpeed = -desiredLinSpeed;
+                        else leftProxLinSpeed = -desiredLinSpeed * 1.25f;
+                    }
+                }
+                else
+                {
+                    if(event.pressed == 0) leftDistLinSpeed = 0.0f;
+                    else
+                    {
+                        if(event.button == 10) leftDistLinSpeed = desiredLinSpeed;
+                        else leftDistLinSpeed = -desiredLinSpeed;
+                    }
+                }
+            }
+            else
+            {
+                if(event.button == 20 || event.button == 0 || event.button == 1)
+                {
+                    if(event.pressed == 0) rightProxLinSpeed = 0.0f;
+                    else
+                    {
+                        if(event.button == 20) rightProxLinSpeed = desiredLinSpeed;
+                        else if(event.button == 0 || event.button == 21) rightProxLinSpeed = -desiredLinSpeed;
+                        else rightProxLinSpeed = -desiredLinSpeed * 1.25f;
+                    }
+                }
+                else
+                {
+                    if(event.pressed == 0) rightDistLinSpeed = 0.0f;
+                    else
+                    {
+                        if(event.button == 10) rightDistLinSpeed = desiredLinSpeed;
+                        else rightDistLinSpeed = -desiredLinSpeed;
+                    }
+                }
+            }
+        }
+    };
+    if(ui->leftJoyComboBox->currentText() == event.joystick->name)
+    {
+        lambdaSwitchEquipment(true);
+        lambdaLinearMotion(true);
+    }
+    else if(ui->rightJoyComboBox->currentText() == event.joystick->name)
+    {
+        lambdaSwitchEquipment(false);
+        lambdaLinearMotion(false);
+    }
     emit infoMessage(event.joystick->name + " (Button): " + QString::asprintf("button=%d, pressed=%d", event.button, event.pressed));
 }
 

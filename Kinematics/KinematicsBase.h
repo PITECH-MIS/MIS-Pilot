@@ -14,6 +14,7 @@ public:
     float id = 0.0f;
     float length = 0.0f;
     float max_abs_pushpull = 0.0f; // mm
+    float max_abs_linear = 0.0f;   // mm
 }kinematics_params_t;
 
 typedef class actuation_t

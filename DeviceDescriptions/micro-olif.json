@@ -14,20 +14,20 @@
                 "Rotation": {
                     "motor_sn": 4185641871,
                     "limiter_idx": 1,
-                    "limiter_offset": 155.0,
+                    "limiter_offset": 40.0,
                     "current_limit": 0.8
                 },
                 "PushPull": {
                     "motor_sn": 4185641872,
                     "limiter_idx": 2,
                     "current_limit": 0.8,
-                    "limiter_offset": -432.0,
+                    "limiter_offset": -480.0,
                     "pitch": 0.75
                 },
                 "Linear": {
                     "motor_sn": 4225469057,
                     "limiter_idx": 2,
-                    "current_limit": 0.5,
+                    "current_limit": 0.8,
                     "pitch": 0.75
                 }
             },
@@ -43,14 +43,14 @@
                 "Rotation": {
                     "motor_sn": 4279984531,
                     "limiter_idx": 1,
-                    "limiter_offset": 60.0,
+                    "limiter_offset": 90.0,
                     "current_limit": 0.8
                 },
                 "PushPull": {
                     "motor_sn": 4279984532,
                     "limiter_idx": 2,
                     "current_limit": 0.8,
-                    "limiter_offset": 0.0,
+                    "limiter_offset": -144.0,
                     "pitch": 0.75
                 },
                 "Linear": {

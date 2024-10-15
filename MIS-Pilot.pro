@@ -2,6 +2,8 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+QT += sql
+
 CONFIG += c++20
 
 soem += $$PWD/SOEM
@@ -31,6 +33,7 @@ LIBS += \
 SOURCES += \
     $$PWD/JoypadWidget/joypad.cpp \
     ControllerWindow.cpp \
+    DataLogger.cpp \
     ECATWrapper.cpp \
     Kinematics/KinematicsAtan2.cpp \
     MainWindow.cpp \
@@ -47,6 +50,7 @@ SOURCES += \
 HEADERS += \
     $$PWD/JoypadWidget/joypad.h \
     ControllerWindow.h \
+    DataLogger.h \
     ECATWrapper.h \
     Eigen/AccelerateSupport \
     Eigen/Cholesky \

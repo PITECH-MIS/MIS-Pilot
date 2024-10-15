@@ -194,7 +194,7 @@ void MainWindow::onTextBrowserCustomContextMenu(const QPoint &pos)
 
 void MainWindow::onErrorMsg(QString s)
 {
-    tray->errorMessage(s);
+    // tray->errorMessage(s);
     QDateTime currentDt = QDateTime::currentDateTime();
     QString result = "[" + currentDt.toString("yyyy-MM-dd hh:mm:ss.zzz") + "] [ERROR] " + s;
     qDebug() << result;

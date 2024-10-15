@@ -42,6 +42,8 @@ signals:
     void errorMessage(QString msg);
     void onCloseWindow();
 private:
+    void readRecordJson();  // for aligning-record
+    void writeRecordJson();
     void updatePanelStatus();
     void updateControlCoord();
     void contextMenuEvent(QContextMenuEvent *event) final;
@@ -57,6 +59,12 @@ private:
     // QSharedPointer<Equipment6DoF> rightEquipment;
     QString leftEquipmentName = "";
     QString rightEquipmentName = "";
+    QJsonObject recordJsonObject;
+    const float desiredLinSpeed = 2.0f;
+    float leftProxLinSpeed = 0.0f;
+    float leftDistLinSpeed = 0.0f;
+    float rightProxLinSpeed = 0.0f;
+    float rightDistLinSpeed = 0.0f;
     Vector2D leftPOVSpeed;
     Vector2D rightPOVSpeed;
 };
