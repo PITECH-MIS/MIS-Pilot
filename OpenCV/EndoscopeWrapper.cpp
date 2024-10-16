@@ -11,8 +11,32 @@ EndoscopeWrapper::EndoscopeWrapper(QLabel *label) :
 void EndoscopeWrapper::init()
 {
     Mat image = imread("C:\\Users\\vip99\\Documents\\Coding\\segment-anything-2-main\\notebooks\\videos\\bedroom\\00000.jpg", 1);
-    auto qImage = cvMatToQImage(image);
+    auto qImage = cvMatToQImage(cutInCircleMat(image, std::min(view->size().height(), view->size().width())));
     view->setPixmap(QPixmap::fromImage(qImage));
+}
+
+cv::Mat EndoscopeWrapper::cutInCircleMat(const cv::Mat &src, int d)
+{
+    if(d <= 0 || d > std::min(src.cols, src.rows)) d = std::min(src.cols, src.rows);
+    int radius = d / 2;
+    Point2f center((src.cols - 1) * 0.5f, (src.rows - 1) * 0.5f);
+    Mat mask(src.size(), CV_8UC1, Scalar::all(0));
+    circle(mask, center, radius, Scalar::all(255), -1);
+    Rect rRoi(center.x - radius, center.y - radius, d, d);
+    Mat masked;
+    if(src.channels() == 3) cvtColor(src, masked, cv::COLOR_BGR2BGRA);
+    else masked = src.clone();
+    // #1
+    // std::vector<cv::Mat> channels;
+    // split(masked, channels);
+    // channels[3].setTo(0, mask == 0);
+    // merge(channels, masked);
+    // #2
+    for(auto y = 0; y < src.rows; ++y)
+    {
+        for(auto x = 0; x < src.cols; ++x) if(mask.at<uchar>(y, x) == 0) masked.at<cv::Vec4b>(y, x)[3] = 0;
+    }
+    return masked(rRoi);
 }
 
 QImage EndoscopeWrapper::cvMatToQImage(const cv::Mat &src)

@@ -16,6 +16,7 @@ public:
     void init();
 private:
     QImage cvMatToQImage(const cv::Mat &src);
+    cv::Mat cutInCircleMat(const cv::Mat &src, int d = -1);
     QLabel *view;
 };
 

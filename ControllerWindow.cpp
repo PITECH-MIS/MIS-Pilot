@@ -49,7 +49,9 @@ ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice
     });
     speedTimer->start(100);
     auto x = new EndoscopeWrapper(ui->cameraView1);
+    auto y = new EndoscopeWrapper(ui->cameraView2);
     x->init();
+    y->init();
 }
 
 void ControllerWindow::updateControlCoord()
