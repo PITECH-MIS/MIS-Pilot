@@ -54,20 +54,23 @@ MainWindow::~MainWindow()
 
 void MainWindow::onEnableController()
 {
-    QJoysticks* QJoy = QJoysticks::getInstance();
-    QJoy->updateInterfaces();
-    for(int i = 0; i < QJoy->deviceNames().size(); i++) joysticks.insert(QJoy->deviceNames().at(i), QJoy->inputDevices().at(i));
-    onDebugMsg(QString::asprintf("Detected %d joystick(s): ", joysticks.size()));
-    for(auto i = joysticks.constKeyValueBegin(); i != joysticks.constKeyValueEnd(); ++i) onDebugMsg(i->first);
-    controllerWindow = new ControllerWindow(wrapper, joysticks, this);
-    connect(controllerWindow, &ControllerWindow::errorMessage, this, &MainWindow::onErrorMsg);
-    connect(controllerWindow, &ControllerWindow::infoMessage, this, &MainWindow::onInfoMsg);
-    connect(controllerWindow, &ControllerWindow::debugMessage, this, &MainWindow::onDebugMsg);
-    connect(controllerWindow, &ControllerWindow::onCloseWindow, this, [this]() {
-        if(controllerWindow) controllerWindow = nullptr;
-    });
-    controllerWindow->setAttribute(Qt::WA_DeleteOnClose);
-    controllerWindow->showWindow();
+    if(!controllerWindow)
+    {
+        QJoysticks* QJoy = QJoysticks::getInstance();
+        QJoy->updateInterfaces();
+        for(int i = 0; i < QJoy->deviceNames().size(); i++) joysticks.insert(QJoy->deviceNames().at(i), QJoy->inputDevices().at(i));
+        onDebugMsg(QString::asprintf("Detected %d joystick(s): ", joysticks.size()));
+        for(auto i = joysticks.constKeyValueBegin(); i != joysticks.constKeyValueEnd(); ++i) onDebugMsg(i->first);
+        controllerWindow = new ControllerWindow(wrapper, joysticks, this);
+        connect(controllerWindow, &ControllerWindow::errorMessage, this, &MainWindow::onErrorMsg);
+        connect(controllerWindow, &ControllerWindow::infoMessage, this, &MainWindow::onInfoMsg);
+        connect(controllerWindow, &ControllerWindow::debugMessage, this, &MainWindow::onDebugMsg);
+        connect(controllerWindow, &ControllerWindow::onCloseWindow, this, [this]() {
+            if(controllerWindow) controllerWindow = nullptr;
+        });
+        controllerWindow->setAttribute(Qt::WA_DeleteOnClose);
+        controllerWindow->showWindow();
+    }
 }
 
 void MainWindow::onSelectXMLPath()
@@ -190,6 +193,11 @@ void MainWindow::onTextBrowserCustomContextMenu(const QPoint &pos)
     connect(pAction.get(), &QAction::triggered, ui->textBrowser, &QTextBrowser::clear);
     pMenu->addAction(pAction.get());
     pMenu->exec(ui->textBrowser->mapToGlobal(pos));
+}
+
+void MainWindow::showEvent(QShowEvent *e)
+{
+    centerOnCursorScreen(this);
 }
 
 void MainWindow::onErrorMsg(QString s)

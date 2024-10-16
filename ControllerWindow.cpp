@@ -796,6 +796,11 @@ void ControllerWindow::onEnableMotorDebugger()
     debuggerWindow->showWindow();
 }
 
+void ControllerWindow::showEvent(QShowEvent *event)
+{
+    centerOnCursorScreen(this);
+}
+
 ControllerWindow::~ControllerWindow()
 {
     emit debugMessage("ControllerWindow destroyed");

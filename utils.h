@@ -8,6 +8,7 @@
 
 bool isUsableEth(QString& origin);
 void qDebugMessage(QString msg);
+void centerOnCursorScreen(QWidget* widget);
 template <class Function, class ...Args>
 void spawnTask(Function &&f, Args &&...args)
 {
@@ -15,5 +16,4 @@ void spawnTask(Function &&f, Args &&...args)
                                              std::forward<Args>(args)...);
     while(!future.isFinished()) QApplication::processEvents(QEventLoop::AllEvents, 100);
 }
-
 #endif // UTILS_H

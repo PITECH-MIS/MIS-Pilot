@@ -43,6 +43,7 @@ private slots:
     void onTextBrowserCustomContextMenu(const QPoint &pos);
 private:
     void closeEvent(QCloseEvent *e);
+    void showEvent(QShowEvent *e);
     void ParseStateViewModel();
     void AppendDescToItem(QString desc, int row, QStandardItem *parent);
     TrayIcon *tray;

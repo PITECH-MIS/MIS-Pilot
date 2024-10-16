@@ -47,6 +47,7 @@ private:
     void updatePanelStatus();
     void updateControlCoord();
     void contextMenuEvent(QContextMenuEvent *event) final;
+    void showEvent(QShowEvent *event);
     Ui::ControllerWindow *ui;
     MotorDebugger* debuggerWindow = nullptr;
     QHash<QString, QSharedPointer<Device>> deviceHashMap;
@@ -55,8 +56,6 @@ private:
     QSharedPointer<Actuator3DoF> panelActuator;
     QString currentPath;
     QTimer* speedTimer;
-    // QSharedPointer<Equipment6DoF> leftEquipment;
-    // QSharedPointer<Equipment6DoF> rightEquipment;
     QString leftEquipmentName = "";
     QString rightEquipmentName = "";
     QJsonObject recordJsonObject;
