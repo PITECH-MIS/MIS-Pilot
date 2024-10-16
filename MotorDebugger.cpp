@@ -32,13 +32,13 @@ void MotorDebugger::showWindow()
     connect(ui->motorSNComboBox, &QComboBox::currentIndexChanged, this, &MotorDebugger::onSelectMotorSN);
     if(snList.size() > 0) onSelectMotorSN();
     this->setWindowFlag(Qt::WindowStaysOnTopHint);
+    this->show();
     if(this->parentWidget())
     {
         auto parentX = this->parentWidget()->x();
         auto parentY = this->parentWidget()->y();
         this->move(parentX + this->parentWidget()->width(), parentY);
     }
-    this->show();
 }
 
 void MotorDebugger::onSelectMotorSN()
