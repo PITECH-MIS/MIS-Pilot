@@ -48,6 +48,8 @@ ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice
         if(panelActuator) panelActuator->beginPostInstallHoming();
     });
     speedTimer->start(100);
+    auto x = new EndoscopeWrapper(ui->cameraView1);
+    x->init();
 }
 
 void ControllerWindow::updateControlCoord()

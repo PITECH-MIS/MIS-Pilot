@@ -11,6 +11,7 @@
 #include "ECATWrapper.h"
 #include "iFOC/Motor.h"
 #include "iFOC/Device.h"
+#include "OpenCV/EndoscopeWrapper.h"
 
 namespace Ui {
 class ControllerWindow;

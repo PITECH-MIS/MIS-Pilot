@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "opencv2/highgui.hpp"
 #include "ui_MainWindow.h"
 #include <QMessageBox>
 #include <QFontMetrics>
