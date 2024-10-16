@@ -9,6 +9,7 @@ CONFIG += c++20
 soem += $$PWD/SOEM
 qjoysticks += $$PWD/QJoysticks
 xcore += $$PWD/RobotArm/xCore/
+opencv += $$PWD/OpenCV
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -20,6 +21,7 @@ INCLUDEPATH += \
     $${soem}/wpcap/Include \
     $${soem}/wpcap/Include/pcap \
     $${qjoysticks}/ \
+    $${opencv}/build_win64/install/include \
 
 LIBS += \
     $${soem}/lib/soem.lib \
@@ -29,6 +31,8 @@ LIBS += \
     $${xcore}/lib/win64/xCoreSDK.lib \
     $${xcore}/lib/win64/xCoreSDK_static.lib \
     # $${xcore}/lib/win64/xCoreSDK.dll \
+    $${opencv}/build_win64/lib/Debug/opencv_*.lib \
+    $${opencv}/build_win64/install/x64/vc17/lib/opencv_*.lib \
 
 SOURCES += \
     $$PWD/JoypadWidget/joypad.cpp \
@@ -38,6 +42,7 @@ SOURCES += \
     Kinematics/KinematicsAtan2.cpp \
     MainWindow.cpp \
     MotorDebugger.cpp \
+    OpenCV/EndoscopeWrapper.cpp \
     RobotArm/RobotArmWrapper.cpp \
     TrayIcon.cpp \
     iFOC/Actuator3DoF.cpp \
@@ -432,6 +437,7 @@ HEADERS += \
     Kinematics/KinematicsBase.h \
     MainWindow.h \
     MotorDebugger.h \
+    OpenCV/EndoscopeWrapper.h \
     RobotArm/RobotArmWrapper.h \
     RobotArm/xCore/Inc/base.h \
     RobotArm/xCore/Inc/data_types.h \
