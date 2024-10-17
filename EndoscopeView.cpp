@@ -59,11 +59,18 @@ void EndoscopeView::onConnectToCamera()
     }
     else
     {
-        captureTimer->stop();
-        worker->closeCamera();
-        ui->cameraView->clear();
-        ui->connectButton->setText("Connect");
-        ui->groupBox->setTitle("Camera View");
+        auto lambda = [this]()
+        {
+            ui->cameraView->clear();
+            captureTimer->stop();
+            worker->closeCamera();
+            ui->connectButton->setText("Connect");
+            ui->groupBox->setTitle("Camera View");
+            while(captureTimer->isActive());
+            QThread::msleep(10);
+            ui->cameraView->clear();
+        };
+        spawnTask(lambda);
     }
 }
 
