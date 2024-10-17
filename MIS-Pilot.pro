@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -39,10 +39,12 @@ SOURCES += \
     ControllerWindow.cpp \
     DataLogger.cpp \
     ECATWrapper.cpp \
+    EndoscopeView.cpp \
     Kinematics/KinematicsAtan2.cpp \
     MainWindow.cpp \
     MotorDebugger.cpp \
-    OpenCV/EndoscopeWrapper.cpp \
+    OpenCV/BridgeUtils.cpp \
+    OpenCV/CaptureWorker.cpp \
     RobotArm/RobotArmWrapper.cpp \
     TrayIcon.cpp \
     iFOC/Actuator3DoF.cpp \
@@ -433,11 +435,13 @@ HEADERS += \
     Eigen/src/plugins/MatrixCwiseBinaryOps.h \
     Eigen/src/plugins/MatrixCwiseUnaryOps.h \
     Eigen/src/plugins/ReshapedMethods.h \
+    EndoscopeView.h \
     Kinematics/KinematicsAtan2.h \
     Kinematics/KinematicsBase.h \
     MainWindow.h \
     MotorDebugger.h \
-    OpenCV/EndoscopeWrapper.h \
+    OpenCV/BridgeUtils.h \
+    OpenCV/CaptureWorker.h \
     RobotArm/RobotArmWrapper.h \
     RobotArm/xCore/Inc/base.h \
     RobotArm/xCore/Inc/data_types.h \
@@ -457,6 +461,7 @@ HEADERS += \
 
 FORMS += \
     ControllerWindow.ui \
+    EndoscopeView.ui \
     MainWindow.ui \
     MotorDebugger.ui
 

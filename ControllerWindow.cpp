@@ -48,10 +48,6 @@ ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice
         if(panelActuator) panelActuator->beginPostInstallHoming();
     });
     speedTimer->start(100);
-    auto x = new EndoscopeWrapper(ui->cameraView1);
-    auto y = new EndoscopeWrapper(ui->cameraView2);
-    x->init();
-    y->init();
 }
 
 void ControllerWindow::updateControlCoord()
@@ -527,8 +523,8 @@ void ControllerWindow::contextMenuEvent(QContextMenuEvent *event)
         pMenu->addAction(pAction.get());
         pMenu->exec(event->globalPos());
     }
-    else if(ui->leftJoyPad->underMouse()) lambda(true);
-    else if(ui->rightJoyPad->underMouse()) lambda(false);
+    else if(ui->leftJoyPad->underMouse() || ui->leftAuxJoyPad->underMouse()) lambda(true);
+    else if(ui->rightJoyPad->underMouse() || ui->rightAuxJoyPad->underMouse()) lambda(false);
 }
 
 void mapPOVToSpeed(Vector2D& speed, int angle)
