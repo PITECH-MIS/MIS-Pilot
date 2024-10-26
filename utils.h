@@ -7,8 +7,13 @@
 #include <QApplication>
 
 bool isUsableEth(QString& origin);
+
 void qDebugMessage(QString msg);
+
 void centerOnCursorScreen(QWidget* widget);
+
+QString filterASCIIVisibleChar(char* origin, size_t max_len);
+
 template <class Function, class ...Args>
 void spawnTask(Function &&f, Args &&...args)
 {

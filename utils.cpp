@@ -4,6 +4,7 @@
 #include <QScreen>
 #include <QCursor>
 #include <QWidget>
+#include <QRegularExpression>
 
 QStringList filterEthWords = {"Miniport", "Virtual", "PPPoE", "Wi-Fi", "WiFi", "Bluetooth", "Tunnel", "VPN", "TEST", "loop"};
 
@@ -21,6 +22,13 @@ void qDebugMessage(QString msg)
     QDateTime currentDt = QDateTime::currentDateTime();
     QString result = "[" + currentDt.toString("yyyy-MM-dd hh:mm:ss.zzz") + "] [DEBUG] " + msg;
     qDebug() << result;
+}
+
+QString filterASCIIVisibleChar(char* origin, size_t max_len)
+{
+    QString result = QString::fromLocal8Bit(origin, strnlen(origin, max_len));
+    result.remove(QRegularExpression("[^\x1F-\x7F]+"));
+    return result;
 }
 
 void centerOnCursorScreen(QWidget* widget)
