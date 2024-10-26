@@ -29,7 +29,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    ECATWrapper wrapper;
+    ECATWrapper* wrapper;
 private slots:
     void onClickConnect(void);
     void updateEthList(void);

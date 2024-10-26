@@ -6,7 +6,7 @@
 #include <QElapsedTimer>
 #include "Kinematics/KinematicsAtan2.h"
 
-ControllerWindow::ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice*>& j, QWidget *parent)
+ControllerWindow::ControllerWindow(ECATWrapper* w, QMap<QString, QJoystickDevice*>& j, QWidget *parent)
     : QMainWindow(parent), wrapper(w), joysticks(j)
     , ui(new Ui::ControllerWindow)
 {
@@ -237,14 +237,14 @@ void ControllerWindow::showWindow()
     }
     motorSNSet.clear();
     motorHashMap.clear();
-    motorSNSet = getMotorSN(wrapper.input_vector);
+    motorSNSet = getMotorSN(wrapper->input_vector);
     emit infoMessage(QString::asprintf("Find %d motor(s) on EtherCAT Bus", motorSNSet.size()));
     for(const auto &i : std::as_const(motorSNSet))
     {
         // emit debugMessage("Find motor SN: " + i);
         uint8_t limiter_index = 0;
         QSharedPointer<Motor> motor = QSharedPointer<Motor>(new Motor(i.toUInt(), limiter_index));
-        if(motor->findMotorInVector(wrapper.input_vector, wrapper.output_vector))
+        if(motor->findMotorInVector(wrapper->input_vector, wrapper->output_vector))
         {
             motor->resetState();
             motorHashMap.insert(i, motor);

@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     currentPath = QCoreApplication::applicationDirPath();
+    wrapper = ECATWrapper::getInstance();
     ui->setupUi(this);
     this->setWhatsThis("MIS-Pilot");
     QIcon icon = QIcon(":/image/logo.png");
@@ -37,10 +38,10 @@ MainWindow::MainWindow(QWidget *parent)
     QJoysticks* QJoy = QJoysticks::getInstance();
     QJoy->updateInterfaces();
     connect(ui->con_pushButton, &QPushButton::clicked, this, &MainWindow::onClickConnect);
-    connect(&wrapper, &ECATWrapper::errorMessage, this, &MainWindow::onErrorMsg, Qt::QueuedConnection);
-    connect(&wrapper, &ECATWrapper::infoMessage, this, &MainWindow::onInfoMsg, Qt::QueuedConnection);
-    connect(&wrapper, &ECATWrapper::debugMessage, this, &MainWindow::onDebugMsg, Qt::QueuedConnection);
-    connect(&wrapper, &ECATWrapper::onStateChanged, this, &MainWindow::onECATStateChanged, Qt::QueuedConnection);
+    connect(wrapper, &ECATWrapper::errorMessage, this, &MainWindow::onErrorMsg, Qt::QueuedConnection);
+    connect(wrapper, &ECATWrapper::infoMessage, this, &MainWindow::onInfoMsg, Qt::QueuedConnection);
+    connect(wrapper, &ECATWrapper::debugMessage, this, &MainWindow::onDebugMsg, Qt::QueuedConnection);
+    connect(wrapper, &ECATWrapper::onStateChanged, this, &MainWindow::onECATStateChanged, Qt::QueuedConnection);
     connect(ui->selectConfigPathButton, &QPushButton::clicked, this, &MainWindow::onSelectXMLPath);
     connect(ui->parseConfigXmlButton, &QPushButton::clicked, this, &MainWindow::onParseXML);
     connect(ui->enterControllerButton, &QPushButton::clicked, this, &MainWindow::onEnableController);
@@ -96,7 +97,7 @@ void MainWindow::onParseXML()
     QFile xmlFile(configXMLPath);
     if(xmlFile.exists())
     {
-        wrapper.parseSlaveXML(xmlFile);
+        wrapper->parseSlaveXML(xmlFile);
     }
 }
 
@@ -104,12 +105,12 @@ void MainWindow::closeEvent(QCloseEvent *e)
 {
     QMessageBox msgBox(this);
     msgBox.setText("Warning");
-    msgBox.setText("State = " + wrapper.getExpectedStateName() + ", do you want to exit now?");
+    msgBox.setText("State = " + wrapper->getExpectedStateName() + ", do you want to exit now?");
     msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Cancel);
     if(msgBox.exec() == QMessageBox::Ok)
     {
-        if(wrapper.getExpectedState() > EC_STATE_INIT) wrapper.closeConnection();
+        if(wrapper->getExpectedState() > EC_STATE_INIT) wrapper->closeConnection();
         e->accept();
     }
     else e->ignore();
@@ -117,21 +118,22 @@ void MainWindow::closeEvent(QCloseEvent *e)
 
 void MainWindow::updateEthList()
 {
-    if(wrapper.getEthInfo(ethInfo) > 0) ui->eth_comboBox->addItems(ethInfo.keys());
+    ui->eth_comboBox->clear();
+    if(wrapper->getEthInfo(ethInfo) > 0) ui->eth_comboBox->addItems(ethInfo.keys());
 }
 
 void MainWindow::onClickConnect(void)
 {
-    if(wrapper.getExpectedState() != EC_STATE_OPERATIONAL) wrapper.initEth(ethInfo[ui->eth_comboBox->currentText()]);
-    else wrapper.closeConnection();
+    if(wrapper->getExpectedState() != EC_STATE_OPERATIONAL) wrapper->initEth(ethInfo[ui->eth_comboBox->currentText()]);
+    else wrapper->closeConnection();
     // robotArm = new RobotArmWrapper;
     // robotArm->init();
 }
 
 void MainWindow::onECATStateChanged()
 {
-    uint16_t current_state = wrapper.getExpectedState();
-    if(controllerWindow && current_state == EC_STATE_OPERATIONAL && (wrapper.getExpectedWKC() == wrapper.getRealWKC())) controllerWindow->controlLoop();
+    uint16_t current_state = wrapper->getExpectedState();
+    if(controllerWindow && current_state == EC_STATE_OPERATIONAL && (wrapper->getExpectedWKC() == wrapper->getRealWKC())) controllerWindow->controlLoop();
     static uint8_t timer_100ms = 0;
     if(timer_100ms++ >= 99 || current_state != EC_STATE_OPERATIONAL)
     {
@@ -150,9 +152,9 @@ void MainWindow::onECATStateChanged()
             ui->enterControllerButton->setEnabled(false);
 #endif
         }
-        statusBarStateLabel->setText("State: " + wrapper.getExpectedStateName() + " ");
-        statusBarWkcLabel->setText(QString::asprintf("WKC: %d/%d ", wrapper.getRealWKC(), wrapper.getExpectedWKC()));
-        statusBarSlaveCountLabel->setText(QString::asprintf("Slave(s): %d ", wrapper.getSlaveCount()));
+        statusBarStateLabel->setText("State: " + wrapper->getExpectedStateName() + " ");
+        statusBarWkcLabel->setText(QString::asprintf("WKC: %d/%d ", wrapper->getRealWKC(), wrapper->getExpectedWKC()));
+        statusBarSlaveCountLabel->setText(QString::asprintf("Slave(s): %d ", wrapper->getSlaveCount()));
         ParseStateViewModel();
         timer_100ms = 0;
     }
@@ -160,18 +162,20 @@ void MainWindow::onECATStateChanged()
 
 void MainWindow::ParseStateViewModel()
 {
-    bool newItem = wrapper.input_vector.size() > stateViewModel->rowCount();
-    for(int i = 0; i < wrapper.input_vector.size(); i++)
+    bool newItem = wrapper->input_vector.size() > stateViewModel->rowCount();
+    for(int i = 0; i < wrapper->input_vector.size(); i++)
     {
         QStandardItem *item;
         if(stateViewModel->rowCount() <= i) item = new QStandardItem;
         else item = stateViewModel->item(i);
         item->setColumnCount(2);
         item->setText(QString::asprintf("Slave #%d", i + 1));
-        AppendDescToItem(QString::asprintf("MotorCount: %d", wrapper.input_vector.at(i)->Interface_State.MotorCount), 0, item);
-        AppendDescToItem(QString::asprintf("MCUTemp: %d", wrapper.input_vector.at(i)->Interface_State.MCUTemp), 1, item);
-        AppendDescToItem(QString::asprintf("VBus: %d", wrapper.input_vector.at(i)->Interface_State.Vbus), 2, item);
-        AppendDescToItem(QString::asprintf("FPS: %d", wrapper.input_vector.at(i)->Interface_State.FramesPerSec), 3, item);
+        AppendDescToItem(QString::asprintf("MotorCount: %d", wrapper->input_vector.at(i)->Interface_State.MotorCount), 0, item);
+        AppendDescToItem(QString::asprintf("MCUTemp: %d", wrapper->input_vector.at(i)->Interface_State.MCUTemp), 1, item);
+        AppendDescToItem(QString::asprintf("VBus: %d", wrapper->input_vector.at(i)->Interface_State.Vbus), 2, item);
+        AppendDescToItem(QString::asprintf("FPS: %d", wrapper->input_vector.at(i)->Interface_State.FramesPerSec), 3, item);
+        AppendDescToItem(QString::asprintf("Uptime: %d", wrapper->input_vector.at(i)->Interface_State.Uptime), 4, item);
+        AppendDescToItem(QString::asprintf("SN: %llu", wrapper->serial_number), 5, item);
         stateViewModel->setItem(i, item);
     }
     if(newItem) ui->stateTreeView->expandAll();

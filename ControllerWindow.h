@@ -21,9 +21,9 @@ class ControllerWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit ControllerWindow(ECATWrapper& w, QMap<QString, QJoystickDevice*>& j, QWidget *parent = nullptr);
+    explicit ControllerWindow(ECATWrapper* w, QMap<QString, QJoystickDevice*>& j, QWidget *parent = nullptr);
     ~ControllerWindow();
-    ECATWrapper& wrapper;
+    ECATWrapper* wrapper;
     QMap<QString, QJoystickDevice*>& joysticks;
 public slots:
     void showWindow();

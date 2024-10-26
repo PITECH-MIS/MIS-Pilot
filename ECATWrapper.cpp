@@ -9,6 +9,14 @@ ECATWrapper::ECATWrapper()
 ECATWrapper::~ECATWrapper()
 {
     qDebugMessage("ECATWrapper destroyed");
+    this->quit();
+    this->wait();
+}
+
+ECATWrapper *ECATWrapper::getInstance()
+{
+    static ECATWrapper wrapper;
+    return &wrapper;
 }
 
 void ECATWrapper::pdoWorkerLoop()
@@ -22,6 +30,22 @@ void ECATWrapper::initEth(QString& name)
 {
     ethName = name;
     start(QThread::TimeCriticalPriority);
+}
+
+int ECATWrapper::PO2SOconfigCb(uint16_t slave)
+{
+    ECATWrapper* inst = ECATWrapper::getInstance();
+    emit inst->infoMessage(QString::asprintf("Slave #%d PO2SOconfig() called", slave));
+    int dummy = sizeof(uint32_t);
+    ec_SDOread(slave, 0x1018, 0x04, false, &dummy, &inst->serial_number, EC_TIMEOUTRXM);
+    emit inst->debugMessage(QString::asprintf("Slave #%d SN: %llu", slave, inst->serial_number));
+    dummy = 16;
+    char temp[16];
+    ec_SDOread(slave, 0x1008, 0x00, false, &dummy, temp, EC_TIMEOUTRXM);
+    inst->device_name = filterASCIIVisibleChar(temp, sizeof(temp));
+    // emit inst->debugMessage(QString::asprintf("%s", temp));
+    emit inst->debugMessage(inst->device_name);
+    return 1;
 }
 
 void ECATWrapper::run()
@@ -51,9 +75,11 @@ void ECATWrapper::run()
         {
             emit infoMessage(QString::asprintf("Found %d EtherCAT slave(s)", ec_slavecount));
             emit debugMessage("Mapping slaves I/O");
+            for(int i = 1; i <= ec_slavecount; i++) ec_slave[i].PO2SOconfig = PO2SOconfigCb;
             int used_mem = ec_config_map(&IOMap);
             emit debugMessage(QString::asprintf("IOMap used/total: %d/%d (%.0f%%)", used_mem, sizeof(IOMap), 100.0f * (float)(used_mem) / (float)(sizeof(IOMap))));
             ec_configdc();
+
             emit infoMessage("Slaves I/O mapped, changing state to SAFE_OP");
             expectedState = EC_STATE_SAFE_OP;
             ec_statecheck(0, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 4);

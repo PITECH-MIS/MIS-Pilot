@@ -30,8 +30,14 @@ public:
     uint16_t getExpectedState();
     QString getExpectedStateName();
     int getSlaveCount();
+    uint32_t serial_number = 0;
+    QString device_name;
     QVector<slave_inputs_t*> input_vector;
     QVector<slave_outputs_t*> output_vector;
+    // Singleton.
+    static ECATWrapper *getInstance();
+    ECATWrapper(const ECATWrapper &) = delete;
+    ECATWrapper &operator=(const ECATWrapper &) = delete;
 signals:
     void debugMessage(QString msg);
     void infoMessage(QString msg);
@@ -41,6 +47,7 @@ private slots:
     void pdoWorkerLoop();
     void checkStateLoop(); // watchdog
 private:
+    static int PO2SOconfigCb(uint16_t slave);
     void run();
     QString ethName;
     QTimer *pdoTimer = nullptr;
