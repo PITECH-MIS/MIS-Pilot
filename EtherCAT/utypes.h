@@ -1,7 +1,13 @@
 #ifndef __UTYPES_H__
 #define __UTYPES_H__
 
+#ifdef ENV_WIN32
 #include <inttypes.h>
+#else
+#ifdef ENV_LINUX
+#include "stdint.h"
+#endif
+#endif
 
 /* Object dictionary storage */
 

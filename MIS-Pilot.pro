@@ -17,22 +17,39 @@ opencv += $$PWD/OpenCV
 DEFINES += __STDC_LIMIT_MACROS
 
 INCLUDEPATH += \
-    $${soem}/Inc\
-    $${soem}/wpcap/Include \
-    $${soem}/wpcap/Include/pcap \
     $${qjoysticks}/ \
+
+win32{
+DEFINES += ENV_WIN32
+
+INCLUDEPATH += \
+    $${soem}/win64/Inc\
+    $${soem}/win64/wpcap/Include \
+    $${soem}/win64/wpcap/Include/pcap \
     $${opencv}/build_win64/install/include \
 
 LIBS += \
-    $${soem}/lib/soem.lib \
-    $${soem}/lib/wpcap/Lib/x64/Packet.lib \
-    $${soem}/lib/wpcap/Lib/x64/wpcap.lib \
+    $${soem}/win64/lib/soem.lib \
+    $${soem}/win64/lib/wpcap/Lib/x64/Packet.lib \
+    $${soem}/win64/lib/wpcap/Lib/x64/wpcap.lib \
     $${xcore}/lib/win64/xMateModeld.lib \
     $${xcore}/lib/win64/xCoreSDK.lib \
     $${xcore}/lib/win64/xCoreSDK_static.lib \
     # $${xcore}/lib/win64/xCoreSDK.dll \
     $${opencv}/build_win64/lib/Debug/opencv_*.lib \
     $${opencv}/build_win64/install/x64/vc17/lib/opencv_*.lib \
+
+LIBS += -L$${soem}/win64/wpcap/Lib/x64/ -lwpcap
+!win32-g++: PRE_TARGETDEPS += $${soem}/win64/wpcap/Lib/x64/wpcap.lib
+}
+
+linux-g++{
+DEFINES += ENV_LINUX
+}
+
+# linux-g++:INCLUDEPATH += \
+
+# linux-g++:LIBS += \
 
 SOURCES += \
     Widgets/CmdDebugger/CmdDebugger.cpp \
@@ -479,9 +496,6 @@ QT += concurrent
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
-win32: LIBS += -L$$PWD/soem/wpcap/Lib/x64/ -lwpcap
-win32:!win32-g++: PRE_TARGETDEPS += $$PWD/soem/wpcap/Lib/x64/wpcap.lib
 
 include ($${qjoysticks}/QJoysticks.pri)
 

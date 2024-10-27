@@ -8,7 +8,9 @@
 #include <QFile>
 #include <QtXml/QDomDocument>
 
+#ifdef ENV_WIN32
 #include <inttypes.h>
+#endif
 #include "ethercat.h"
 #include "utypes.h"
 #include "utils.h"

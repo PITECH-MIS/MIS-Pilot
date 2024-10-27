@@ -2,8 +2,10 @@
 
 #include <QApplication>
 
+#ifdef ENV_WIN32
 #pragma comment( lib, "Winmm" )
 #pragma comment(lib, "ws2_32.lib")
+#endif
 
 int main(int argc, char *argv[])
 {
