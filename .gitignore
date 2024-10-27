@@ -1,5 +1,6 @@
 build/**
 Import_DLLS/**
+Import_libs/**
 RobotArm/xCore/lib/win64/xCoreSDK.pdb
 RobotArm/xCore/lib/win64/xCoreSDK_static.lib
 /MIS-Pilot.pro.user

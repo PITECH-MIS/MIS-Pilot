@@ -18,6 +18,7 @@ DEFINES += __STDC_LIMIT_MACROS
 
 INCLUDEPATH += \
     $${qjoysticks}/ \
+    $${opencv}/include \
 
 win32{
 DEFINES += ENV_WIN32
@@ -26,7 +27,6 @@ INCLUDEPATH += \
     $${soem}/win64/Inc\
     $${soem}/win64/wpcap/Include \
     $${soem}/win64/wpcap/Include/pcap \
-    $${opencv}/build_win64/install/include \
 
 LIBS += \
     $${soem}/win64/lib/soem.lib \
@@ -45,11 +45,18 @@ LIBS += -L$${soem}/win64/wpcap/Lib/x64/ -lwpcap
 
 linux-g++{
 DEFINES += ENV_LINUX
+
+INCLUDEPATH += \
+    $${soem}/linux/Inc \
+
+LIBS += \
+    $${soem}/linux/libsoem.a \
+    $${opencv}/build_linux/lib/libopencv_*.so \
+    $${xcore}/lib/linux/libxCoreSDK.a \
+    $${xcore}/lib/linux/libxCoreSDK.so.0.4.1 \
+    $${xcore}/lib/linux/libxMateModel.a \
+    -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_imgcodecs \
 }
-
-# linux-g++:INCLUDEPATH += \
-
-# linux-g++:LIBS += \
 
 SOURCES += \
     Widgets/CmdDebugger/CmdDebugger.cpp \
@@ -77,6 +84,7 @@ HEADERS += \
     Widgets/CmdDebugger/CmdDebugger.h \
     Widgets/JoypadWidget/joypad.h \
     Widgets/ControllerWindow/ControllerWindow.h \
+    Widgets/EndoscopeView/EndoscopeView.h \
     DataLogger.h \
     EtherCAT/ECATWrapper.h \
     Widgets/EEPROMTool/EEPROMTool.h \

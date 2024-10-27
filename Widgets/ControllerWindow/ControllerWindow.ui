@@ -37,8 +37,8 @@
      <rect>
       <x>10</x>
       <y>580</y>
-      <width>1608</width>
-      <height>288</height>
+      <width>1636</width>
+      <height>294</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,0">
@@ -1381,7 +1381,7 @@
                  <x>0</x>
                  <y>20</y>
                  <width>251</width>
-                 <height>145</height>
+                 <height>150</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -1597,7 +1597,7 @@
                  <x>0</x>
                  <y>20</y>
                  <width>251</width>
-                 <height>145</height>
+                 <height>150</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -1837,7 +1837,7 @@
                  <x>0</x>
                  <y>20</y>
                  <width>251</width>
-                 <height>145</height>
+                 <height>150</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -2093,7 +2093,7 @@
        <rect>
         <x>420</x>
         <y>300</y>
-        <width>755</width>
+        <width>819</width>
         <height>251</height>
        </rect>
       </property>
@@ -2728,7 +2728,7 @@
      <x>0</x>
      <y>0</y>
      <width>1600</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuLoadDescFiles">
@@ -2750,13 +2750,13 @@
   <customwidget>
    <class>JoyPad</class>
    <extends>QWidget</extends>
-   <header>../JoypadWidget/joypad.h</header>
+   <header>../../Widgets/JoypadWidget/joypad.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>EndoscopeView</class>
    <extends>QWidget</extends>
-   <header>../EndoscopeView/EndoscopeView.h</header>
+   <header>../../Widgets/EndoscopeView/EndoscopeView.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

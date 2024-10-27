@@ -50,7 +50,11 @@ namespace QtCVBridge
             for(auto row = 0; row < src.rows; row++)
             {
                 uchar *pDest = result.scanLine(row);
+#ifdef ENV_WIN32
                 memcpy_s(pDest, src.cols, pSrc, src.cols);
+#else
+                memccpy(pDest, pSrc, src.cols, src.cols);
+#endif
                 pSrc += src.step;
             }
             return result;

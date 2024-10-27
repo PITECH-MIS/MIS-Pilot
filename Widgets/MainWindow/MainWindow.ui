@@ -55,7 +55,7 @@
            <x>0</x>
            <y>10</y>
            <width>222</width>
-           <height>100</height>
+           <height>101</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
@@ -88,7 +88,7 @@
             </property>
            </widget>
           </item>
-          <item alignment="Qt::AlignmentFlag::AlignRight">
+          <item alignment="">
            <widget class="QPushButton" name="con_pushButton">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -124,7 +124,7 @@
            <x>0</x>
            <y>110</y>
            <width>222</width>
-           <height>102</height>
+           <height>107</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -306,7 +306,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>17</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuTools">
