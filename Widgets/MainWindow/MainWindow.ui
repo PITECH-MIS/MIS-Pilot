@@ -88,7 +88,7 @@
             </property>
            </widget>
           </item>
-          <item alignment="">
+          <item>
            <widget class="QPushButton" name="con_pushButton">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -124,7 +124,7 @@
            <x>0</x>
            <y>110</y>
            <width>222</width>
-           <height>107</height>
+           <height>111</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -232,17 +232,29 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>210</y>
+           <y>220</y>
            <width>222</width>
-           <height>331</height>
+           <height>321</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <property name="spacing">
-           <number>7</number>
+           <number>3</number>
           </property>
           <item>
            <widget class="QTreeView" name="stateTreeView">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>280</height>
+             </size>
+            </property>
             <property name="rootIsDecorated">
              <bool>true</bool>
             </property>
@@ -282,14 +294,26 @@
       </item>
       <item>
        <widget class="QWidget" name="widget" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="0" column="0">
           <widget class="QTextBrowser" name="textBrowser">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
            </property>
           </widget>
          </item>
@@ -306,7 +330,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuTools">

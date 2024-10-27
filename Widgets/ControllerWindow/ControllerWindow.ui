@@ -37,7 +37,7 @@
      <rect>
       <x>10</x>
       <y>580</y>
-      <width>1636</width>
+      <width>1581</width>
       <height>294</height>
      </rect>
     </property>
@@ -2093,7 +2093,7 @@
        <rect>
         <x>420</x>
         <y>300</y>
-        <width>819</width>
+        <width>751</width>
         <height>251</height>
        </rect>
       </property>
@@ -2728,7 +2728,7 @@
      <x>0</x>
      <y>0</y>
      <width>1600</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuLoadDescFiles">
