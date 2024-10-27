@@ -27,8 +27,14 @@ void qDebugMessage(QString msg)
 QString filterASCIIVisibleChar(char* origin, size_t max_len)
 {
     QString result = QString::fromLocal8Bit(origin, strnlen(origin, max_len));
-    result.remove(QRegularExpression("[^\x1F-\x7F]+"));
+    QRegularExpression regExp = QRegularExpression("[^\x1F-\x7F]+");
+    result.remove(regExp);
     return result;
+}
+
+QString secondsToHHmmss(int time_sec)
+{
+    return QTime(0, 0, 0).addSecs(int(time_sec)).toString(QString::fromLatin1("HH:mm:ss"));
 }
 
 void centerOnCursorScreen(QWidget* widget)

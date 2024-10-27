@@ -11,10 +11,10 @@
 #include <QDir>
 #include <QStandardItemModel>
 
-#include "ECATWrapper.h"
-#include "RobotArm/RobotArmWrapper.h"
-#include "ControllerWindow.h"
-#include "TrayIcon.h"
+#include "../../EtherCAT/ECATWrapper.h"
+#include "../../RobotArm/RobotArmWrapper.h"
+#include "../ControllerWindow/ControllerWindow.h"
+#include "../TrayIcon/TrayIcon.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

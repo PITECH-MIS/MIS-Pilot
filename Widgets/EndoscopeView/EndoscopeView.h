@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QTimer>
 #include <QThread>
-#include "OpenCV/CaptureWorker.h"
+#include "../../OpenCV/CaptureWorker.h"
 
 namespace Ui {
 class EndoscopeView;

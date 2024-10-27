@@ -169,12 +169,12 @@ void MainWindow::ParseStateViewModel()
         if(stateViewModel->rowCount() <= i) item = new QStandardItem;
         else item = stateViewModel->item(i);
         item->setColumnCount(2);
-        item->setText(QString::asprintf("Slave #%d", i + 1));
+        item->setText(QString::asprintf("Slave #%d (", i + 1) + wrapper->device_name + ")");
         AppendDescToItem(QString::asprintf("MotorCount: %d", wrapper->input_vector.at(i)->Interface_State.MotorCount), 0, item);
         AppendDescToItem(QString::asprintf("MCUTemp: %d", wrapper->input_vector.at(i)->Interface_State.MCUTemp), 1, item);
         AppendDescToItem(QString::asprintf("VBus: %d", wrapper->input_vector.at(i)->Interface_State.Vbus), 2, item);
         AppendDescToItem(QString::asprintf("FPS: %d", wrapper->input_vector.at(i)->Interface_State.FramesPerSec), 3, item);
-        AppendDescToItem(QString::asprintf("Uptime: %d", wrapper->input_vector.at(i)->Interface_State.Uptime), 4, item);
+        AppendDescToItem("Uptime: " + secondsToHHmmss(wrapper->input_vector.at(i)->Interface_State.Uptime), 4, item);
         AppendDescToItem(QString::asprintf("SN: %llu", wrapper->serial_number), 5, item);
         stateViewModel->setItem(i, item);
     }

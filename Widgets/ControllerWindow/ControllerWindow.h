@@ -7,11 +7,11 @@
 #include <QMap>
 #include <QCloseEvent>
 #include "Kinematics/KinematicsBase.h"
-#include "MotorDebugger.h"
-#include "ECATWrapper.h"
-#include "iFOC/Motor.h"
-#include "iFOC/Device.h"
-#include "EndoscopeView.h"
+#include "../MotorDebugger/MotorDebugger.h"
+#include "../../EtherCAT/ECATWrapper.h"
+#include "../../iFOC/Motor.h"
+#include "../../iFOC/Device.h"
+#include "../EndoscopeView/EndoscopeView.h"
 
 namespace Ui {
 class ControllerWindow;

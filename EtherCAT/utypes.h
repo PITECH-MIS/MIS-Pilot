@@ -13,12 +13,14 @@ typedef struct slave_inputs_t
         uint8_t MotorCount;
         uint8_t MCUTemp;
         uint16_t Vbus;
-        uint32_t FramesPerSec;
+        uint16_t FramesPerSec;
+        uint32_t Uptime;
     } Interface_State;
     struct
     {
         uint8_t IsAlive;
         uint8_t Enable;
+        uint8_t NodeID;
         uint8_t Mode;
         uint8_t MotorTemp;
         uint8_t MCUTemp;
@@ -27,8 +29,6 @@ typedef struct slave_inputs_t
         uint32_t SN;
         float IqReal;
         float IdReal;
-        float IqSet;
-        float IdSet;
         float Vbus;
         float Ibus;
         float EstimateSpeed;
@@ -39,6 +39,7 @@ typedef struct slave_inputs_t
     {
         uint8_t IsAlive;
         uint8_t Enable;
+        uint8_t NodeID;
         uint8_t Mode;
         uint8_t MotorTemp;
         uint8_t MCUTemp;
@@ -47,8 +48,6 @@ typedef struct slave_inputs_t
         uint32_t SN;
         float IqReal;
         float IdReal;
-        float IqSet;
-        float IdSet;
         float Vbus;
         float Ibus;
         float EstimateSpeed;
@@ -59,6 +58,7 @@ typedef struct slave_inputs_t
     {
         uint8_t IsAlive;
         uint8_t Enable;
+        uint8_t NodeID;
         uint8_t Mode;
         uint8_t MotorTemp;
         uint8_t MCUTemp;
@@ -67,8 +67,6 @@ typedef struct slave_inputs_t
         uint32_t SN;
         float IqReal;
         float IdReal;
-        float IqSet;
-        float IdSet;
         float Vbus;
         float Ibus;
         float EstimateSpeed;
@@ -79,6 +77,7 @@ typedef struct slave_inputs_t
     {
         uint8_t IsAlive;
         uint8_t Enable;
+        uint8_t NodeID;
         uint8_t Mode;
         uint8_t MotorTemp;
         uint8_t MCUTemp;
@@ -87,8 +86,6 @@ typedef struct slave_inputs_t
         uint32_t SN;
         float IqReal;
         float IdReal;
-        float IqSet;
-        float IdSet;
         float Vbus;
         float Ibus;
         float EstimateSpeed;
@@ -99,6 +96,7 @@ typedef struct slave_inputs_t
     {
         uint8_t IsAlive;
         uint8_t Enable;
+        uint8_t NodeID;
         uint8_t Mode;
         uint8_t MotorTemp;
         uint8_t MCUTemp;
@@ -107,8 +105,6 @@ typedef struct slave_inputs_t
         uint32_t SN;
         float IqReal;
         float IdReal;
-        float IqSet;
-        float IdSet;
         float Vbus;
         float Ibus;
         float EstimateSpeed;
@@ -119,6 +115,7 @@ typedef struct slave_inputs_t
     {
         uint8_t IsAlive;
         uint8_t Enable;
+        uint8_t NodeID;
         uint8_t Mode;
         uint8_t MotorTemp;
         uint8_t MCUTemp;
@@ -127,8 +124,6 @@ typedef struct slave_inputs_t
         uint32_t SN;
         float IqReal;
         float IdReal;
-        float IqSet;
-        float IdSet;
         float Vbus;
         float Ibus;
         float EstimateSpeed;
@@ -139,6 +134,7 @@ typedef struct slave_inputs_t
     {
         uint8_t IsAlive;
         uint8_t Enable;
+        uint8_t NodeID;
         uint8_t Mode;
         uint8_t MotorTemp;
         uint8_t MCUTemp;
@@ -147,8 +143,6 @@ typedef struct slave_inputs_t
         uint32_t SN;
         float IqReal;
         float IdReal;
-        float IqSet;
-        float IdSet;
         float Vbus;
         float Ibus;
         float EstimateSpeed;
@@ -159,6 +153,7 @@ typedef struct slave_inputs_t
     {
         uint8_t IsAlive;
         uint8_t Enable;
+        uint8_t NodeID;
         uint8_t Mode;
         uint8_t MotorTemp;
         uint8_t MCUTemp;
@@ -167,8 +162,6 @@ typedef struct slave_inputs_t
         uint32_t SN;
         float IqReal;
         float IdReal;
-        float IqSet;
-        float IdSet;
         float Vbus;
         float Ibus;
         float EstimateSpeed;
@@ -181,18 +174,9 @@ typedef struct slave_outputs_t
 {
     struct
     {
-        uint8_t LEDState;
-        uint8_t LEDR;
-        uint8_t LEDG;
-        uint8_t LEDB;
-    } Interface_Set;
-    struct
-    {
         uint8_t Enable;
-        uint8_t Identify;
         uint8_t Mode;
         float IqSet;
-        float IdSet;
         float SetSpeed;
         float SetRawAngle;
         float SetTrajectoryAngle;
@@ -201,10 +185,8 @@ typedef struct slave_outputs_t
     struct
     {
         uint8_t Enable;
-        uint8_t Identify;
         uint8_t Mode;
         float IqSet;
-        float IdSet;
         float SetSpeed;
         float SetRawAngle;
         float SetTrajectoryAngle;
@@ -213,10 +195,8 @@ typedef struct slave_outputs_t
     struct
     {
         uint8_t Enable;
-        uint8_t Identify;
         uint8_t Mode;
         float IqSet;
-        float IdSet;
         float SetSpeed;
         float SetRawAngle;
         float SetTrajectoryAngle;
@@ -225,10 +205,8 @@ typedef struct slave_outputs_t
     struct
     {
         uint8_t Enable;
-        uint8_t Identify;
         uint8_t Mode;
         float IqSet;
-        float IdSet;
         float SetSpeed;
         float SetRawAngle;
         float SetTrajectoryAngle;
@@ -237,10 +215,8 @@ typedef struct slave_outputs_t
     struct
     {
         uint8_t Enable;
-        uint8_t Identify;
         uint8_t Mode;
         float IqSet;
-        float IdSet;
         float SetSpeed;
         float SetRawAngle;
         float SetTrajectoryAngle;
@@ -249,10 +225,8 @@ typedef struct slave_outputs_t
     struct
     {
         uint8_t Enable;
-        uint8_t Identify;
         uint8_t Mode;
         float IqSet;
-        float IdSet;
         float SetSpeed;
         float SetRawAngle;
         float SetTrajectoryAngle;
@@ -261,10 +235,8 @@ typedef struct slave_outputs_t
     struct
     {
         uint8_t Enable;
-        uint8_t Identify;
         uint8_t Mode;
         float IqSet;
-        float IdSet;
         float SetSpeed;
         float SetRawAngle;
         float SetTrajectoryAngle;
@@ -273,10 +245,8 @@ typedef struct slave_outputs_t
     struct
     {
         uint8_t Enable;
-        uint8_t Identify;
         uint8_t Mode;
         float IqSet;
-        float IdSet;
         float SetSpeed;
         float SetRawAngle;
         float SetTrajectoryAngle;

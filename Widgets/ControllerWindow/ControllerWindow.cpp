@@ -4,7 +4,7 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QElapsedTimer>
-#include "Kinematics/KinematicsAtan2.h"
+#include "../../Kinematics/KinematicsAtan2.h"
 
 ControllerWindow::ControllerWindow(ECATWrapper* w, QMap<QString, QJoystickDevice*>& j, QWidget *parent)
     : QMainWindow(parent), wrapper(w), joysticks(j)

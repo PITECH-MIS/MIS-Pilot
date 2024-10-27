@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QWidget>
-#include "iFOC/Motor.h"
+#include "../../iFOC/Motor.h"
 
 namespace Ui {
 class MotorDebugger;

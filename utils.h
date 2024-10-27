@@ -14,6 +14,8 @@ void centerOnCursorScreen(QWidget* widget);
 
 QString filterASCIIVisibleChar(char* origin, size_t max_len);
 
+QString secondsToHHmmss(int time_sec);
+
 template <class Function, class ...Args>
 void spawnTask(Function &&f, Args &&...args)
 {

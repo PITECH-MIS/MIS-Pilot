@@ -35,18 +35,20 @@ LIBS += \
     $${opencv}/build_win64/install/x64/vc17/lib/opencv_*.lib \
 
 SOURCES += \
-    $$PWD/JoypadWidget/joypad.cpp \
-    ControllerWindow.cpp \
+    Widgets/CmdDebugger/CmdDebugger.cpp \
+    Widgets/JoypadWidget/joypad.cpp \
+    Widgets/ControllerWindow/ControllerWindow.cpp \
     DataLogger.cpp \
-    ECATWrapper.cpp \
-    EndoscopeView.cpp \
+    EtherCAT/ECATWrapper.cpp \
+    Widgets/EEPROMTool/EEPROMTool.cpp \
+    Widgets/EndoscopeView/EndoscopeView.cpp \
     Kinematics/KinematicsAtan2.cpp \
-    MainWindow.cpp \
-    MotorDebugger.cpp \
+    Widgets/MainWindow/MainWindow.cpp \
+    Widgets/MotorDebugger/MotorDebugger.cpp \
     OpenCV/BridgeUtils.cpp \
     OpenCV/CaptureWorker.cpp \
     RobotArm/RobotArmWrapper.cpp \
-    TrayIcon.cpp \
+    Widgets/TrayIcon/TrayIcon.cpp \
     iFOC/Actuator3DoF.cpp \
     iFOC/Device.cpp \
     iFOC/Equipment6DoF.cpp \
@@ -55,10 +57,12 @@ SOURCES += \
     utils.cpp
 
 HEADERS += \
-    $$PWD/JoypadWidget/joypad.h \
-    ControllerWindow.h \
+    Widgets/CmdDebugger/CmdDebugger.h \
+    Widgets/JoypadWidget/joypad.h \
+    Widgets/ControllerWindow/ControllerWindow.h \
     DataLogger.h \
-    ECATWrapper.h \
+    EtherCAT/ECATWrapper.h \
+    Widgets/EEPROMTool/EEPROMTool.h \
     Eigen/AccelerateSupport \
     Eigen/Cholesky \
     Eigen/CholmodSupport \
@@ -435,11 +439,11 @@ HEADERS += \
     Eigen/src/plugins/MatrixCwiseBinaryOps.h \
     Eigen/src/plugins/MatrixCwiseUnaryOps.h \
     Eigen/src/plugins/ReshapedMethods.h \
-    EndoscopeView.h \
+    Widgets/EndoscopeView/EndoscopeView.h \
     Kinematics/KinematicsAtan2.h \
     Kinematics/KinematicsBase.h \
-    MainWindow.h \
-    MotorDebugger.h \
+    Widgets/MainWindow/MainWindow.h \
+    Widgets/MotorDebugger/MotorDebugger.h \
     OpenCV/BridgeUtils.h \
     OpenCV/CaptureWorker.h \
     RobotArm/RobotArmWrapper.h \
@@ -451,19 +455,21 @@ HEADERS += \
     RobotArm/xCore/Inc/planner.h \
     RobotArm/xCore/Inc/robot.h \
     RobotArm/xCore/Inc/utility.h \
-    TrayIcon.h \
+    Widgets/TrayIcon/TrayIcon.h \
     iFOC/Actuator3DoF.h \
     iFOC/Device.h \
     iFOC/Equipment6DoF.h \
     iFOC/Motor.h \
     utils.h \
-    utypes.h
+    EtherCAT/utypes.h
 
 FORMS += \
-    ControllerWindow.ui \
-    EndoscopeView.ui \
-    MainWindow.ui \
-    MotorDebugger.ui
+    Widgets/CmdDebugger/CmdDebugger.ui \
+    Widgets/ControllerWindow/ControllerWindow.ui \
+    Widgets/EEPROMTool/EEPROMTool.ui \
+    Widgets/EndoscopeView/EndoscopeView.ui \
+    Widgets/MainWindow/MainWindow.ui \
+    Widgets/MotorDebugger/MotorDebugger.ui
 
 QT += xml
 QT += core
