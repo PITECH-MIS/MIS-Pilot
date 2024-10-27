@@ -770,6 +770,7 @@ void ControllerWindow::onButtonEvent(const QJoystickButtonEvent &event)
 
 void ControllerWindow::controlLoop()
 {
+    qDebugMessage(QString::asprintf("[controlLoop] Thread ID: %x", this->thread()->currentThreadId()));
     for(auto i = motorHashMap.constKeyValueBegin(); i != motorHashMap.constKeyValueEnd(); ++i)
     {
         i->second.get()->applyMotorConfig();

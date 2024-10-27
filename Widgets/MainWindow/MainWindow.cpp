@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    qDebugMessage(QString::asprintf("[MainWindow] Thread ID: %x", this->thread()->currentThreadId()));
     currentPath = QCoreApplication::applicationDirPath();
     wrapper = ECATWrapper::getInstance();
     ui->setupUi(this);
@@ -132,6 +133,7 @@ void MainWindow::onClickConnect(void)
 
 void MainWindow::onECATStateChanged()
 {
+    // qDebugMessage(QString::asprintf("[MainWindow::onECATStateChanged] Thread ID: %x", this->thread()->currentThreadId())); // executed at Main Thread, with QueuedConnection
     uint16_t current_state = wrapper->getExpectedState();
     if(controllerWindow && current_state == EC_STATE_OPERATIONAL && (wrapper->getExpectedWKC() == wrapper->getRealWKC())) controllerWindow->controlLoop();
     static uint8_t timer_100ms = 0;

@@ -9,8 +9,16 @@ ECATWrapper::ECATWrapper()
 ECATWrapper::~ECATWrapper()
 {
     qDebugMessage("ECATWrapper destroyed");
-    this->quit();
-    this->wait();
+    if(pdoThread)
+    {
+        pdoThread->quit();
+        pdoThread->wait();
+    }
+    if(checkStateThread)
+    {
+        checkStateThread->quit();
+        checkStateThread->wait();
+    }
 }
 
 ECATWrapper *ECATWrapper::getInstance()
@@ -21,16 +29,21 @@ ECATWrapper *ECATWrapper::getInstance()
 
 void ECATWrapper::pdoWorkerLoop()
 {
-    emit onStateChanged();
+    emit onStateChanged(); // executed on GUI thread with Qt::QueuedConnection
     ec_send_processdata();
-    realWKC = ec_receive_processdata(EC_TIMEOUTRET3);
+    realWKC = ec_receive_processdata(EC_TIMEOUTRET);
 }
 
 void ECATWrapper::initEth(QString& name)
 {
     ethName = name;
-    start(QThread::TimeCriticalPriority);
+    // start(QThread::TimeCriticalPriority);
+    run();
 }
+
+/* The easy way of increasing the CoE throughput of SOEM is simply to spawn multiple tasks that each do their own CoE for a single slave.
+ * SOEM is multi-tasking safe. But beware of the the buffer limit (MAXBUF) that is default 16. You could increase this when necessary.
+ */
 
 int ECATWrapper::PO2SOconfigCb(uint16_t slave)
 {
@@ -53,17 +66,25 @@ void ECATWrapper::run()
     memset(IOMap, 0, sizeof(IOMap));
     if(pdoTimer == nullptr)
     {
+        if(pdoThread == nullptr) pdoThread = new QThread(this);
         pdoTimer = new QTimer();
+        pdoTimer->moveToThread(pdoThread);
         pdoTimer->setTimerType(Qt::PreciseTimer);
-        connect(pdoTimer, &QTimer::timeout, this, &ECATWrapper::pdoWorkerLoop);
-        connect(this, &QThread::finished, pdoTimer, &QTimer::stop);
+        pdoTimer->setInterval(1);
+        connect(pdoTimer, &QTimer::timeout, this, &ECATWrapper::pdoWorkerLoop, Qt::DirectConnection);
+        connect(pdoThread, &QThread::finished, pdoTimer, &QTimer::stop);
+        connect(pdoThread, &QThread::started, pdoTimer, QOverload<>::of(&QTimer::start));
     }
     if(checkStateTimer == nullptr)
     {
+        if(checkStateThread == nullptr) checkStateThread = new QThread(this);
         checkStateTimer = new QTimer();
+        checkStateTimer->moveToThread(checkStateThread);
         checkStateTimer->setTimerType(Qt::PreciseTimer);
-        connect(checkStateTimer, &QTimer::timeout, this, &ECATWrapper::checkStateLoop);
-        connect(this, &QThread::finished, checkStateTimer, &QTimer::stop);
+        checkStateTimer->setInterval(10);
+        connect(checkStateTimer, &QTimer::timeout, this, &ECATWrapper::checkStateLoop, Qt::DirectConnection);
+        connect(checkStateThread, &QThread::finished, checkStateTimer, &QTimer::stop);
+        connect(checkStateThread, &QThread::started, checkStateTimer, QOverload<>::of(&QTimer::start));
     }
     QByteArray bArray = ethName.toLatin1();
     char *eth = bArray.data();
@@ -104,8 +125,8 @@ void ECATWrapper::run()
             ec_slave[0].state = EC_STATE_OPERATIONAL;
             expectedState = EC_STATE_OPERATIONAL;
             // emit onStateChanged();
-            pdoWorkerLoop();
-            pdoTimer->start(1);
+            // pdoWorkerLoop();
+            pdoThread->start();
             ec_writestate(0);
             int timeout = 500;
             do
@@ -153,7 +174,8 @@ void ECATWrapper::run()
                     emit infoMessage("Slave outputs mapped successfully");
                 }
 
-                checkStateTimer->start(10);
+                // checkStateTimer->start(10);
+                checkStateThread->start();
                 emit onStateChanged();
             }
         }
@@ -162,7 +184,7 @@ void ECATWrapper::run()
             emit errorMessage("No EtherCAT slave found\n");
             // closeConnection();
             ec_close();
-            quit();
+            // quit();
         }
     }
     else
@@ -170,9 +192,9 @@ void ECATWrapper::run()
         emit errorMessage("Error in ec_init(eth)\n");
         // closeConnection();
         ec_close();
-        quit();
+        // quit();
     }
-    exec();
+    // exec();
 }
 
 void ECATWrapper::closeConnection()
@@ -181,20 +203,29 @@ void ECATWrapper::closeConnection()
     ec_slave[0].state = EC_STATE_INIT;
     ec_writestate(0);
     expectedState = EC_STATE_INIT;
-    // ec_close();
     ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTRET3);
     realWKC = 0;
     emit onStateChanged();
     input_vector.clear();
     output_vector.clear();
-    quit();
+    if(pdoThread)
+    {
+        pdoThread->quit();
+        pdoThread->wait();
+    }
+    if(checkStateThread)
+    {
+        checkStateThread->quit();
+        checkStateThread->wait();
+    }
+    ec_close();
 }
 
 void ECATWrapper::checkStateLoop()
 {
-    // emit onStateChanged();
     static QSet<int> lostSlaveSet;
     int currentgroup = 0; // TODO: for later use
+    expectedWKC = (ec_group[0].outputsWKC * 2) + ec_group[0].inputsWKC;
     if(expectedState == EC_STATE_OPERATIONAL && ((realWKC < expectedWKC) || ec_group[currentgroup].docheckstate))
     {
         ec_group[currentgroup].docheckstate = FALSE;
@@ -218,14 +249,10 @@ void ECATWrapper::checkStateLoop()
                 }
                 else if(ec_slave[slave].state > EC_STATE_NONE)
                 {
-                    if(ec_reconfig_slave(slave, EC_TIMEOUTSTATE))
+                    if(ec_reconfig_slave(slave, EC_TIMEOUTMON))
                     {
                         ec_slave[slave].islost = FALSE;
                         emit infoMessage(QString::asprintf("Slave #%d reconfigured", slave));
-                    }
-                    else
-                    {
-                        // emit errorMessage(QString::asprintf("Slave #%d reconfiguration failed", slave, ec_slave[slave].state));
                     }
                 }
                 else if(!ec_slave[slave].islost)
@@ -234,15 +261,15 @@ void ECATWrapper::checkStateLoop()
                     if(ec_slave[slave].state == EC_STATE_NONE)
                     {
                         ec_slave[slave].islost = TRUE;
-                        emit errorMessage(QString::asprintf("Slave #%d lost", slave));
                         lostSlaveSet.insert(slave);
-                        if(lostSlaveSet.size() >= ec_slavecount)
-                        {
-                            emit errorMessage("All slave(s) lost, resetting state to INIT");
-                            lostSlaveSet.clear();
-                            closeConnection();
-                            break;
-                        }
+                        emit errorMessage(QString::asprintf("Slave #%d lost (lost:%d/%d)", slave, lostSlaveSet.size(), ec_slavecount));
+                        // if(lostSlaveSet.size() >= ec_slavecount)
+                        // {
+                        //     emit errorMessage("All slave(s) lost, resetting state to INIT");
+                        //     lostSlaveSet.clear();
+                        //     closeConnection();
+                        //     break;
+                        // }
                     }
                     else lostSlaveSet.clear();
                 }
@@ -251,7 +278,7 @@ void ECATWrapper::checkStateLoop()
             {
                 if(ec_slave[slave].state == EC_STATE_NONE || ec_slave[slave].state == EC_STATE_INIT)
                 {
-                    if(ec_recover_slave(slave, EC_TIMEOUTRET))
+                    if(ec_recover_slave(slave, EC_TIMEOUTMON))
                     {
                         ec_slave[slave].islost = FALSE;
                         emit infoMessage(QString::asprintf("Slave #%d recovered", slave));

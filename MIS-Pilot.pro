@@ -19,6 +19,7 @@ DEFINES += __STDC_LIMIT_MACROS
 INCLUDEPATH += \
     $${qjoysticks}/ \
     $${opencv}/include \
+    $${soem}/include \
 
 win32{
 DEFINES += ENV_WIN32

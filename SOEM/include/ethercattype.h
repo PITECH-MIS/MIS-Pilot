@@ -74,6 +74,9 @@ extern "C"
 #define EC_TIMEOUTRXM      700000
 /** timeout value in us for check statechange */
 #define EC_TIMEOUTSTATE    2000000
+
+#define EC_TIMEOUTMON 500
+
 /** size of EEPROM bitmap cache */
 #define EC_MAXEEPBITMAP    128
 /** size of EEPROM cache buffer */

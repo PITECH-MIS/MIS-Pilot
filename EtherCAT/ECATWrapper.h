@@ -14,10 +14,8 @@
 #include "ethercat.h"
 #include "utypes.h"
 #include "utils.h"
-#include <QMutex>
-#include <QMutexLocker>
 
-class ECATWrapper : public QThread
+class ECATWrapper : public QObject
 {
     Q_OBJECT
 public:
@@ -53,7 +51,9 @@ private:
     void run();
     QString ethName;
     QTimer *pdoTimer = nullptr;
+    QThread *pdoThread = nullptr;
     QTimer *checkStateTimer = nullptr;
+    QThread *checkStateThread = nullptr;
     char IOMap[4096] = {0};
     int realWKC = 0;
     int expectedWKC = 0;
