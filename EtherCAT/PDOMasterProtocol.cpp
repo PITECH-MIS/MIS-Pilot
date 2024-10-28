@@ -16,6 +16,16 @@ void PDOMasterProtocol::parseSlaves(QHash<uint16_t, ECATSlave*>& slaves)
     }
 }
 
+void PDOMasterProtocol::reset()
+{
+    for(auto &i : pdoSlaves.values())
+    {
+        delete(i);
+        i = nullptr;
+    }
+    pdoSlaves.clear();
+}
+
 void PDOMasterProtocol::onPDOLoop()
 {
     for(auto i = pdoSlaves.constKeyValueBegin(); i != pdoSlaves.constKeyValueEnd(); i++)

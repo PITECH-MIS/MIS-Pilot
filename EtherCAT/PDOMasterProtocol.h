@@ -65,6 +65,7 @@ public:
 public slots:
     void onPDOLoop();
     bool sendPayload(uint16_t slave_id, char *payload, uint8_t len);
+    void reset();
 signals:
     void receivePayload(uint16_t slave_id, char *payload, uint8_t len);
 private:

@@ -257,6 +257,7 @@ void ECATWrapper::closeConnection()
     }
     if(pdoProtocolThread)
     {
+        pdoProtocol.reset();
         pdoProtocolThread->quit();
         pdoProtocolThread->wait();
     }
