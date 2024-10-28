@@ -1,5 +1,5 @@
-#include "CmdDebugger.h"
-#include "ui_CmdDebugger.h"
+#include "PayloadDebugger.h"
+#include "ui_PayloadDebugger.h"
 
 CmdDebugger::CmdDebugger(QWidget *parent)
     : QWidget(parent)

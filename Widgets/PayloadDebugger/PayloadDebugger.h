@@ -1,5 +1,5 @@
-#ifndef CMDDEBUGGER_H
-#define CMDDEBUGGER_H
+#ifndef PAYLOADDEBUGGER_H
+#define PAYLOADDEBUGGER_H
 
 #include <QWidget>
 
@@ -19,4 +19,4 @@ private:
     Ui::CmdDebugger *ui;
 };
 
-#endif // CMDDEBUGGER_H
+#endif // PAYLOADDEBUGGER_H
