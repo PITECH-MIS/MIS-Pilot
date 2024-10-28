@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->statusbar->addPermanentWidget(statusBarSlaveCountLabel);
     ui->statusbar->addPermanentWidget(statusBarWkcLabel);
     ui->statusbar->addPermanentWidget(statusBarStateLabel);
+    ui->menubar->raise();
+    ui->menuTools->raise();
     statusBarStateLabel->setText("State: NONE ");
     statusBarWkcLabel->setText("WKC: 0/0 ");
     statusBarSlaveCountLabel->setText("Slave(s): 0 ");
@@ -48,6 +50,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->enterControllerButton, &QPushButton::clicked, this, &MainWindow::onEnableController);
     ui->textBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->textBrowser, &QTextBrowser::customContextMenuRequested, this, &MainWindow::onTextBrowserCustomContextMenu);
+    ui->actionEEPROM_Update->setEnabled(false);
+    ui->actionPayload_Debugger->setEnabled(false);
+    // connect(ui->actionEEPROM_Update, &QAction::triggered, )
+    connect(ui->actionPayload_Debugger, &QAction::triggered, this, &MainWindow::onEnablePayloadDebugger);
 }
 
 MainWindow::~MainWindow()
@@ -73,6 +79,24 @@ void MainWindow::onEnableController()
         });
         controllerWindow->setAttribute(Qt::WA_DeleteOnClose);
         controllerWindow->showWindow();
+    }
+}
+
+void MainWindow::onEnableEEPROMTool()
+{
+
+}
+
+void MainWindow::onEnablePayloadDebugger()
+{
+    if(!payloadDebugger)
+    {
+        payloadDebugger = new PayloadDebugger(wrapper);
+        connect(payloadDebugger, &PayloadDebugger::destroyed, this, [this](){
+            if(payloadDebugger) payloadDebugger = nullptr;
+        });
+        payloadDebugger->setAttribute(Qt::WA_DeleteOnClose);
+        payloadDebugger->show();
     }
 }
 
@@ -142,6 +166,8 @@ void MainWindow::onECATStateChanged()
         if(current_state == EC_STATE_OPERATIONAL)
         {
             ui->con_pushButton->setText(QString::fromUtf8("Disconnect"));
+            ui->actionEEPROM_Update->setEnabled(true);
+            ui->actionPayload_Debugger->setEnabled(true);
 #ifndef DEBUG_ENVIRONMENT
             ui->enterControllerButton->setEnabled(true);
 #endif
@@ -150,6 +176,8 @@ void MainWindow::onECATStateChanged()
         {
             stateViewModel->clear();
             ui->con_pushButton->setText(QString::fromUtf8("Connect"));
+            ui->actionEEPROM_Update->setEnabled(false);
+            ui->actionPayload_Debugger->setEnabled(false);
 #ifndef DEBUG_ENVIRONMENT
             ui->enterControllerButton->setEnabled(false);
 #endif

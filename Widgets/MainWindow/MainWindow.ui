@@ -38,6 +38,12 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>580</height>
+    </size>
+   </property>
    <property name="maximumSize">
     <size>
      <width>16777215</width>
@@ -45,8 +51,14 @@
     </size>
    </property>
    <layout class="QGridLayout" name="gridLayout">
+    <property name="topMargin">
+     <number>0</number>
+    </property>
     <item row="0" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>4</number>
+      </property>
       <item>
        <widget class="QWidget" name="navigation_widget" native="true">
         <property name="minimumSize">
@@ -58,7 +70,7 @@
         <property name="maximumSize">
          <size>
           <width>220</width>
-          <height>16777215</height>
+          <height>580</height>
          </size>
         </property>
         <widget class="QWidget" name="verticalLayoutWidget">
@@ -135,7 +147,7 @@
           <rect>
            <x>0</x>
            <y>110</y>
-           <width>222</width>
+           <width>221</width>
            <height>111</height>
           </rect>
          </property>
@@ -156,7 +168,7 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
-             <widget class="QTextEdit" name="configXmlPathEdit">
+             <widget class="QLineEdit" name="configXmlPathEdit">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -174,24 +186,6 @@
                 <width>220</width>
                 <height>40</height>
                </size>
-              </property>
-              <property name="verticalScrollBarPolicy">
-               <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-              </property>
-              <property name="horizontalScrollBarPolicy">
-               <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-              </property>
-              <property name="undoRedoEnabled">
-               <bool>false</bool>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-              <property name="acceptRichText">
-               <bool>false</bool>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::TextInteractionFlag::NoTextInteraction</set>
               </property>
              </widget>
             </item>
@@ -218,6 +212,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="parseConfigXmlButton">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -246,7 +243,7 @@
            <x>0</x>
            <y>220</y>
            <width>222</width>
-           <height>321</height>
+           <height>341</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -307,10 +304,22 @@
       <item>
        <widget class="QWidget" name="widget" native="true">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>560</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>560</height>
+         </size>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="0" column="0">
@@ -354,10 +363,10 @@
    <widget class="QMenu" name="menuTools">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>147</width>
-      <height>48</height>
+      <x>345</x>
+      <y>101</y>
+      <width>148</width>
+      <height>100</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -370,6 +379,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionEEPROM_Update"/>
+    <addaction name="actionPayload_Debugger"/>
    </widget>
    <addaction name="menuTools"/>
   </widget>
@@ -377,6 +387,11 @@
   <action name="actionEEPROM_Update">
    <property name="text">
     <string>EEPROM Update...</string>
+   </property>
+  </action>
+  <action name="actionPayload_Debugger">
+   <property name="text">
+    <string>Payload Debugger</string>
    </property>
   </action>
  </widget>

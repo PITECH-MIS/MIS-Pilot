@@ -15,6 +15,7 @@
 #include "../../RobotArm/RobotArmWrapper.h"
 #include "../ControllerWindow/ControllerWindow.h"
 #include "../TrayIcon/TrayIcon.h"
+#include "../PayloadDebugger/PayloadDebugger.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -40,6 +41,8 @@ private slots:
     void onSelectXMLPath();
     void onParseXML();
     void onEnableController();
+    void onEnableEEPROMTool();
+    void onEnablePayloadDebugger();
     void onTextBrowserCustomContextMenu(const QPoint &pos);
 private:
     void closeEvent(QCloseEvent *e);
@@ -50,6 +53,7 @@ private:
     QStandardItemModel *stateViewModel;
     Ui::MainWindow *ui;
     ControllerWindow *controllerWindow = nullptr;
+    PayloadDebugger *payloadDebugger = nullptr;
     RobotArmWrapper *robotArm;
     QLabel *statusBarStateLabel;
     QLabel *statusBarWkcLabel;
