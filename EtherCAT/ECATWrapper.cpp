@@ -117,119 +117,122 @@ void ECATWrapper::run()
         connect(pdoProtocolThread, &QThread::finished, pdoProtocolTimer, &QTimer::stop);
         connect(pdoProtocolThread, &QThread::started, pdoProtocolTimer, QOverload<>::of(&QTimer::start));
     }
-    QByteArray bArray = ethName.toLatin1();
-    char *eth = bArray.data();
-    if(ec_init(eth))
+    auto lambda = [this]()
     {
-        emit infoMessage("ec_init() succeeded");
-        emit debugMessage(QString::asprintf("ifname desc is %s", eth));
-        if(ec_config_init(FALSE) > 0)
+        QByteArray bArray = ethName.toLatin1();
+        char *eth = bArray.data();
+        if(ec_init(eth))
         {
-            emit infoMessage(QString::asprintf("Found %d EtherCAT slave(s), creating slave instances", ec_slavecount));
-            emit debugMessage("Mapping slaves I/O");
-            for(int i = 1; i <= ec_slavecount; i++)
+            emit infoMessage("ec_init() succeeded");
+            emit debugMessage(QString::asprintf("ifname desc is %s", eth));
+            if(ec_config_init(FALSE) > 0)
             {
-                slaves.insert(i, new ECATSlave(i));
-                auto s = slaves.value(i);
-                s->slave_t = &ec_slave[i];
-                s->slave_t->PO2SOconfig = PO2SOconfigCb;
-            }
-            int used_mem = ec_config_map(&IOMap);
-            emit debugMessage(QString::asprintf("IOMap used/total: %d/%d (%.0f%%)", used_mem, sizeof(IOMap), 100.0f * (float)(used_mem) / (float)(sizeof(IOMap))));
-            ec_configdc();
-
-            emit infoMessage("Slaves I/O mapped, changing state to SAFE_OP");
-            expectedState = EC_STATE_SAFE_OP;
-            ec_statecheck(0, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 4);
-            emit onStateChanged();
-            for(int i = 1; i <= ec_slavecount; i++)
-            {
-                emit debugMessage(QString::asprintf("Slave #%d state: %d", i, ec_slave[i].state));
-            }
-            oloop = ec_slave[0].Obytes;
-            if ((oloop == 0) && (ec_slave[0].Obits > 0)) oloop = 1;
-            iloop = ec_slave[0].Ibytes;
-            if ((iloop == 0) && (ec_slave[0].Ibits > 0)) iloop = 1;
-            emit debugMessage(QString::asprintf("oloop: %d, iloop: %d", oloop, iloop));
-            emit debugMessage(QString::asprintf("Segments(%d): %d %d %d %d", ec_group[0].nsegments,
-                                                                            ec_group[0].IOsegment[0],
-                                                                            ec_group[0].IOsegment[1],
-                                                                            ec_group[0].IOsegment[2],
-                                                                            ec_group[0].IOsegment[3]));
-            expectedWKC = (ec_group[0].outputsWKC * 2) + ec_group[0].inputsWKC;
-            emit infoMessage(QString::asprintf("Calculated workcounter(WKC): %d", expectedWKC));
-            emit infoMessage("Requesting OP state");
-            ec_slave[0].state = EC_STATE_OPERATIONAL;
-            expectedState = EC_STATE_OPERATIONAL;
-            pdoThread->start();
-            ec_writestate(0);
-            int timeout = 500;
-            do
-            {
-                ec_statecheck(0, EC_STATE_OPERATIONAL, 50000);
-            }
-            while(timeout-- && (ec_slave[0].state != EC_STATE_OPERATIONAL));
-            if(ec_slave[0].state != EC_STATE_OPERATIONAL)
-            {
-                emit errorMessage("Not all slaves are operational");
-                ec_readstate();
-                for(int i = 1; i<=ec_slavecount; i++)
+                emit infoMessage(QString::asprintf("Found %d EtherCAT slave(s), creating slave instances", ec_slavecount));
+                emit debugMessage("Mapping slaves I/O");
+                for(int i = 1; i <= ec_slavecount; i++)
                 {
-                    if(ec_slave[i].state != EC_STATE_OPERATIONAL) emit errorMessage(QString::asprintf("Slave %d not in OP mode", i));
+                    slaves.insert(i, new ECATSlave(i));
+                    auto s = slaves.value(i);
+                    s->slave_t = &ec_slave[i];
+                    s->slave_t->PO2SOconfig = PO2SOconfigCb;
                 }
-                closeConnection();
+                int used_mem = ec_config_map(&IOMap);
+                emit debugMessage(QString::asprintf("IOMap used/total: %d/%d (%.0f%%)", used_mem, sizeof(IOMap), 100.0f * (float)(used_mem) / (float)(sizeof(IOMap))));
+                ec_configdc();
+
+                emit infoMessage("Slaves I/O mapped, changing state to SAFE_OP");
+                expectedState = EC_STATE_SAFE_OP;
+                ec_statecheck(0, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 4);
+                emit onStateChanged();
+                for(int i = 1; i <= ec_slavecount; i++)
+                {
+                    emit debugMessage(QString::asprintf("Slave #%d state: %d", i, ec_slave[i].state));
+                }
+                oloop = ec_slave[0].Obytes;
+                if ((oloop == 0) && (ec_slave[0].Obits > 0)) oloop = 1;
+                iloop = ec_slave[0].Ibytes;
+                if ((iloop == 0) && (ec_slave[0].Ibits > 0)) iloop = 1;
+                emit debugMessage(QString::asprintf("oloop: %d, iloop: %d", oloop, iloop));
+                emit debugMessage(QString::asprintf("Segments(%d): %d %d %d %d", ec_group[0].nsegments,
+                                                    ec_group[0].IOsegment[0],
+                                                    ec_group[0].IOsegment[1],
+                                                    ec_group[0].IOsegment[2],
+                                                    ec_group[0].IOsegment[3]));
+                expectedWKC = (ec_group[0].outputsWKC * 2) + ec_group[0].inputsWKC;
+                emit infoMessage(QString::asprintf("Calculated workcounter(WKC): %d", expectedWKC));
+                emit infoMessage("Requesting OP state");
+                ec_slave[0].state = EC_STATE_OPERATIONAL;
+                expectedState = EC_STATE_OPERATIONAL;
+                pdoThread->start();
+                ec_writestate(0);
+                int timeout = 500;
+                do
+                {
+                    ec_statecheck(0, EC_STATE_OPERATIONAL, 50000);
+                }
+                while(timeout-- && (ec_slave[0].state != EC_STATE_OPERATIONAL));
+                if(ec_slave[0].state != EC_STATE_OPERATIONAL)
+                {
+                    emit errorMessage("Not all slaves are operational");
+                    ec_readstate();
+                    for(int i = 1; i<=ec_slavecount; i++)
+                    {
+                        if(ec_slave[i].state != EC_STATE_OPERATIONAL) emit errorMessage(QString::asprintf("Slave %d not in OP mode", i));
+                    }
+                    closeConnection();
+                }
+                else
+                {
+                    emit infoMessage("All slaves reached operational state");
+
+                    if(sizeof(slave_inputs_t) != iloop && (iloop % sizeof(slave_inputs_t) != 0))
+                    {
+                        emit errorMessage(QString::asprintf("Size of inputs_t is not equal or common factor to iloop: %d/%d", sizeof(slave_inputs_t), iloop));
+                    }
+                    else
+                    {
+                        for(int i = 1; i <= ec_slavecount; i++)
+                        {
+                            if(slaves.contains(i)) slaves.value(i)->input = (slave_inputs_t*)ec_slave[i].inputs;
+                        }
+                        emit infoMessage("Slave inputs mapped successfully");
+                    }
+
+                    if(sizeof(slave_outputs_t) != oloop && (oloop % sizeof(slave_outputs_t) != 0))
+                    {
+                        emit errorMessage(QString::asprintf("Size of outputs_t is not equal or common factor to oloop: %d/%d", sizeof(slave_outputs_t), oloop));
+                    }
+                    else
+                    {
+                        for(int i = 1; i <= ec_slavecount; i++)
+                        {
+                            if(slaves.contains(i)) slaves.value(i)->output = (slave_outputs_t*)ec_slave[i].outputs;
+                        }
+                        pdoProtocol.parseSlaves(slaves);
+                        pdoProtocolThread->start();
+                        emit infoMessage("Slave outputs mapped successfully, listening PDO Protocol");
+                    }
+                    checkStateThread->start();
+                    emit onStateChanged();
+                }
             }
             else
             {
-                emit infoMessage("All slaves reached operational state");
-
-                if(sizeof(slave_inputs_t) != iloop && (iloop % sizeof(slave_inputs_t) != 0))
-                {
-                    emit errorMessage(QString::asprintf("Size of inputs_t is not equal or common factor to iloop: %d/%d", sizeof(slave_inputs_t), iloop));
-                }
-                else
-                {
-                    for(int i = 1; i <= ec_slavecount; i++)
-                    {
-                        if(slaves.contains(i)) slaves.value(i)->input = (slave_inputs_t*)ec_slave[i].inputs;
-                    }
-                    emit infoMessage("Slave inputs mapped successfully");
-                }
-
-                if(sizeof(slave_outputs_t) != oloop && (oloop % sizeof(slave_outputs_t) != 0))
-                {
-                    emit errorMessage(QString::asprintf("Size of outputs_t is not equal or common factor to oloop: %d/%d", sizeof(slave_outputs_t), oloop));
-                }
-                else
-                {
-                    for(int i = 1; i <= ec_slavecount; i++)
-                    {
-                        if(slaves.contains(i)) slaves.value(i)->output = (slave_outputs_t*)ec_slave[i].outputs;
-                    }
-                    pdoProtocol.parseSlaves(slaves);
-                    pdoProtocolThread->start();
-                    emit infoMessage("Slave outputs mapped successfully, listening PDO Protocol");
-                }
-                checkStateThread->start();
-                emit onStateChanged();
+                emit errorMessage("No EtherCAT slave found\n");
+                // closeConnection();
+                ec_close();
+                // quit();
             }
         }
         else
         {
-            emit errorMessage("No EtherCAT slave found\n");
+            emit errorMessage("Error in ec_init(eth)\n");
             // closeConnection();
             ec_close();
             // quit();
         }
-    }
-    else
-    {
-        emit errorMessage("Error in ec_init(eth)\n");
-        // closeConnection();
-        ec_close();
-        // quit();
-    }
-    // exec();
+    };
+    spawnTask(lambda);
 }
 
 void ECATWrapper::closeConnection()
