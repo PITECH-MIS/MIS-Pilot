@@ -172,14 +172,17 @@ void MainWindow::ParseStateViewModel()
         else item = stateViewModel->item(i);
         item->setColumnCount(2);
         const auto x = wrapper->slaves.values().at(i);
-        item->setText(QString::asprintf("Slave #%d (", x->slave_id) + x->name + ")");
-        AppendDescToItem(QString::asprintf("MotorCount: %d", x->input->Interface_State.MotorCount), 0, item);
-        AppendDescToItem(QString::asprintf("MCUTemp: %d", x->input->Interface_State.MCUTemp), 1, item);
-        AppendDescToItem(QString::asprintf("VBus: %d", x->input->Interface_State.Vbus), 2, item);
-        AppendDescToItem(QString::asprintf("FPS: %d", x->input->Interface_State.FramesPerSec), 3, item);
-        AppendDescToItem("Uptime: " + secondsToHHmmss(x->input->Interface_State.Uptime), 4, item);
-        AppendDescToItem(QString::asprintf("SN: %llu", x->serial_number), 5, item);
-        stateViewModel->setItem(i, item);
+        if(x->input)
+        {
+            item->setText(QString::asprintf("Slave #%d (", x->slave_id) + x->name + ")");
+            AppendDescToItem(QString::asprintf("MotorCount: %d", x->input->Interface_State.MotorCount), 0, item);
+            AppendDescToItem(QString::asprintf("MCUTemp: %d", x->input->Interface_State.MCUTemp), 1, item);
+            AppendDescToItem(QString::asprintf("VBus: %d", x->input->Interface_State.Vbus), 2, item);
+            AppendDescToItem(QString::asprintf("FPS: %d", x->input->Interface_State.FramesPerSec), 3, item);
+            AppendDescToItem("Uptime: " + secondsToHHmmss(x->input->Interface_State.Uptime), 4, item);
+            AppendDescToItem(QString::asprintf("SN: %llu", x->serial_number), 5, item);
+            stateViewModel->setItem(i, item);
+        }
     }
     if(newItem) ui->stateTreeView->expandAll();
 }
