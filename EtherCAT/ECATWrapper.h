@@ -30,6 +30,7 @@ public:
     QHash<uint16_t, ECATSlave*> slaves;
     // Singleton.
     static ECATWrapper *getInstance();
+    PDOMasterProtocol pdoProtocol;
     ECATWrapper(const ECATWrapper &) = delete;
     ECATWrapper &operator=(const ECATWrapper &) = delete;
     int printErrorStack();
@@ -43,7 +44,6 @@ private slots:
     void checkStateLoop(); // watchdog
 private:
     static int PO2SOconfigCb(uint16_t slave);
-    PDOMasterProtocol pdoProtocol;
     void run();
     QString ethName;
     QTimer *pdoTimer = nullptr;

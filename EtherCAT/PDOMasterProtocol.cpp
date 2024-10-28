@@ -38,18 +38,30 @@ void PDOMasterProtocol::onPDOLoop()
     }
 }
 
-bool PDOMasterProtocol::sendPayload(uint16_t slave_id, char *payload, uint8_t len)
+bool PDOMasterProtocol::sendPayload(uint16_t slave_id, char *payload, uint8_t len) // slave_id = 0: global
 {
-    if(!pdoSlaves.contains(slave_id)) return false;
-    auto slave = pdoSlaves.value(slave_id);
-    auto currRxBuf = (pdo_protocol_buf_t*)slave->inst->output->RxBuf;
-    if(*currRxBuf != slave->tx_buf && slave->tx_buf.isValid()) return false; // THERE IS ONGOING PAYLOAD THAT HASN'T BEEN TRANSMITTED
-    if(len > sizeof(slave->tx_buf.payload)) len = sizeof(slave->tx_buf.payload);
-    slave->tx_buf.packet_id++;
-    memset(slave->tx_buf.payload, 0, sizeof(slave->tx_buf.payload));
-    memcpy(slave->tx_buf.payload, payload, len);
-    slave->tx_buf.prepare();
-    return true;
+    if(slave_id != 0 && !pdoSlaves.contains(slave_id)) return false;
+    QList<uint16_t> idList;
+    size_t successCount = 0;
+    if(slave_id == 0)
+    {
+        idList = pdoSlaves.keys();
+    }
+    else idList.append(slave_id);
+    for(const auto &id : idList)
+    {
+        auto slave = pdoSlaves.value(id);
+        auto currRxBuf = (pdo_protocol_buf_t*)slave->inst->output->RxBuf;
+        if(*currRxBuf != slave->tx_buf && slave->tx_buf.isValid()) continue; // THERE IS ONGOING PAYLOAD THAT HASN'T BEEN TRANSMITTED
+        if(len > sizeof(slave->tx_buf.payload)) len = sizeof(slave->tx_buf.payload);
+        slave->tx_buf.packet_id++;
+        memset(slave->tx_buf.payload, 0, sizeof(slave->tx_buf.payload));
+        memcpy(slave->tx_buf.payload, payload, len);
+        slave->tx_buf.prepare();
+        successCount++;
+    }
+    if(successCount == idList.size()) return true;
+    return false;
 }
 
 static const uint8_t CRC16_H[256] =
