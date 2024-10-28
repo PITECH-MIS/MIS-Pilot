@@ -174,6 +174,7 @@ typedef struct slave_inputs_t
         float EstimateRawAngle;
         float CurrentLimit;
     } Motor8_State;
+    uint8_t TxBuf[48];
 }slave_inputs_t;
 
 typedef struct slave_outputs_t
@@ -258,6 +259,7 @@ typedef struct slave_outputs_t
         float SetTrajectoryAngle;
         float SetCurrentLimit;
     } Motor8_Set;
+    uint8_t RxBuf[48];
 
 }slave_outputs_t;
 

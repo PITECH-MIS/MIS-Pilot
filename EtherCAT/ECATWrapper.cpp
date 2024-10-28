@@ -5,6 +5,13 @@
 ECATWrapper::ECATWrapper()
 {
     memset(IOMap, 0, sizeof(IOMap));
+    connect(&pdoProtocol, &PDOMasterProtocol::receivePayload, this, [this](uint16_t slave_id,
+                                                                           char *payload,
+                                                                           uint8_t len){
+        QString ret = QString::asprintf("Received PDO Payload from slave #%d: \n", slave_id) + QString::fromUtf8(payload);
+        emit this->infoMessage(ret);
+        this->pdoProtocol.sendPayload(slave_id, payload, len);
+    });
 }
 ECATWrapper::~ECATWrapper()
 {
@@ -19,6 +26,11 @@ ECATWrapper::~ECATWrapper()
         checkStateThread->quit();
         checkStateThread->wait();
     }
+    if(pdoProtocolThread)
+    {
+        pdoProtocolThread->quit();
+        pdoProtocolThread->wait();
+    }
 }
 
 ECATWrapper *ECATWrapper::getInstance()
@@ -30,6 +42,7 @@ ECATWrapper *ECATWrapper::getInstance()
 void ECATWrapper::pdoWorkerLoop()
 {
     emit onStateChanged(); // executed on GUI thread with Qt::QueuedConnection
+    // pdoProtocol.onPDOLoop();
     ec_send_processdata();
     realWKC = ec_receive_processdata(EC_TIMEOUTRET);
 }
@@ -37,7 +50,6 @@ void ECATWrapper::pdoWorkerLoop()
 void ECATWrapper::initEth(QString& name)
 {
     ethName = name;
-    // start(QThread::TimeCriticalPriority);
     run();
 }
 
@@ -56,8 +68,8 @@ int ECATWrapper::PO2SOconfigCb(uint16_t slave)
         auto slaveInst = inst->slaves.value(slave);
         ec_SDOread(slave, 0x1018, 0x04, false, &dummy, &slaveInst->serial_number, EC_TIMEOUTRXM);
         emit inst->debugMessage(QString::asprintf("Slave #%d SN: %llu", slave, slaveInst->serial_number));
-        dummy = 16;
         char temp[16];
+        dummy = sizeof(temp);
         ec_SDOread(slave, 0x1008, 0x00, false, &dummy, temp, EC_TIMEOUTRXM);
         slaveInst->name = filterASCIIVisibleChar(temp, sizeof(temp));
         emit inst->debugMessage(QString::asprintf("Slave #%d name: ", slave) + slaveInst->name);
@@ -88,11 +100,22 @@ void ECATWrapper::run()
         if(checkStateThread == nullptr) checkStateThread = new QThread(this);
         checkStateTimer = new QTimer();
         checkStateTimer->moveToThread(checkStateThread);
-        checkStateTimer->setTimerType(Qt::PreciseTimer);
-        checkStateTimer->setInterval(10);
+        checkStateTimer->setTimerType(Qt::CoarseTimer);
+        checkStateTimer->setInterval(20);
         connect(checkStateTimer, &QTimer::timeout, this, &ECATWrapper::checkStateLoop, Qt::DirectConnection);
         connect(checkStateThread, &QThread::finished, checkStateTimer, &QTimer::stop);
         connect(checkStateThread, &QThread::started, checkStateTimer, QOverload<>::of(&QTimer::start));
+    }
+    if(pdoProtocolTimer == nullptr)
+    {
+        if(pdoProtocolThread == nullptr) pdoProtocolThread = new QThread(this);
+        pdoProtocolTimer = new QTimer();
+        pdoProtocolTimer->moveToThread(pdoProtocolThread);
+        pdoProtocolTimer->setTimerType(Qt::CoarseTimer);
+        pdoProtocolTimer->setInterval(5);
+        connect(pdoProtocolTimer, &QTimer::timeout, &pdoProtocol, &PDOMasterProtocol::onPDOLoop);
+        connect(pdoProtocolThread, &QThread::finished, pdoProtocolTimer, &QTimer::stop);
+        connect(pdoProtocolThread, &QThread::started, pdoProtocolTimer, QOverload<>::of(&QTimer::start));
     }
     QByteArray bArray = ethName.toLatin1();
     char *eth = bArray.data();
@@ -138,8 +161,6 @@ void ECATWrapper::run()
             emit infoMessage("Requesting OP state");
             ec_slave[0].state = EC_STATE_OPERATIONAL;
             expectedState = EC_STATE_OPERATIONAL;
-            // emit onStateChanged();
-            // pdoWorkerLoop();
             pdoThread->start();
             ec_writestate(0);
             int timeout = 500;
@@ -170,7 +191,6 @@ void ECATWrapper::run()
                 {
                     for(int i = 1; i <= ec_slavecount; i++)
                     {
-                        // input_vector.append((slave_inputs_t*)ec_slave[i].inputs);
                         if(slaves.contains(i)) slaves.value(i)->input = (slave_inputs_t*)ec_slave[i].inputs;
                     }
                     emit infoMessage("Slave inputs mapped successfully");
@@ -185,26 +205,11 @@ void ECATWrapper::run()
                     for(int i = 1; i <= ec_slavecount; i++)
                     {
                         if(slaves.contains(i)) slaves.value(i)->output = (slave_outputs_t*)ec_slave[i].outputs;
-                        // output_vector.append((slave_outputs_t*)ec_slave[i].outputs);
                     }
-                    emit infoMessage("Slave outputs mapped successfully");
+                    pdoProtocol.parseSlaves(slaves);
+                    pdoProtocolThread->start();
+                    emit infoMessage("Slave outputs mapped successfully, listening PDO Protocol");
                 }
-                // auto lambda = [this]()
-                // {
-                //     QThread::msleep(2000);
-                //     int max_retries = 30;
-                //     while(max_retries--)
-                //     {
-                //         char x[] = "Hello!";
-                //         auto ret = ec_SDOwrite(1, 0x8000, 0x00, false, sizeof(x), x, 0);
-                //         qDebugMessage(QString::asprintf("Retry #%d, with ret: %d", 30 - max_retries, ret));
-                //         printErrorStack();
-                //         // auto ret = ec_SDOread(1, 0x8000, 0x00, FALSE, &size, &value, EC_TIMEOUTRXM);
-                //         QThread::msleep(500);
-                //     }
-                // };
-                // spawnTask(lambda);
-                // checkStateTimer->start(10);
                 checkStateThread->start();
                 emit onStateChanged();
             }
@@ -246,6 +251,11 @@ void ECATWrapper::closeConnection()
     {
         checkStateThread->quit();
         checkStateThread->wait();
+    }
+    if(pdoProtocolThread)
+    {
+        pdoProtocolThread->quit();
+        pdoProtocolThread->wait();
     }
     ec_close();
 }

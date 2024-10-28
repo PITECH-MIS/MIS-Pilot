@@ -9,6 +9,7 @@
 #include <QtXml/QDomDocument>
 
 #include "ECATSlave.h"
+#include "PDOMasterProtocol.h"
 #include "utils.h"
 
 class ECATWrapper : public QObject
@@ -42,12 +43,15 @@ private slots:
     void checkStateLoop(); // watchdog
 private:
     static int PO2SOconfigCb(uint16_t slave);
+    PDOMasterProtocol pdoProtocol;
     void run();
     QString ethName;
     QTimer *pdoTimer = nullptr;
     QThread *pdoThread = nullptr;
     QTimer *checkStateTimer = nullptr;
     QThread *checkStateThread = nullptr;
+    QTimer *pdoProtocolTimer = nullptr;
+    QThread *pdoProtocolThread = nullptr;
     char IOMap[4096] = {0};
     int realWKC = 0;
     int expectedWKC = 0;

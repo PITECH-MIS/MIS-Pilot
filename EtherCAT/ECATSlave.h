@@ -20,8 +20,8 @@ public:
     uint32_t serial_number = 0;
     QString name;
     /* PDO Mapped Area */
-    slave_inputs_t* input;
-    slave_outputs_t* output;
+    slave_inputs_t* input = nullptr;
+    slave_outputs_t* output = nullptr;
 };
 
 #endif // ECATSLAVE_H
