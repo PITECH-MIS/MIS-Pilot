@@ -62,7 +62,8 @@ LIBS += \
 
 SOURCES += \
     EtherCAT/ECATSlave.cpp \
-    Widgets/CmdDebugger/CmdDebugger.cpp \
+    EtherCAT/PDOMasterProtocol.cpp \
+    Widgets/PayloadDebugger/PayloadDebugger.cpp \
     Widgets/JoypadWidget/joypad.cpp \
     Widgets/ControllerWindow/ControllerWindow.cpp \
     DataLogger.cpp \
@@ -85,7 +86,8 @@ SOURCES += \
 
 HEADERS += \
     EtherCAT/ECATSlave.h \
-    Widgets/CmdDebugger/CmdDebugger.h \
+    EtherCAT/PDOMasterProtocol.h \
+    Widgets/PayloadDebugger/PayloadDebugger.h \
     Widgets/JoypadWidget/joypad.h \
     Widgets/ControllerWindow/ControllerWindow.h \
     Widgets/EndoscopeView/EndoscopeView.h \
@@ -493,7 +495,7 @@ HEADERS += \
     EtherCAT/utypes.h
 
 FORMS += \
-    Widgets/CmdDebugger/CmdDebugger.ui \
+    Widgets/PayloadDebugger/PayloadDebugger.ui \
     Widgets/ControllerWindow/ControllerWindow.ui \
     Widgets/EEPROMTool/EEPROMTool.ui \
     Widgets/EndoscopeView/EndoscopeView.ui \
