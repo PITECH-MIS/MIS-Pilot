@@ -8,11 +8,7 @@
 #include <QFile>
 #include <QtXml/QDomDocument>
 
-#ifdef ENV_WIN32
-#include <inttypes.h>
-#endif
-#include "ethercat.h"
-#include "utypes.h"
+#include "ECATSlave.h"
 #include "utils.h"
 
 class ECATWrapper : public QObject
@@ -30,14 +26,12 @@ public:
     uint16_t getExpectedState();
     QString getExpectedStateName();
     int getSlaveCount();
-    uint32_t serial_number = 0;
-    QString device_name;
-    QVector<slave_inputs_t*> input_vector;
-    QVector<slave_outputs_t*> output_vector;
+    QHash<uint16_t, ECATSlave*> slaves;
     // Singleton.
     static ECATWrapper *getInstance();
     ECATWrapper(const ECATWrapper &) = delete;
     ECATWrapper &operator=(const ECATWrapper &) = delete;
+    int printErrorStack();
 signals:
     void debugMessage(QString msg);
     void infoMessage(QString msg);

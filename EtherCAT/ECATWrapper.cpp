@@ -47,17 +47,25 @@ void ECATWrapper::initEth(QString& name)
 
 int ECATWrapper::PO2SOconfigCb(uint16_t slave)
 {
+    // read serial number and device name
     ECATWrapper* inst = ECATWrapper::getInstance();
-    emit inst->infoMessage(QString::asprintf("Slave #%d PO2SOconfig() called", slave));
-    int dummy = sizeof(uint32_t);
-    ec_SDOread(slave, 0x1018, 0x04, false, &dummy, &inst->serial_number, EC_TIMEOUTRXM);
-    emit inst->debugMessage(QString::asprintf("Slave #%d SN: %llu", slave, inst->serial_number));
-    dummy = 16;
-    char temp[16];
-    ec_SDOread(slave, 0x1008, 0x00, false, &dummy, temp, EC_TIMEOUTRXM);
-    inst->device_name = filterASCIIVisibleChar(temp, sizeof(temp));
-    // emit inst->debugMessage(QString::asprintf("%s", temp));
-    emit inst->debugMessage(inst->device_name);
+    if(inst->slaves.contains(slave))
+    {
+        emit inst->debugMessage(QString::asprintf("Slave #%d PO2SOconfig() called", slave));
+        int dummy = sizeof(uint32_t);
+        auto slaveInst = inst->slaves.value(slave);
+        ec_SDOread(slave, 0x1018, 0x04, false, &dummy, &slaveInst->serial_number, EC_TIMEOUTRXM);
+        emit inst->debugMessage(QString::asprintf("Slave #%d SN: %llu", slave, slaveInst->serial_number));
+        dummy = 16;
+        char temp[16];
+        ec_SDOread(slave, 0x1008, 0x00, false, &dummy, temp, EC_TIMEOUTRXM);
+        slaveInst->name = filterASCIIVisibleChar(temp, sizeof(temp));
+        emit inst->debugMessage(QString::asprintf("Slave #%d name: ", slave) + slaveInst->name);
+    }
+    else
+    {
+        emit inst->errorMessage(QString::asprintf("Get unregistered slave #%d at PO2SOconfig()", slave));
+    }
     return 1;
 }
 
@@ -94,9 +102,15 @@ void ECATWrapper::run()
         emit debugMessage(QString::asprintf("ifname desc is %s", eth));
         if(ec_config_init(FALSE) > 0)
         {
-            emit infoMessage(QString::asprintf("Found %d EtherCAT slave(s)", ec_slavecount));
+            emit infoMessage(QString::asprintf("Found %d EtherCAT slave(s), creating slave instances", ec_slavecount));
             emit debugMessage("Mapping slaves I/O");
-            for(int i = 1; i <= ec_slavecount; i++) ec_slave[i].PO2SOconfig = PO2SOconfigCb;
+            for(int i = 1; i <= ec_slavecount; i++)
+            {
+                slaves.insert(i, new ECATSlave(i));
+                auto s = slaves.value(i);
+                s->slave_t = &ec_slave[i];
+                s->slave_t->PO2SOconfig = PO2SOconfigCb;
+            }
             int used_mem = ec_config_map(&IOMap);
             emit debugMessage(QString::asprintf("IOMap used/total: %d/%d (%.0f%%)", used_mem, sizeof(IOMap), 100.0f * (float)(used_mem) / (float)(sizeof(IOMap))));
             ec_configdc();
@@ -156,7 +170,8 @@ void ECATWrapper::run()
                 {
                     for(int i = 1; i <= ec_slavecount; i++)
                     {
-                        input_vector.append((slave_inputs_t*)ec_slave[i].inputs);
+                        // input_vector.append((slave_inputs_t*)ec_slave[i].inputs);
+                        if(slaves.contains(i)) slaves.value(i)->input = (slave_inputs_t*)ec_slave[i].inputs;
                     }
                     emit infoMessage("Slave inputs mapped successfully");
                 }
@@ -169,11 +184,26 @@ void ECATWrapper::run()
                 {
                     for(int i = 1; i <= ec_slavecount; i++)
                     {
-                        output_vector.append((slave_outputs_t*)ec_slave[i].outputs);
+                        if(slaves.contains(i)) slaves.value(i)->output = (slave_outputs_t*)ec_slave[i].outputs;
+                        // output_vector.append((slave_outputs_t*)ec_slave[i].outputs);
                     }
                     emit infoMessage("Slave outputs mapped successfully");
                 }
-
+                // auto lambda = [this]()
+                // {
+                //     QThread::msleep(2000);
+                //     int max_retries = 30;
+                //     while(max_retries--)
+                //     {
+                //         char x[] = "Hello!";
+                //         auto ret = ec_SDOwrite(1, 0x8000, 0x00, false, sizeof(x), x, 0);
+                //         qDebugMessage(QString::asprintf("Retry #%d, with ret: %d", 30 - max_retries, ret));
+                //         printErrorStack();
+                //         // auto ret = ec_SDOread(1, 0x8000, 0x00, FALSE, &size, &value, EC_TIMEOUTRXM);
+                //         QThread::msleep(500);
+                //     }
+                // };
+                // spawnTask(lambda);
                 // checkStateTimer->start(10);
                 checkStateThread->start();
                 emit onStateChanged();
@@ -206,8 +236,7 @@ void ECATWrapper::closeConnection()
     ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTRET3);
     realWKC = 0;
     emit onStateChanged();
-    input_vector.clear();
-    output_vector.clear();
+    slaves.clear();
     if(pdoThread)
     {
         pdoThread->quit();
@@ -221,6 +250,18 @@ void ECATWrapper::closeConnection()
     ec_close();
 }
 
+int ECATWrapper::printErrorStack()
+{
+    int ret = 0;
+    ec_errort ec;
+    while(ec_poperror(&ec))
+    {
+        ret++;
+        qDebugMessage(QString::fromUtf8(ecx_err2string(ec)));
+    }
+    return ret;
+}
+
 void ECATWrapper::checkStateLoop()
 {
     static QSet<int> lostSlaveSet;
@@ -228,12 +269,14 @@ void ECATWrapper::checkStateLoop()
     expectedWKC = (ec_group[0].outputsWKC * 2) + ec_group[0].inputsWKC;
     if(expectedState == EC_STATE_OPERATIONAL && ((realWKC < expectedWKC) || ec_group[currentgroup].docheckstate))
     {
+        int checkedCount = 0;
         ec_group[currentgroup].docheckstate = FALSE;
         ec_readstate();
         for(int slave = 1; slave <= ec_slavecount; slave++)
         {
             if((ec_slave[slave].group == currentgroup) && (ec_slave[slave].state != EC_STATE_OPERATIONAL))
             {
+                checkedCount++;
                 ec_group[currentgroup].docheckstate = TRUE;
                 if(ec_slave[slave].state == (EC_STATE_SAFE_OP + EC_STATE_ERROR))
                 {
@@ -276,6 +319,7 @@ void ECATWrapper::checkStateLoop()
             }
             if(ec_slave[slave].islost)
             {
+                checkedCount++;
                 if(ec_slave[slave].state == EC_STATE_NONE || ec_slave[slave].state == EC_STATE_INIT)
                 {
                     if(ec_recover_slave(slave, EC_TIMEOUTMON))
@@ -296,7 +340,7 @@ void ECATWrapper::checkStateLoop()
                 }
             }
         }
-        if(!ec_group[currentgroup].docheckstate) emit infoMessage("All slaves resumed OP state");
+        if(checkedCount > 0 && !ec_group[currentgroup].docheckstate) emit infoMessage(QString::asprintf("All slaves resumed OP state, real/expectWKC:%d/%d", realWKC, expectedWKC));
     }
     else lostSlaveSet.clear();
 }

@@ -70,7 +70,7 @@ public:
     Motor(uint32_t _SN) : SN(_SN) {};
     Motor(uint32_t _SN, uint8_t _limit) : SN(_SN), limiter_index(_limit) {};
     ~Motor();
-    bool findMotorInVector(QVector<slave_inputs_t*>& input, QVector<slave_outputs_t*>& output);
+    bool findMotor(QHash<uint16_t, ECATSlave*>& slaves);
     void resetState();
     bool setMode(Motor::Mode mode);
     bool setState(Motor::State state);
@@ -106,7 +106,7 @@ private:
     motor_set_t *set_ptr = nullptr;
 };
 
-QSet<QString> getMotorSN(QVector<slave_inputs_t*>& input_vector);
+QSet<QString> getMotorSN(QHash<uint16_t, ECATSlave*>& slaves);
 float normalizeRad(float radian);
 float getIncAngleByRPM(float rpm, float dt);
 

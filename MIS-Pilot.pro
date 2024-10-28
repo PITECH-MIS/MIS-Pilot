@@ -22,7 +22,8 @@ INCLUDEPATH += \
     $${soem}/include \
 
 win32{
-DEFINES += ENV_WIN32
+DEFINES += ENV_WIN32 \
+        _XKEYCHECK_H \
 
 INCLUDEPATH += \
     $${soem}/win64/Inc\
@@ -60,6 +61,7 @@ LIBS += \
 }
 
 SOURCES += \
+    EtherCAT/ECATSlave.cpp \
     Widgets/CmdDebugger/CmdDebugger.cpp \
     Widgets/JoypadWidget/joypad.cpp \
     Widgets/ControllerWindow/ControllerWindow.cpp \
@@ -82,6 +84,7 @@ SOURCES += \
     utils.cpp
 
 HEADERS += \
+    EtherCAT/ECATSlave.h \
     Widgets/CmdDebugger/CmdDebugger.h \
     Widgets/JoypadWidget/joypad.h \
     Widgets/ControllerWindow/ControllerWindow.h \

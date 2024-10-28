@@ -237,14 +237,14 @@ void ControllerWindow::showWindow()
     }
     motorSNSet.clear();
     motorHashMap.clear();
-    motorSNSet = getMotorSN(wrapper->input_vector);
+    motorSNSet = getMotorSN(wrapper->slaves);
     emit infoMessage(QString::asprintf("Find %d motor(s) on EtherCAT Bus", motorSNSet.size()));
     for(const auto &i : std::as_const(motorSNSet))
     {
         // emit debugMessage("Find motor SN: " + i);
         uint8_t limiter_index = 0;
         QSharedPointer<Motor> motor = QSharedPointer<Motor>(new Motor(i.toUInt(), limiter_index));
-        if(motor->findMotorInVector(wrapper->input_vector, wrapper->output_vector))
+        if(motor->findMotor(wrapper->slaves))
         {
             motor->resetState();
             motorHashMap.insert(i, motor);

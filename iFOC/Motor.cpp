@@ -7,13 +7,13 @@ Motor::~Motor()
     qDebugMessage("Motor SN: " + QString::number(SN) + " destroyed");
 }
 
-bool Motor::findMotorInVector(QVector<slave_inputs_t*>& input, QVector<slave_outputs_t*>& output)
+bool Motor::findMotor(QHash<uint16_t, ECATSlave*>& slaves)
 {
-    if(input.size() != output.size()) return false;
-    for(int i = 0; i < input.size(); i++)
+    for(int i = 0; i < slaves.size(); i++)
     {
-        motor_state_t* state_start = reinterpret_cast<motor_state_t*>(&input.at(i)->Motor1_State);
-        motor_set_t* set_start = reinterpret_cast<motor_set_t*>(&output.at(i)->Motor1_Set);
+        const auto x = slaves.values().at(i);
+        motor_state_t* state_start = reinterpret_cast<motor_state_t*>(&x->input->Motor1_State);
+        motor_set_t* set_start = reinterpret_cast<motor_set_t*>(&x->output->Motor1_Set);
         for(uint8_t j = 0; j < 8; j++)
         {
             if(state_start->SN == SN)
@@ -188,12 +188,12 @@ bool Motor::hasLimiterActivated()
     }
 }
 
-QSet<QString> getMotorSN(QVector<slave_inputs_t*>& input_vector)
+QSet<QString> getMotorSN(QHash<uint16_t, ECATSlave*>& slaves)
 {
     QSet<QString> result;
-    for(const auto &i : input_vector)
+    for(const auto &i : slaves.values())
     {
-        motor_state_t* state_start = (motor_state_t*) &i->Motor1_State;
+        motor_state_t* state_start = (motor_state_t*) &i->input->Motor1_State;
         for(uint8_t j = 0; j < 8; j++)
         {
             if(state_start->SN != 0)
