@@ -2,7 +2,7 @@ QT       += core gui multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-QT += sql
+QT += sql charts
 
 CONFIG += c++20
 
@@ -63,6 +63,7 @@ LIBS += \
 SOURCES += \
     EtherCAT/ECATSlave.cpp \
     EtherCAT/PDOMasterProtocol.cpp \
+    Widgets/DynamicChart/DynamicChart.cpp \
     Widgets/PayloadDebugger/PayloadDebugger.cpp \
     Widgets/JoypadWidget/joypad.cpp \
     Widgets/ControllerWindow/ControllerWindow.cpp \
@@ -87,6 +88,7 @@ SOURCES += \
 HEADERS += \
     EtherCAT/ECATSlave.h \
     EtherCAT/PDOMasterProtocol.h \
+    Widgets/DynamicChart/DynamicChart.h \
     Widgets/PayloadDebugger/PayloadDebugger.h \
     Widgets/JoypadWidget/joypad.h \
     Widgets/ControllerWindow/ControllerWindow.h \
