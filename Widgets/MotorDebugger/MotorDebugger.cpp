@@ -18,6 +18,14 @@ MotorDebugger::MotorDebugger(QHash<QString, QSharedPointer<Motor>>& hashMap, QWi
     connect(ui->motorTargetTorqueSpinBox, &QDoubleSpinBox::valueChanged, this, &MotorDebugger::onChangeMotorTarget);
     connect(ui->motorTargetSpeedSpinBox, &QDoubleSpinBox::valueChanged, this, &MotorDebugger::onChangeMotorTarget);
     connect(ui->motorTargetPosSpinBox, &QDoubleSpinBox::valueChanged, this, &MotorDebugger::onChangeMotorTarget);
+
+    ui->dynamicChart->createSeries(1, "Test 1");
+    timer = new QTimer();
+    connect(timer, &QTimer::timeout, this, [this]()
+    {
+        ui->dynamicChart->addPoint(1, QPointF(m_index++, QRandomGenerator::global()->bounded(100)));
+    });
+    timer->start(100);
 }
 
 void MotorDebugger::showWindow()
@@ -67,7 +75,7 @@ void MotorDebugger::onChangeMotorEnable(Qt::CheckState state)
 {
     if(!(currentDbgMotor && currentDbgMotor->setState((Motor::State)ui->motorEnabledCheckBox->isChecked())))
     {
-        emit errorMessage("Error");
+        emit errorMessage("Error: No debug motor available");
         disconnect(ui->motorEnabledCheckBox, &QCheckBox::checkStateChanged, this, &MotorDebugger::onChangeMotorEnable);
         ui->motorEnabledCheckBox->setCheckState(state == Qt::Unchecked ? Qt::Checked : Qt::Unchecked);
         connect(ui->motorEnabledCheckBox, &QCheckBox::checkStateChanged, this, &MotorDebugger::onChangeMotorEnable);
@@ -89,7 +97,7 @@ void MotorDebugger::onChangeMotorTarget()
 {
     if(!currentDbgMotor)
     {
-        emit errorMessage("Error");
+        emit errorMessage("Error: No debug motor available");
         return;
     }
     switch(currentDbgMotor->getMode())

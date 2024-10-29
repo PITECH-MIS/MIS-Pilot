@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>401</width>
-    <height>391</height>
+    <height>594</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -623,8 +623,26 @@
      </item>
     </layout>
    </widget>
+   <widget class="DynamicChart" name="dynamicChart" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>390</y>
+      <width>400</width>
+      <height>200</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DynamicChart</class>
+   <extends>QWidget</extends>
+   <header>../../Widgets/DynamicChart/DynamicChart.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
