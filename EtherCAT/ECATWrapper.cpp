@@ -9,7 +9,7 @@ ECATWrapper::ECATWrapper()
                                                                            char *payload,
                                                                            uint8_t len){
         QString ret = QString::asprintf("Received PDO Payload from slave #%d: \n", slave_id) + QString::fromUtf8(payload);
-        emit this->infoMessage(ret);
+        emit this->debugMessage(ret);
         this->pdoProtocol.sendPayload(slave_id, payload, len);
     });
 }
