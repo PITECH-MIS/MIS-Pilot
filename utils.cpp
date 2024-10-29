@@ -27,7 +27,7 @@ void qDebugMessage(QString msg)
 QString filterASCIIVisibleChar(char* origin, size_t max_len)
 {
     QString result = QString::fromLocal8Bit(origin, strnlen(origin, max_len));
-    QRegularExpression regExp = QRegularExpression("[^\x1F-\x7F]+");
+    static QRegularExpression regExp = QRegularExpression("[^\x1F-\x7F]+");
     result.remove(regExp);
     return result;
 }
