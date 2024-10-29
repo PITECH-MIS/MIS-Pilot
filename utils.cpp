@@ -6,7 +6,7 @@
 #include <QWidget>
 #include <QRegularExpression>
 
-QStringList filterEthWords = {"Miniport", "Virtual", "PPPoE", "Wi-Fi", "WiFi", "Bluetooth", "Tunnel", "VPN", "TEST", "loop"};
+QStringList filterEthWords = {"Miniport", "Virtual", "PPPoE", "Wi-Fi", "WiFi", "Bluetooth", "Tunnel", "VPN", "TEST", "loop", "TAP"};
 
 bool isUsableEth(QString& origin)
 {
