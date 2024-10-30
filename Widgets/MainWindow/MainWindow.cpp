@@ -110,9 +110,7 @@ void MainWindow::onSelectXMLPath()
     if(dialog.exec())
     {
         configXMLPath = dialog.selectedFiles().at(0);
-        QFontMetrics fontWidth(ui->configXmlPathEdit->font());
-        QString pathElided = fontWidth.elidedText(configXMLPath, Qt::ElideMiddle, ui->configXmlPathEdit->width() - 5);
-        ui->configXmlPathEdit->setText(pathElided);
+        ui->configXmlPathEdit->setText(getElidedString(configXMLPath, ui->configXmlPathEdit->font(), ui->configXmlPathEdit->width() - 5));
         ui->configXmlPathEdit->setToolTip(configXMLPath);
     }
 }

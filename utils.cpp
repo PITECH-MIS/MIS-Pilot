@@ -37,6 +37,12 @@ QString secondsToHHmmss(int time_sec)
     return QTime(0, 0, 0).addSecs(int(time_sec)).toString(QString::fromLatin1("HH:mm:ss"));
 }
 
+QString getElidedString(const QString& origin, const QFont& font, int width)
+{
+    QFontMetrics fontWidth(font);
+    return fontWidth.elidedText(origin, Qt::ElideMiddle, width);
+}
+
 void centerOnCursorScreen(QWidget* widget)
 {
     auto screen = QGuiApplication::screenAt(QCursor::pos());

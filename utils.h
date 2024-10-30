@@ -5,6 +5,7 @@
 #include <QFuture>
 #include <QtConcurrent>
 #include <QApplication>
+#include <QFont>
 
 bool isUsableEth(QString& origin);
 
@@ -15,6 +16,8 @@ void centerOnCursorScreen(QWidget* widget);
 QString filterASCIIVisibleChar(char* origin, size_t max_len);
 
 QString secondsToHHmmss(int time_sec);
+
+QString getElidedString(const QString& origin, const QFont& font, int width);
 
 template <class Function, class ...Args>
 void spawnTask(Function &&f, Args &&...args)
