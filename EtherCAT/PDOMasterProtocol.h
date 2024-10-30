@@ -17,7 +17,7 @@ public:
     uint8_t packet_id = 0;
     uint8_t sender_id = 0;
     uint8_t receiver_id = 0;
-    char payload[BUFFER_LEN - 8];
+    char payload[BUFFER_LEN - 6];
     uint8_t crc16_msb = 0;
     uint8_t crc16_lsb = 0;
     bool operator==(const pdo_protocol_buf_t& rhs) const
