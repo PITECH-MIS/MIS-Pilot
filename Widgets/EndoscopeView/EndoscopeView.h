@@ -23,6 +23,8 @@ private slots:
     void onConnectToCamera();
     void onCaptureTimeout();
     void onRefreshCameraList();
+    void onSelectRecordPath();
+    void onTriggerRecording();
     void onSelectFPS();
     void refreshFrame(const QImage &image);
 private:

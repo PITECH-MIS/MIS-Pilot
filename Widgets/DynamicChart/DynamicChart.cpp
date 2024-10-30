@@ -47,7 +47,7 @@ void DynamicChart::addPoint(int seriesId, const QPointF &point)
     }
     else
     {
-        lastPoint = point; // 第一个点直接添加
+        lastPoint = point;
         series->append(point);
     }
     newPoint = point;
