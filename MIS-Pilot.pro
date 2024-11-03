@@ -57,7 +57,7 @@ LIBS += \
     $${xcore}/lib/linux/libxCoreSDK.a \
     $${xcore}/lib/linux/libxCoreSDK.so.0.4.1 \
     $${xcore}/lib/linux/libxMateModel.a \
-    -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_imgcodecs \
+    # -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_imgcodecs \
 }
 
 SOURCES += \
