@@ -121,6 +121,7 @@ void ECATWrapper::run()
     {
         QByteArray bArray = ethName.toLatin1();
         char *eth = bArray.data();
+        /* Make sure running the program with ROOT user on Linux, otherwise the ec_init() will fail. */
         if(ec_init(eth))
         {
             emit infoMessage("ec_init() succeeded");
