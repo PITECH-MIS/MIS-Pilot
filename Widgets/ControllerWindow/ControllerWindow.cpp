@@ -218,8 +218,12 @@ void ControllerWindow::updateControlCoord()
 
 void ControllerWindow::showWindow()
 {
-    ui->leftJoyComboBox->addItems(joysticks.keys());
-    ui->rightJoyComboBox->addItems(joysticks.keys());
+    for(const auto &i : joysticks.keys())
+    {
+        auto name = getElidedString(i, ui->leftJoyComboBox->font(), ui->leftJoyComboBox->width() + 5);
+        ui->leftJoyComboBox->addItem(name);
+        ui->rightJoyComboBox->addItem(name);
+    }
     if(joysticks.size() > 0)
     {
         ui->leftJoyComboBox->setCurrentIndex(0);
@@ -568,13 +572,13 @@ void mapPOVToSpeed(Vector2D& speed, int angle)
 void ControllerWindow::onPOVEvent(const QJoystickPOVEvent &event)
 {
     // emit infoMessage(event.joystick->name + " (POV): " + QString::asprintf("angle=%d, pov=%d", event.angle, event.pov));
-    if(ui->leftJoyComboBox->currentText() == event.joystick->name)
+    if(ui->leftJoyComboBox->currentIndex() == event.joystick->id)
     {
         mapPOVToSpeed(leftPOVSpeed, event.angle);
         ui->leftAuxJoyPad->setX(leftPOVSpeed.x);
         ui->leftAuxJoyPad->setY(leftPOVSpeed.y);
     }
-    if(ui->rightJoyComboBox->currentText() == event.joystick->name)
+    if(ui->rightJoyComboBox->currentIndex() == event.joystick->id)
     {
         mapPOVToSpeed(rightPOVSpeed, event.angle);
         ui->rightAuxJoyPad->setX(rightPOVSpeed.x);
@@ -587,7 +591,7 @@ void ControllerWindow::onAxisEvent(const QJoystickAxisEvent &event)
     // emit infoMessage(event.joystick->name + " (Axis): " + QString::asprintf("axis=%d, value=%.3f", event.axis, event.value));
     float value = event.value;
     if(std::abs(value) <= 0.05f) value = 0.0f; // deadzone
-    if(ui->leftJoyComboBox->currentText() == event.joystick->name)
+    if(ui->leftJoyComboBox->currentIndex() == event.joystick->id)
     {
         if(event.axis == 0)
         {
@@ -609,7 +613,7 @@ void ControllerWindow::onAxisEvent(const QJoystickAxisEvent &event)
             ui->leftAuxJoyPad->setY(leftPOVSpeed.y);
         }
     }
-    if(ui->rightJoyComboBox->currentText() == event.joystick->name)
+    if(ui->rightJoyComboBox->currentIndex() == event.joystick->id)
     {
         if(event.axis == 0)
         {
