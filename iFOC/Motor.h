@@ -15,39 +15,42 @@
 #define RAD2DEG(radian) ((float)(radian) * 57.295779513082320876798154814105f)
 
 #pragma pack(push, 1)
-typedef struct motor_state_t
+class motor_state_t
 {
-    uint8_t IsAlive;
-    uint8_t Enable;
-    uint8_t Mode;
-    uint8_t MotorTemp;
-    uint8_t MCUTemp;
-    uint8_t LimiterState;
-    uint16_t ErrorCode;
-    uint32_t SN;
-    float IqReal;
-    float IdReal;
-    float IqSet;
-    float IdSet;
-    float Vbus;
-    float Ibus;
-    float EstimateSpeed;
-    float EstimateRawAngle;
-    float CurrentLimit;
-}motor_state_t;
+public:
+    uint8_t IsAlive = 0;
+    uint8_t Enable = 0;
+    uint8_t NodeID = 0;
+    uint8_t Mode = 0;
+    uint8_t MotorTemp = 0;
+    uint8_t MCUTemp = 0;
+    uint8_t LimiterState = 0;
+    uint16_t ErrorCode = 0;
+    uint32_t SN = 0;
+    float IqReal = 0.0f;
+    float IdReal = 0.0f;
+    float Vbus = 0.0f;
+    float Ibus = 0.0f;
+    float EstimateSpeed = 0.0f;
+    float EstimateRawAngle = 0.0f;
+    float CurrentLimit = 0.0f;
+    bool operator==(const motor_state_t& rhs) const { return memcmp(&IsAlive, &rhs.IsAlive, sizeof(motor_state_t)) == 0; }
+    bool operator!=(const motor_state_t& rhs) const { return !(*this == rhs); }
+};
 
-typedef struct motor_set_t
+class motor_set_t
 {
-    uint8_t Enable;
-    uint8_t Identify;
-    uint8_t Mode;
-    float IqSet;
-    float IdSet;
-    float SetSpeed;
-    float SetRawAngle;
-    float SetTrajectoryAngle;
-    float SetCurrentLimit;
-}motor_set_t;
+public:
+    uint8_t Enable = 0;
+    uint8_t Mode = 0;
+    float IqSet = 0.0f;
+    float SetSpeed = 0.0f;
+    float SetRawAngle = 0.0f;
+    float SetTrajectoryAngle = 0.0f;
+    float SetCurrentLimit = 0.0f;
+    bool operator==(const motor_set_t& rhs) const { return memcmp(&Enable, &rhs.Enable, sizeof(motor_set_t)) == 0; }
+    bool operator!=(const motor_set_t& rhs) const { return !(*this == rhs); }
+};
 
 #pragma pack(pop)
 
