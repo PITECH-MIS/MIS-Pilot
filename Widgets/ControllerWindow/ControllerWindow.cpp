@@ -774,7 +774,7 @@ void ControllerWindow::onButtonEvent(const QJoystickButtonEvent &event)
 
 void ControllerWindow::controlLoop()
 {
-    qDebugMessage(QString::asprintf("[controlLoop] Thread ID: %x", this->thread()->currentThreadId()));
+    // qDebugMessage(QString::asprintf("[controlLoop] Thread ID: %x", this->thread()->currentThreadId()));
     for(auto i = motorHashMap.constKeyValueBegin(); i != motorHashMap.constKeyValueEnd(); ++i)
     {
         i->second.get()->applyMotorConfig();
@@ -808,6 +808,11 @@ void ControllerWindow::showEvent(QShowEvent *event)
 
 ControllerWindow::~ControllerWindow()
 {
+    if(debuggerWindow)
+    {
+        delete debuggerWindow;
+        debuggerWindow = nullptr;
+    }
     emit debugMessage("ControllerWindow destroyed");
     delete ui;
     emit onCloseWindow();
