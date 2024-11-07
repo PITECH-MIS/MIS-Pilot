@@ -1,9 +1,10 @@
 #include "DynamicChart.h"
+#include "../../utils.h"
 
 DynamicChart::DynamicChart(QWidget *parent)
     : QChartView(new QChart(), parent), m_chart(this->chart())
 {
-    m_chart->setTitle("Dynamic Data Plot");
+    // m_chart->setTitle("Dynamic Data Plot");
     m_chart->legend()->hide();
     m_chart->layout()->setContentsMargins(0, 0, 0, 0);
     m_chart->setMargins(QMargins(0, 0, 0, 0));
@@ -22,6 +23,16 @@ DynamicChart::DynamicChart(QWidget *parent)
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &DynamicChart::animateDrawing);
     timer->setInterval(30);
+}
+
+void DynamicChart::setTitle(QString title)
+{
+    m_chart->setTitle(title);
+}
+
+void DynamicChart::setVerticalRange(float lower, float upper)
+{
+    axisY->setRange(lower, upper);
 }
 
 void DynamicChart::createSeries(int seriesId, const QString &name)
@@ -79,8 +90,8 @@ void DynamicChart::animateDrawing()
     }
     if (y > axisY->max() || y < axisY->min())
     {
-        axisY->setMax(qMax(y + 10, axisY->max()));
-        axisY->setMin(qMin(y - 10, axisY->min()));
+        axisY->setMax(qMax(1.5f * y, axisY->max()));
+        axisY->setMin(qMin(1.5f * y, axisY->min()));
     }
 
     currentStep++;

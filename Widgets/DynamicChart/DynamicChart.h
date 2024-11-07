@@ -19,6 +19,8 @@ public:
     DynamicChart(QWidget *parent);
     void createSeries(int seriesId, const QString &name);
     void addPoint(int seriesId, const QPointF &point);
+    void setTitle(QString title);
+    void setVerticalRange(float lower, float upper);
 private:
     QChart* m_chart;
     QValueAxis* axisX;
