@@ -36,7 +36,7 @@ private:
     QHash<QString, QSharedPointer<Motor>>& motorHashMap;
     QMap<Motor::Mode, QString> motorModeNames;
     QSharedPointer<Motor> currentDbgMotor = nullptr;
-    QTimer *timer;
+    // QTimer *timer;
     int m_index = 0;
 };
 

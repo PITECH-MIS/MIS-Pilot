@@ -19,13 +19,16 @@ MotorDebugger::MotorDebugger(QHash<QString, QSharedPointer<Motor>>& hashMap, QWi
     connect(ui->motorTargetSpeedSpinBox, &QDoubleSpinBox::valueChanged, this, &MotorDebugger::onChangeMotorTarget);
     connect(ui->motorTargetPosSpinBox, &QDoubleSpinBox::valueChanged, this, &MotorDebugger::onChangeMotorTarget);
 
-    ui->dynamicChart->createSeries(1, "Test 1");
-    timer = new QTimer();
-    connect(timer, &QTimer::timeout, this, [this]()
-    {
-        ui->dynamicChart->addPoint(1, QPointF(m_index++, QRandomGenerator::global()->bounded(100)));
-    });
-    timer->start(100);
+    ui->dynamicChart->createSeries(1, "Iq");
+    // ui->dynamicChart->createSeries(2, "Id");
+    ui->dynamicChart->setTitle("Real Iq (A)");
+    ui->dynamicChart->setVerticalRange(-0.1f, 0.1f);
+    // timer = new QTimer();
+    // connect(timer, &QTimer::timeout, this, [this]()
+    // {
+    //     ui->dynamicChart->addPoint(1, QPointF(m_index++, QRandomGenerator::global()->bounded(100)));
+    // });
+    // timer->start(100);
 }
 
 void MotorDebugger::showWindow()
@@ -151,6 +154,8 @@ void MotorDebugger::updateState()
         ui->motorStateEstAngleEdit->setText(QString::number(currentDbgMotor->getPosDeg()));
         ui->motorStateCurrLimitEdit->setText(QString::number(currentDbgMotor->getCurrentLimit()));
         ui->motorStateMCUTempEdit->setText(QString::number(currentDbgMotor->getMCUTemp()));
+        ui->dynamicChart->addPoint(1, QPointF(m_index++, currentDbgMotor->getIq()));
+        // ui->dynamicChart->addPoint(2, QPointF(m_index, currentDbgMotor->getId()));
     }
 }
 
