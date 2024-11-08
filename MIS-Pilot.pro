@@ -10,6 +10,7 @@ soem += $$PWD/SOEM
 qjoysticks += $$PWD/QJoysticks
 xcore += $$PWD/RobotArm/xCore/
 opencv += $$PWD/OpenCV
+matplot += $$PWD/matplot
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -20,6 +21,7 @@ INCLUDEPATH += \
     $${qjoysticks}/ \
     $${opencv}/include \
     $${soem}/include \
+    $${matplot}/include \
 
 win32{
 DEFINES += ENV_WIN32 \
@@ -40,6 +42,8 @@ LIBS += \
     # $${xcore}/lib/win64/xCoreSDK.dll \
     $${opencv}/build_win64/lib/Debug/opencv_*.lib \
     $${opencv}/build_win64/install/x64/vc17/lib/opencv_*.lib \
+    $${matplot}/lib_win64/matplot.lib \
+    $${matplot}/lib_win64/nodesoup.lib \
 
 LIBS += -L$${soem}/win64/wpcap/Lib/x64/ -lwpcap
 !win32-g++: PRE_TARGETDEPS += $${soem}/win64/wpcap/Lib/x64/wpcap.lib
@@ -57,12 +61,15 @@ LIBS += \
     $${xcore}/lib/linux/libxCoreSDK.a \
     $${xcore}/lib/linux/libxCoreSDK.so.0.4.1 \
     $${xcore}/lib/linux/libxMateModel.a \
+    $${matplot}/lib_linux/libmatplot.a \
+    $${matplot}/lib_linux/libnodesoup.a \
     # -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_imgcodecs \
 }
 
 SOURCES += \
     EtherCAT/ECATSlave.cpp \
     EtherCAT/PDOMasterProtocol.cpp \
+    Kinematics/KinematicsGA.cpp \
     Widgets/DynamicChart/DynamicChart.cpp \
     Widgets/PayloadDebugger/PayloadDebugger.cpp \
     Widgets/JoypadWidget/joypad.cpp \
@@ -88,6 +95,8 @@ SOURCES += \
 HEADERS += \
     EtherCAT/ECATSlave.h \
     EtherCAT/PDOMasterProtocol.h \
+    Kinematics/KinematicsGA.h \
+    Kinematics/openGA.hpp \
     Widgets/DynamicChart/DynamicChart.h \
     Widgets/PayloadDebugger/PayloadDebugger.h \
     Widgets/JoypadWidget/joypad.h \
@@ -519,4 +528,6 @@ RESOURCES += \
     Resources/resources.qrc
 
 DISTFILES += \
-    DeviceDescriptions/micro-olif.json
+    DeviceDescriptions/micro-olif.json \
+    Kinematics/ga/ChangeLog \
+    matplot/CMakeLists.txt
