@@ -193,14 +193,20 @@ void ECATWrapper::run()
                     {
                         for(int i = 1; i <= ec_slavecount; i++)
                         {
-                            if(slaves.contains(i)) slaves.value(i)->input = (slave_inputs_t*)ec_slave[i].inputs;
+                            if(slaves.contains(i))
+                            {
+                                slaves.value(i)->input = (slave_inputs_t*)ec_slave[i].inputs;
+                                slaves.value(i)->last_motor_count = slaves.value(i)->input->Interface_State.MotorCount;
+                            }
                         }
                         emit infoMessage("Slave inputs mapped successfully");
                     }
 
                     if(sizeof(slave_outputs_t) != oloop && (oloop % sizeof(slave_outputs_t) != 0))
                     {
-                        emit errorMessage(QString::asprintf("Size of outputs_t is not equal or common factor to oloop: %d/%d", sizeof(slave_outputs_t), oloop));
+                        emit errorMessage(QString::asprintf("Size of outputs_t is not equal or common factor to oloop: %d/%d, disconnecting", sizeof(slave_outputs_t), oloop));
+                        ec_close();
+                        return;
                     }
                     else
                     {
