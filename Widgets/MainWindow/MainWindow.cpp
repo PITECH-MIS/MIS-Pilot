@@ -216,6 +216,11 @@ void MainWindow::ParseStateViewModel()
             AppendDescToItem("Uptime: " + secondsToHHmmss(x->input->Interface_State.Uptime), 4, item);
             AppendDescToItem(QString::asprintf("SN: %llu", x->serial_number), 5, item);
             stateViewModel->setItem(i, item);
+            if(x->input->Interface_State.MotorCount != x->last_motor_count)
+            {
+                onInfoMsg(QString::asprintf("Slave #%d MotorCount changed from %d to %d", x->slave_id, x->last_motor_count, x->input->Interface_State.MotorCount));
+                x->last_motor_count = x->input->Interface_State.MotorCount;
+            }
         }
     }
     if(newItem) ui->stateTreeView->expandAll();

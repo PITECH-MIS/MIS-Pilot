@@ -22,6 +22,8 @@ public:
     /* PDO Mapped Area */
     slave_inputs_t* input = nullptr;
     slave_outputs_t* output = nullptr;
+    /* User-defined Area */
+    int last_motor_count = 0;
 };
 
 #endif // ECATSLAVE_H
