@@ -148,7 +148,15 @@ void MainWindow::updateEthList()
 void MainWindow::onClickConnect(void)
 {
     if(wrapper->getExpectedState() != EC_STATE_OPERATIONAL) wrapper->initEth(ethInfo[ui->eth_comboBox->currentText()]);
-    else wrapper->closeConnection();
+    else
+    {
+        if(payloadDebugger)
+        {
+            delete payloadDebugger;
+            payloadDebugger = nullptr;
+        }
+        wrapper->closeConnection();
+    }
     // robotArm = new RobotArmWrapper;
     // robotArm->init();
 }
