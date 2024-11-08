@@ -7,6 +7,7 @@ PayloadDebugger::PayloadDebugger(ECATWrapper *w, QWidget *parent)
     , ui(new Ui::PayloadDebugger), wrapper(w)
 {
     ui->setupUi(this);
+    connect(&wrapper->pdoProtocol, &PDOMasterProtocol::receivePayload, this, &PayloadDebugger::receivePayload);
     if(wrapper->slaves.size() > 0)
     {
         ui->slaveIDComboBox->addItem("All");
@@ -23,6 +24,12 @@ PayloadDebugger::PayloadDebugger(ECATWrapper *w, QWidget *parent)
         wrapper->pdoProtocol.sendPayload(slave_id, payload, len);
         qDebugMessage(QString::asprintf("Send PDO Payload to slave #%d: ", slave_id) + QString::fromUtf8(payload));
     });
+}
+
+void PayloadDebugger::receivePayload(uint16_t slave_id, char *payload, uint8_t len)
+{
+    QString txt = QString::asprintf("#%d (%d)>> ", slave_id, strnlen(payload, len)) + QString::fromUtf8(payload);
+    ui->rxPayloadEdit->appendPlainText(txt);
 }
 
 PayloadDebugger::~PayloadDebugger()

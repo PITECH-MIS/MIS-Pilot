@@ -15,7 +15,8 @@ class PayloadDebugger : public QWidget
 public:
     explicit PayloadDebugger(ECATWrapper* w, QWidget *parent = nullptr);
     ~PayloadDebugger();
-
+private slots:
+    void receivePayload(uint16_t slave_id, char *payload, uint8_t len);
 private:
     Ui::PayloadDebugger *ui;
     ECATWrapper* wrapper;
