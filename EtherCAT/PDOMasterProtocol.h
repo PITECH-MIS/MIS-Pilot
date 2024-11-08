@@ -54,6 +54,7 @@ public:
     ECATSlave* inst;
     pdo_protocol_buf_t rx_buf; // Slave-to-Master
     pdo_protocol_buf_t tx_buf; // Master-to-Slave
+    uint8_t packet_id = 0;
 };
 
 class PDOMasterProtocol : public QObject
@@ -62,6 +63,8 @@ class PDOMasterProtocol : public QObject
 public:
     PDOMasterProtocol();
     void parseSlaves(QHash<uint16_t, ECATSlave*>& slaves);
+    void resetSlaveBuffer(uint16_t slave_id);
+    bool print(uint16_t slave_id, const char *fmt, ...);
 public slots:
     void onPDOLoop();
     bool sendPayload(uint16_t slave_id, char *payload, uint8_t len);

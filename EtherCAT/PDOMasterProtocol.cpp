@@ -1,4 +1,5 @@
 #include "PDOMasterProtocol.h"
+#include "../utils.h"
 
 PDOMasterProtocol::PDOMasterProtocol()
 {
@@ -31,18 +32,38 @@ void PDOMasterProtocol::onPDOLoop()
     for(auto i = pdoSlaves.constKeyValueBegin(); i != pdoSlaves.constKeyValueEnd(); i++)
     {
         auto slave = i->second;
-        if(slave->inst && slave->inst->input && slave->inst->output && (slave->inst->slave_t && !slave->inst->slave_t->islost))
+        if(slave->inst && slave->inst->input && slave->inst->output && slave->inst->slave_t)
         {
             auto currTxBuf = (pdo_protocol_buf_t*)slave->inst->input->TxBuf;  // Slave-to-Master
             auto currRxBuf = (pdo_protocol_buf_t*)slave->inst->output->RxBuf; // Master-to-Slave
-            if(*currTxBuf != slave->rx_buf && (*currTxBuf).isValid()) // Received Command from Slave
+            if(!slave->inst->slave_t->islost)
             {
-                memcpy(&slave->rx_buf, currTxBuf, sizeof(pdo_protocol_buf_t));
-                emit receivePayload(slave->inst->slave_id, slave->rx_buf.payload, sizeof(slave->rx_buf.payload));
+                if(*currTxBuf != slave->rx_buf && (*currTxBuf).isValid()) // Received Command from Slave
+                {
+                    memcpy(&slave->rx_buf, currTxBuf, sizeof(pdo_protocol_buf_t));
+                    emit receivePayload(slave->inst->slave_id, slave->rx_buf.payload, sizeof(slave->rx_buf.payload));
+                }
+                if(*currRxBuf != slave->tx_buf && slave->tx_buf.isValid()) // Transmit Command to Slave
+                {
+                    memcpy(currRxBuf, &slave->tx_buf, sizeof(pdo_protocol_buf_t));
+                    // memset(&slave->tx_buf, 0, sizeof(pdo_protocol_buf_t));
+                    // auto lambda = [&currRxBuf]()
+                    // {
+                    //     QThread::msleep(1000);
+                    //     memset(currRxBuf, 0, sizeof(pdo_protocol_buf_t));
+                    // };
+                    // spawnTask(lambda); // max lifetime: 1s
+                }
+                // else if(*currRxBuf == slave->tx_buf && slave->tx_buf.isValid()) // max lifetime: 1 PDO Cycle
+                // {
+                //     memset(&slave->tx_buf, 0, sizeof(pdo_protocol_buf_t));
+                //     memset(currRxBuf, 0, sizeof(pdo_protocol_buf_t));
+                // }
             }
-            if(*currRxBuf != slave->tx_buf && slave->tx_buf.isValid()) // Transmit Command to Slave
+            else // clean the buffer when slave lost
             {
-                memcpy(currRxBuf, &slave->tx_buf, sizeof(pdo_protocol_buf_t));
+                memset(&slave->tx_buf, 0, sizeof(pdo_protocol_buf_t));
+                memset(currRxBuf, 0, sizeof(pdo_protocol_buf_t));
             }
         }
     }
@@ -64,7 +85,8 @@ bool PDOMasterProtocol::sendPayload(uint16_t slave_id, char *payload, uint8_t le
         auto currRxBuf = (pdo_protocol_buf_t*)slave->inst->output->RxBuf;
         if(*currRxBuf != slave->tx_buf && slave->tx_buf.isValid()) continue; // THERE IS ONGOING PAYLOAD THAT HASN'T BEEN TRANSMITTED
         if(len > sizeof(slave->tx_buf.payload)) len = sizeof(slave->tx_buf.payload);
-        slave->tx_buf.packet_id++;
+        slave->packet_id++;
+        slave->tx_buf.packet_id = slave->packet_id;
         memset(slave->tx_buf.payload, 0, sizeof(slave->tx_buf.payload));
         memcpy(slave->tx_buf.payload, payload, len);
         slave->tx_buf.prepare();
@@ -72,6 +94,15 @@ bool PDOMasterProtocol::sendPayload(uint16_t slave_id, char *payload, uint8_t le
     }
     if(successCount == idList.size()) return true;
     return false;
+}
+
+bool PDOMasterProtocol::print(uint16_t slave_id, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    char buffer[sizeof(pdo_protocol_buf_t::payload)];
+    auto len = (uint8_t)vsnprintf(buffer, sizeof(buffer), fmt, args);
+    return sendPayload(slave_id, buffer, len);
 }
 
 static const uint8_t CRC16_H[256] =
