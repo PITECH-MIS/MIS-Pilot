@@ -140,7 +140,7 @@ void MotorDebugger::updateState()
             break;
         default: break;
         }
-        ui->motorStateIsAliveButton->setChecked(currentDbgMotor->checkAlive());
+        ui->motorStateIsAliveLabel->setText("Alive:"+QString::number(currentDbgMotor->checkAlive()));
         ui->motorStateEnabledButton->setChecked(currentDbgMotor->getState());
         ui->motorStateModeSlider->setValue((int)currentDbgMotor->getMode());
         ui->motorStateSNEdit->setText(QString::number(currentDbgMotor->getSN()));

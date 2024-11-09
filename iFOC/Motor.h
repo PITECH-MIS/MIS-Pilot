@@ -97,7 +97,7 @@ public:
     bool isLimiterActivated();
     bool hasLimiterActivated();
     uint8_t getRawLimiterState();
-    bool checkAlive();
+    uint8_t checkAlive();
     void applyMotorConfig();
 private:
     uint32_t SN = 0;

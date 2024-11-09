@@ -29,9 +29,11 @@ bool Motor::findMotor(QHash<uint16_t, ECATSlave*>& slaves)
     return false;
 }
 
-bool Motor::checkAlive()
+uint8_t Motor::checkAlive()
 {
-    return state_ptr && (state_ptr->IsAlive) && (getSN() == SN);
+    // return state_ptr && (state_ptr->IsAlive) && (getSN() == SN);
+    if(!state_ptr || getSN() != SN) return 0;
+    return state_ptr->IsAlive;
 }
 
 void Motor::resetState()
