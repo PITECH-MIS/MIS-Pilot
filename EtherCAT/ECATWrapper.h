@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QString>
 #include <QTimer>
+#include <QSemaphore>
 #include <QFile>
 #include <QtXml/QDomDocument>
 
@@ -52,6 +53,7 @@ private:
     QThread *checkStateThread = nullptr;
     QTimer *pdoProtocolTimer = nullptr;
     QThread *pdoProtocolThread = nullptr;
+
     char IOMap[4096] = {0};
     int realWKC = 0;
     int expectedWKC = 0;

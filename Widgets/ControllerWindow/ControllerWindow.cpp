@@ -12,6 +12,7 @@ ControllerWindow::ControllerWindow(ECATWrapper* w, QMap<QString, QJoystickDevice
 {
     currentPath = QCoreApplication::applicationDirPath();
     ui->setupUi(this);
+    qDebugMessage(QString::asprintf("[ControllerWindow] Thread ID: %x", this->thread()->currentThreadId()));
     speedTimer = new QTimer(this);
     speedTimer->setTimerType(Qt::CoarseTimer);
     connect(speedTimer, &QTimer::timeout, this, &ControllerWindow::updateControlCoord);

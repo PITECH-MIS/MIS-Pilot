@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(wrapper, &ECATWrapper::errorMessage, this, &MainWindow::onErrorMsg, Qt::QueuedConnection);
     connect(wrapper, &ECATWrapper::infoMessage, this, &MainWindow::onInfoMsg, Qt::QueuedConnection);
     connect(wrapper, &ECATWrapper::debugMessage, this, &MainWindow::onDebugMsg, Qt::QueuedConnection);
-    connect(wrapper, &ECATWrapper::onStateChanged, this, &MainWindow::onECATStateChanged, Qt::QueuedConnection);
+    connect(wrapper, &ECATWrapper::onStateChanged, this, &MainWindow::onECATStateChanged, Qt::QueuedConnection); // Qt::QueuedConnection
     connect(ui->selectConfigPathButton, &QPushButton::clicked, this, &MainWindow::onSelectXMLPath);
     connect(ui->parseConfigXmlButton, &QPushButton::clicked, this, &MainWindow::onParseXML);
     connect(ui->enterControllerButton, &QPushButton::clicked, this, &MainWindow::onEnableController);
@@ -156,6 +156,9 @@ void MainWindow::onClickConnect(void)
             payloadDebugger = nullptr;
         }
         wrapper->closeConnection();
+        ui->con_pushButton->setEnabled(false);
+        while(wrapper->getExpectedState() != EC_STATE_INIT) QApplication::processEvents();
+        ui->con_pushButton->setEnabled(true);
     }
     // robotArm = new RobotArmWrapper;
     // robotArm->init();

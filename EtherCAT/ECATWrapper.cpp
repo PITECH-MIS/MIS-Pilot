@@ -41,7 +41,6 @@ ECATWrapper *ECATWrapper::getInstance()
 void ECATWrapper::pdoWorkerLoop()
 {
     emit onStateChanged(); // executed on GUI thread with Qt::QueuedConnection
-    // pdoProtocol.onPDOLoop();
     ec_send_processdata();
     realWKC = ec_receive_processdata(EC_TIMEOUTRET);
 }
@@ -164,6 +163,7 @@ void ECATWrapper::run()
                 ec_slave[0].state = EC_STATE_OPERATIONAL;
                 expectedState = EC_STATE_OPERATIONAL;
                 pdoThread->start();
+                // pdoThread->setPriority(QThread::TimeCriticalPriority)
                 ec_writestate(0);
                 int timeout = 500;
                 do
@@ -216,9 +216,11 @@ void ECATWrapper::run()
                         }
                         pdoProtocol.parseSlaves(slaves);
                         pdoProtocolThread->start();
+                        // pdoProtocolThread->setPriority(QThread::HighPriority);
                         emit infoMessage("Slave outputs mapped successfully, listening PDO Protocol");
                     }
                     checkStateThread->start();
+                    // checkStateThread->setPriority(QThread::NormalPriority);
                     emit onStateChanged();
                 }
             }
@@ -246,10 +248,8 @@ void ECATWrapper::closeConnection()
     emit infoMessage("Closing connection, request INIT state for all slaves\n");
     ec_slave[0].state = EC_STATE_INIT;
     ec_writestate(0);
-    expectedState = EC_STATE_INIT;
     ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTRET3);
     realWKC = 0;
-    emit onStateChanged();
     slaves.clear();
     if(pdoThread)
     {
@@ -268,6 +268,8 @@ void ECATWrapper::closeConnection()
         pdoProtocolThread->wait();
     }
     ec_close();
+    expectedState = EC_STATE_INIT;
+    emit onStateChanged();
 }
 
 int ECATWrapper::printErrorStack()

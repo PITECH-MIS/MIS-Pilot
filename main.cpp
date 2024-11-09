@@ -15,14 +15,11 @@ int main(int argc, char *argv[])
 {
     // qputenv("QT_QPA_PLATFORM", "windows:darkmode=0");
     QApplication a(argc, argv);
-    QThread::currentThread()->setPriority(QThread::HighestPriority);
+    QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
 #ifdef ENV_LINUX
     struct sched_param param;
     param.sched_priority = 99;
-    if(sched_setscheduler(0, SCHED_RR, &param) != 0)
-    {
-        qDebugMessage("Error on set Round-Robin Scheduler");
-    }
+    if(sched_setscheduler(0, SCHED_FIFO, &param) != 0) qDebugMessage("Error on set RT-FIFO Scheduler");
 #endif
     // setvbuf(stdout, NULL, _IONBF, 0);
     MainWindow w;
