@@ -1,6 +1,7 @@
 #include "Widgets/MainWindow/MainWindow.h"
 
 #include <QApplication>
+#include "RobotArm/RobotArmWrapper.h"
 
 #ifdef ENV_WIN32
 #pragma comment( lib, "Winmm" )
@@ -30,6 +31,8 @@ int main(int argc, char *argv[])
     // if(sched_setaffinity(0, sizeof(cpu_set_t), &cpus) != 0) qDebugMessage("Error on setaffinity");
 #endif
     // setvbuf(stdout, NULL, _IONBF, 0);
+    // RobotArmWrapper wrapper;
+    // wrapper.init();
     MainWindow w;
     w.show();
     return a.exec();
