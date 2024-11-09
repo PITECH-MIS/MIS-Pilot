@@ -6,6 +6,13 @@ using namespace rokae;
 
 RobotArmWrapper::RobotArmWrapper() {}
 
+error_code RobotArmWrapper::jog(rokae::JogOpt::Space space, JogAxis axis, double rate, double length)
+{
+    error_code ec;
+    robot->startJog(space, rate, abs(length), static_cast<unsigned int>(axis), length >= 0.0, ec);
+    return ec;
+}
+
 void RobotArmWrapper::init()
 {
     try
@@ -43,10 +50,16 @@ void RobotArmWrapper::init()
         robot->setMotionControlMode(rokae::MotionControlMode::NrtCommand, ec);
         robot->setOperateMode(rokae::OperateMode::manual, ec);
         qDebugMessage("Please press the button");
-        QThread::msleep(5000);
-        robot->startJog(JogOpt::world, 0.5, 100, 2, false, ec); // Neg. Direction 100mm, 50% speed
-        QThread::msleep(5000);
-        robot->startJog(JogOpt::world, 0.5, 100, 2, true, ec); // Pos. Direction
+        QThread::msleep(3000);
+        ec = jog(JogOpt::flange, JogAxis::Z, 0.5, 100);
+        QThread::msleep(3000);
+        ec = jog(JogOpt::flange, JogAxis::Z, 0.5, -100);
+        QThread::msleep(3000);
+        ec = jog(JogOpt::flange, JogAxis::X, 0.5, -100);
+        QThread::msleep(3000);
+        ec = jog(JogOpt::flange, JogAxis::X, 0.5, 100);
+        QThread::msleep(3000);
+
         robot->stop(ec);
 
         robot->setPowerState(false, ec);
