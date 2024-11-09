@@ -18,8 +18,16 @@ int main(int argc, char *argv[])
     QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
 #ifdef ENV_LINUX
     struct sched_param param;
-    param.sched_priority = 99;
-    if(sched_setscheduler(0, SCHED_FIFO, &param) != 0) qDebugMessage("Error on set RT-FIFO Scheduler");
+    param.sched_priority = 20;
+    if(sched_setscheduler(0, SCHED_RR, &param) != 0) qDebugMessage("Error on set RT Scheduler");
+    // // Run Task in dedicated performace CPUs
+    // cpu_set_t cpus;
+    // CPU_ZERO(&cpus);
+    // CPU_SET(0, &cpus);
+    // CPU_SET(1, &cpus);
+    // CPU_SET(2, &cpus);
+    // CPU_SET(3, &cpus);
+    // if(sched_setaffinity(0, sizeof(cpu_set_t), &cpus) != 0) qDebugMessage("Error on setaffinity");
 #endif
     // setvbuf(stdout, NULL, _IONBF, 0);
     MainWindow w;
