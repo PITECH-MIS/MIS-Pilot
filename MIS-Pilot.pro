@@ -84,6 +84,7 @@ SOURCES += \
     OpenCV/BridgeUtils.cpp \
     OpenCV/CaptureWorker.cpp \
     RobotArm/RobotArmWrapper.cpp \
+    Widgets/RobotArmController/RobotArmController.cpp \
     Widgets/TrayIcon/TrayIcon.cpp \
     iFOC/Actuator3DoF.cpp \
     iFOC/Device.cpp \
@@ -497,6 +498,7 @@ HEADERS += \
     RobotArm/xCore/Inc/planner.h \
     RobotArm/xCore/Inc/robot.h \
     RobotArm/xCore/Inc/utility.h \
+    Widgets/RobotArmController/RobotArmController.h \
     Widgets/TrayIcon/TrayIcon.h \
     iFOC/Actuator3DoF.h \
     iFOC/Device.h \
@@ -511,7 +513,8 @@ FORMS += \
     Widgets/EEPROMTool/EEPROMTool.ui \
     Widgets/EndoscopeView/EndoscopeView.ui \
     Widgets/MainWindow/MainWindow.ui \
-    Widgets/MotorDebugger/MotorDebugger.ui
+    Widgets/MotorDebugger/MotorDebugger.ui \
+    Widgets/RobotArmController/RobotArmController.ui
 
 QT += xml
 QT += core

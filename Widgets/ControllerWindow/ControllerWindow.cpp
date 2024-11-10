@@ -108,13 +108,13 @@ void ControllerWindow::updateControlCoord()
                         ui->leftDistXLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getDistalTarget()->x));
                         ui->leftDistYLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getDistalTarget()->y));
                         ui->leftDistLinearLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getDistalTarget()->z));
-                        if(leftEquipment->isAllReady())
-                        {
+                        // if(leftEquipment->isAllReady())
+                        // {
                             ui->leftReadyLabel->setText("READY");
                             leftEquipment->setProximalAct(leftEquipment->kinematics->proximal_act);
                             leftEquipment->setDistalAct(leftEquipment->kinematics->distal_act);
-                        }
-                        else ui->leftReadyLabel->setText("Not Ready");
+                        // }
+                        // else ui->leftReadyLabel->setText("Not Ready");
                     }
                 }
             }
@@ -183,13 +183,13 @@ void ControllerWindow::updateControlCoord()
                         ui->rightDistXLineEdit->setText(QString::asprintf("%.3f", rightEquipment->getDistalTarget()->x));
                         ui->rightDistYLineEdit->setText(QString::asprintf("%.3f", rightEquipment->getDistalTarget()->y));
                         ui->rightDistLinearLineEdit->setText(QString::asprintf("%.3f", rightEquipment->getDistalTarget()->z));
-                        if(rightEquipment->isAllReady())
-                        {
+                        // if(rightEquipment->isAllReady())
+                        // {
                             ui->rightReadyLabel->setText("READY");
                             rightEquipment->setProximalAct(rightEquipment->kinematics->proximal_act);
                             rightEquipment->setDistalAct(rightEquipment->kinematics->distal_act);
-                        }
-                        else ui->rightReadyLabel->setText("Not Ready");
+                        // }
+                        // else ui->rightReadyLabel->setText("Not Ready");
                     }
                 }
             }

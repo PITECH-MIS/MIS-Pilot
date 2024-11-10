@@ -1079,7 +1079,7 @@
      <enum>QTabWidget::TabShape::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="elideMode">
      <enum>Qt::TextElideMode::ElideNone</enum>
@@ -2083,6 +2083,19 @@
        <string>MIS Auxiliary Equipments</string>
       </property>
      </widget>
+     <widget class="QGroupBox" name="groupBox_6">
+      <property name="geometry">
+       <rect>
+        <x>790</x>
+        <y>0</y>
+        <width>781</width>
+        <height>541</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>MIS Robot Arm</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tabRun">
      <attribute name="title">
@@ -2728,7 +2741,7 @@
      <x>0</x>
      <y>0</y>
      <width>1600</width>
-     <height>17</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuLoadDescFiles">
