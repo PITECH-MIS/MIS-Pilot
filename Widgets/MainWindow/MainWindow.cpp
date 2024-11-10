@@ -58,6 +58,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    if(payloadDebugger)
+    {
+        payloadDebugger->close();
+        delete payloadDebugger;
+        payloadDebugger = nullptr;
+    }
     delete ui;
 }
 
@@ -134,6 +140,7 @@ void MainWindow::closeEvent(QCloseEvent *e)
     if(msgBox.exec() == QMessageBox::Ok)
     {
         if(wrapper->getExpectedState() > EC_STATE_INIT) wrapper->closeConnection();
+        if(payloadDebugger) payloadDebugger->close();
         e->accept();
     }
     else e->ignore();
