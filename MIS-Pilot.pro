@@ -90,6 +90,7 @@ SOURCES += \
     iFOC/Device.cpp \
     iFOC/Equipment6DoF.cpp \
     iFOC/Motor.cpp \
+    iFOC/PDOEndpointAccess.cpp \
     main.cpp \
     utils.cpp
 
@@ -504,6 +505,8 @@ HEADERS += \
     iFOC/Device.h \
     iFOC/Equipment6DoF.h \
     iFOC/Motor.h \
+    iFOC/PDOEndpointAccess.h \
+    iFOC/endpoints_enum.h \
     utils.h \
     EtherCAT/utypes.h
 
