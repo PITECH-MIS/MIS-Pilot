@@ -41,7 +41,6 @@ void Actuator3DoF::beginPostInstallHoming()
     {
         float homing_speed = 20.0f;
         float abs_rotation_limit = (1.0f * 360.0f);
-
     };
     spawnTask(lambda);
 }
@@ -51,6 +50,7 @@ void Actuator3DoF::beginLinearHoming()
     if(motorLinear.second.limiter_idx == 0) return;
     auto lambda = [this]()
     {
+        is_linear_homing = true;
         linear_ready = false;
         float homing_speed = 90.0f;
         uint32_t timeout_set_move = 600000;      // 60s
@@ -148,10 +148,24 @@ void Actuator3DoF::beginLinearHoming()
         motorLinear.first->setState(Motor::STATE_OFF);
         QThread::msleep(300);
 
-        // Calculate ABS_POS_OFFSET with limiter side_1/2
-        motorLinear.second.abs_pos_offset = (limiter_side_1 + limiter_side_2) * 0.5f;
+        // // Calculate ABS_POS_OFFSET with limiter side_1/2
+        // motorLinear.second.abs_pos_offset = (limiter_side_1 + limiter_side_2) * 0.5f;
 
-        // goto zero
+        // // goto zero
+        // setLinearDegAbs(0.0f);
+
+        // goto home position
+        setLinearDegAbs((limiter_side_1 + limiter_side_2) * 0.5f);
+        QThread::msleep(1000);
+
+        // set home
+        motorLinear.first->setState(Motor::STATE_OFF);
+        QThread::msleep(100);
+        PDOEndpointAccess::getInstance()->SetHome(motorLinear.first->getSN());
+        motorLinear.second.abs_pos_offset = 0.0f;
+
+        // enable motor
+        QThread::msleep(100);
         setLinearDegAbs(0.0f);
 
         qDebugMessage(QString::asprintf("Linear homing successful with new pos_offset: %.2f", motorLinear.second.abs_pos_offset));
@@ -198,6 +212,7 @@ void Actuator3DoF::beginLinearHoming()
             motorLinear.first->setState(Motor::STATE_OFF);
             return;
         }
+        is_linear_homing = false;
     };
     spawnTask(lambda);
 }
@@ -212,6 +227,7 @@ void Actuator3DoF::beginPushPullHoming()
     if(motorPushPull.second.limiter_idx == 0) return;
     auto lambda = [this]()
     {
+        is_pushpull_homing = true;
         pushpull_ready = false;
         QPair<float, float> original_limit = pushpull_limit;
         pushpull_limit.first *= 2.0f;
@@ -397,8 +413,23 @@ void Actuator3DoF::beginPushPullHoming()
         isSuccess = true;
         result = (limiter_side_1 + limiter_side_2) * 0.5f;
         // result + start_pp_deg;
+
+        // go home
         motorPushPull.second.abs_pos_offset += result + start_pp_deg - motorPushPull.second.limiter_pos_offset;
         setPushPullDegAbs(0.0f);
+
+        QThread::msleep(1000);
+
+        motorPushPull.first->setState(Motor::STATE_OFF);
+        QThread::msleep(100);
+        PDOEndpointAccess::getInstance()->SetHome(motorPushPull.first->getSN());
+        motorPushPull.second.abs_pos_offset = 0.0f;
+
+        // enable motor
+        QThread::msleep(100);
+        setPushPullDegAbs(0.0f);
+
+        qDebugMessage(QString::asprintf("PushPull homing successful"));
         pushpull_ready = true;
     CLEAN:
         if(!isSuccess)
@@ -408,6 +439,7 @@ void Actuator3DoF::beginPushPullHoming()
             return;
         }
         pushpull_limit = original_limit;
+        is_pushpull_homing = false;
     };
     spawnTask(lambda);
 }
@@ -444,6 +476,7 @@ void Actuator3DoF::beginRotationHoming()
 {
     auto lambda = [this]()
     {
+        is_rotation_homing = true;
         rotation_ready = false;
         float homing_speed = 10.0f;
         uint16_t timeout_set_curr_limit = 500;   // 0.5s
@@ -549,6 +582,7 @@ void Actuator3DoF::beginRotationHoming()
             motorPushPull.first->setState(Motor::STATE_OFF);
             return;
         }
+        is_rotation_homing = false;
     };
     spawnTask(lambda);
 }
@@ -715,16 +749,18 @@ bool Actuator3DoF::init()
         motorPushPull.first->setCurrentLimit(motorPushPull.second.current_limit);
         motorLinear.first->setCurrentLimit(motorLinear.second.current_limit);
         motorRotation.first->setTrajAbsAngle(motorRotation.second.abs_pos_offset);
-        motorPushPull.first->setTrajAbsAngle(motorPushPull.second.abs_pos_offset);
-        motorLinear.first->setTrajAbsAngle(motorLinear.second.abs_pos_offset);
+        // motorPushPull.first->setTrajAbsAngle(motorPushPull.second.abs_pos_offset); // target handled by driver
+        // motorLinear.first->setTrajAbsAngle(motorLinear.second.abs_pos_offset);
         motorRotation.first->setMode(Motor::MODE_TRAJECTORY);
-        motorPushPull.first->setMode(Motor::MODE_TRAJECTORY);
-        motorLinear.first->setMode(Motor::MODE_TRAJECTORY);
+        // motorPushPull.first->setMode(Motor::MODE_TRAJECTORY);
+        // motorLinear.first->setMode(Motor::MODE_TRAJECTORY);
         motorRotation.first->setState(Motor::STATE_ON);
         QThread::msleep(100);
-        motorPushPull.first->setState(Motor::STATE_ON);
+        setPushPullDegAbs(motorPushPull.first->getPosDeg());
+        // motorPushPull.first->setState(Motor::STATE_ON);
         QThread::msleep(100);
-        motorLinear.first->setState(Motor::STATE_ON);
+        setLinearDegAbs(motorLinear.first->getPosDeg());
+        // motorLinear.first->setState(Motor::STATE_ON);
     };
     spawnTask(lambda);
     return true;
@@ -830,12 +866,12 @@ bool Actuator3DoF::parseJsonFromObject(const QJsonObject& object, QHash<QString,
                 }
                 else if(key == "pushpull")
                 {
-                    cfg_ptr->abs_pos_offset = motorPushPull.first->getPosDeg();
+                    // cfg_ptr->abs_pos_offset = motorPushPull.first->getPosDeg(); // Home position preserved to driver
                     motorPushPull.first->limiter_index = cfg_ptr->limiter_idx;
                 }
                 else if(key == "linear")
                 {
-                    cfg_ptr->abs_pos_offset = motorLinear.first->getPosDeg();
+                    // cfg_ptr->abs_pos_offset = motorLinear.first->getPosDeg(); // Home position preserved to driver
                     motorLinear.first->limiter_index = cfg_ptr->limiter_idx;
                 }
                 cfg_ptr->current_limit = motorObject.value("current_limit").toDouble(0.5f);

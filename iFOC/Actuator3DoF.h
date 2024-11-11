@@ -6,6 +6,7 @@
 #include <QJsonObject>
 #include <QPair>
 #include "../Kinematics/KinematicsBase.h"
+#include "PDOEndpointAccess.h"
 
 typedef struct motor_config_t
 {
@@ -53,6 +54,9 @@ public:
     bool linear_ready = false;
     bool preInstall_ready = false;
     bool postInstall_ready = false;
+    bool is_rotation_homing = false;
+    bool is_pushpull_homing = false;
+    bool is_linear_homing = false;
     kinematics_params_t kineParams;
     Point3D targetPoint;
 private:
