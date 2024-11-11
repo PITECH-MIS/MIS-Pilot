@@ -6,6 +6,7 @@
 #ifdef ENV_WIN32
 #pragma comment( lib, "Winmm" )
 #pragma comment(lib, "ws2_32.lib")
+#include "processthreadsapi.h"
 #endif
 
 #ifdef ENV_LINUX
@@ -17,6 +18,9 @@ int main(int argc, char *argv[])
     // qputenv("QT_QPA_PLATFORM", "windows:darkmode=0");
     QApplication a(argc, argv);
     QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
+#ifdef ENV_WIN32
+    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
+#endif
 #ifdef ENV_LINUX
     struct sched_param param;
     param.sched_priority = 20;
