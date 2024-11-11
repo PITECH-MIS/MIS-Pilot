@@ -25,13 +25,13 @@ ControllerWindow::ControllerWindow(ECATWrapper* w, QMap<QString, QJoystickDevice
     connect(ui->equipmentSelectComboBox, &QComboBox::currentIndexChanged, this, &ControllerWindow::onSelectEquipment);
     connect(ui->actuatorSelectComboBox, &QComboBox::currentIndexChanged, this, &ControllerWindow::onSelectActuator);
     connect(ui->panelRotationSpinBox, &QDoubleSpinBox::valueChanged, this, [this](){
-        if(panelActuator) panelActuator->setRotationDegAbs(ui->panelRotationSpinBox->value());
+        if(panelActuator && !panelActuator->is_rotation_homing) panelActuator->setRotationDegAbs(ui->panelRotationSpinBox->value());
     });
     connect(ui->panelPushPullSpinBox, &QDoubleSpinBox::valueChanged, this, [this](){
-        if(panelActuator) panelActuator->setPushPullDegAbs(ui->panelPushPullSpinBox->value());
+        if(panelActuator && !panelActuator->is_pushpull_homing) panelActuator->setPushPullDegAbs(ui->panelPushPullSpinBox->value());
     });
     connect(ui->panelLinearSpinBox, &QDoubleSpinBox::valueChanged, this, [this](){
-        if(panelActuator) panelActuator->setLinearDegAbs(ui->panelLinearSpinBox->value());
+        if(panelActuator && !panelActuator->is_linear_homing) panelActuator->setLinearDegAbs(ui->panelLinearSpinBox->value());
     });
     connect(ui->panelLinearAlignButton, &QPushButton::clicked, this, [this](){
         if(panelActuator) panelActuator->beginLinearHoming();
@@ -268,7 +268,10 @@ void ControllerWindow::onSelectDevice()
 {
     ui->equipmentSelectComboBox->clear();
     QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
-    ui->equipmentSelectComboBox->addItems(dev.lock()->equipmentNames());
+    auto lst = dev.lock()->equipmentNames();
+    ui->equipmentSelectComboBox->addItems(lst);
+    ui->endoView1->addEquipList(lst);
+    ui->endoView2->addEquipList(lst);
 }
 
 void ControllerWindow::onSelectEquipment()
@@ -276,8 +279,19 @@ void ControllerWindow::onSelectEquipment()
     ui->actuatorSelectComboBox->clear();
     QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
     QWeakPointer<Equipment6DoF> eq(dev.lock()->getEquipmentByName(ui->equipmentSelectComboBox->currentText()));
-    if(eq.lock()->getProximal()) ui->actuatorSelectComboBox->addItem("Proximal");
-    if(eq.lock()->getDistal()) ui->actuatorSelectComboBox->addItem("Distal");
+    QStringList act_lst;
+    if(eq.lock()->getProximal())
+    {
+        ui->actuatorSelectComboBox->addItem("Proximal");
+        act_lst.append("Proximal");
+    }
+    if(eq.lock()->getDistal())
+    {
+        ui->actuatorSelectComboBox->addItem("Distal");
+        act_lst.append("Distal");
+    }
+    ui->endoView1->addActuatorList(act_lst);
+    ui->endoView2->addActuatorList(act_lst);
 }
 
 void ControllerWindow::onSelectActuator()
@@ -299,7 +313,7 @@ void ControllerWindow::onSelectActuator()
         ui->panelRotationIqEdit->setEnabled(true);
         ui->panelRotationLineEdit->setEnabled(true);
         ui->panelRotationSpinBox->setEnabled(true);
-        if(panelActuator->rotation_ready) ui->panelRotationSpinBox->setValue(roundf(panelActuator->getRotationState()));
+        if(!panelActuator->is_rotation_homing) ui->panelRotationSpinBox->setValue(roundf(panelActuator->getRotationState()));
 
         ui->panelPushPullAlignButton->setEnabled(true);
         ui->panelPushPullLimiterActivatedRadioButton->setEnabled(true);
@@ -308,7 +322,7 @@ void ControllerWindow::onSelectActuator()
         ui->panelPushPullIqEdit->setEnabled(true);
         ui->panelPushPullLineEdit->setEnabled(true);
         ui->panelPushPullSpinBox->setEnabled(true);
-        if(panelActuator->pushpull_ready) ui->panelPushPullSpinBox->setValue(roundf(panelActuator->getPushPullState()));
+        if(!panelActuator->is_pushpull_homing) ui->panelPushPullSpinBox->setValue(roundf(panelActuator->getPushPullState()));
 
         ui->panelLinearAlignButton->setEnabled(true);
         ui->panelLinearLimiterActivatedRadioButton->setEnabled(true);
@@ -317,7 +331,7 @@ void ControllerWindow::onSelectActuator()
         ui->panelLinearIqEdit->setEnabled(true);
         ui->panelLinearLineEdit->setEnabled(true);
         ui->panelLinearSpinBox->setEnabled(true);
-        if(panelActuator->linear_ready) ui->panelLinearSpinBox->setValue(roundf(panelActuator->getLinearState()));
+        if(!panelActuator->is_linear_homing) ui->panelLinearSpinBox->setValue(roundf(panelActuator->getLinearState()));
 
         ui->panelPreHomingButton->setEnabled(true);
         ui->panelPostHomingButton->setEnabled(panelActuator->preInstall_ready);
@@ -333,18 +347,36 @@ void ControllerWindow::updatePanelStatus()
         ui->panelRotationLimiterActivatedRadioButton->setChecked(panelActuator->motorRotation.first->isLimiterActivated());
         ui->panelRotationLimiterHasActivatedRadioButton->setChecked(panelActuator->motorRotation.first->hasLimiterActivated());
         ui->panelRotationReadyRadioButton->setChecked(panelActuator->rotation_ready || isOverrideReady);
+        if(panelActuator->is_rotation_homing)
+        {
+            ui->panelRotationSpinBox->setEnabled(false);
+            ui->panelRotationSpinBox->setValue(0.0f);
+        }
+        else ui->panelRotationSpinBox->setEnabled(true);
 
         ui->panelPushPullLineEdit->setText(QString::number(panelActuator->getPushPullState()));
         ui->panelPushPullIqEdit->setText(QString::number(panelActuator->motorPushPull.first->getIq()));
         ui->panelPushPullLimiterActivatedRadioButton->setChecked(panelActuator->motorPushPull.first->isLimiterActivated());
         ui->panelPushPullLimiterHasActivatedRadioButton->setChecked(panelActuator->motorPushPull.first->hasLimiterActivated());
         ui->panelPushPullReadyRadioButton->setChecked(panelActuator->pushpull_ready || isOverrideReady);
+        if(panelActuator->is_pushpull_homing)
+        {
+            ui->panelPushPullSpinBox->setEnabled(false);
+            ui->panelPushPullSpinBox->setValue(0.0f);
+        }
+        else ui->panelPushPullSpinBox->setEnabled(true);
 
         ui->panelLinearLineEdit->setText(QString::number(panelActuator->getLinearState()));
         ui->panelLinearIqEdit->setText(QString::number(panelActuator->motorLinear.first->getIq()));
         ui->panelLinearLimiterActivatedRadioButton->setChecked(panelActuator->motorLinear.first->isLimiterActivated());
         ui->panelLinearLimiterHasActivatedRadioButton->setChecked(panelActuator->motorLinear.first->hasLimiterActivated());
         ui->panelLinearReadyRadioButton->setChecked(panelActuator->linear_ready || isOverrideReady);
+        if(panelActuator->is_linear_homing)
+        {
+            ui->panelLinearSpinBox->setEnabled(false);
+            ui->panelLinearSpinBox->setValue(0.0f);
+        }
+        else ui->panelLinearSpinBox->setEnabled(true);
 
         ui->panelPreHomingButton->setEnabled(!isOverrideReady);
         ui->panelPostHomingButton->setEnabled(panelActuator->preInstall_ready && !isOverrideReady);
