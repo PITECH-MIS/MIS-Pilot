@@ -37,7 +37,7 @@
      <rect>
       <x>10</x>
       <y>580</y>
-      <width>1608</width>
+      <width>1581</width>
       <height>294</height>
      </rect>
     </property>
@@ -2095,6 +2095,16 @@
       <property name="title">
        <string>MIS Robot Arm</string>
       </property>
+      <widget class="RobotArmController" name="widgetRobotArmController" native="true">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>761</width>
+         <height>521</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="tabRun">
@@ -2741,7 +2751,7 @@
      <x>0</x>
      <y>0</y>
      <width>1600</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuLoadDescFiles">
@@ -2785,6 +2795,12 @@
    <class>EndoscopeView</class>
    <extends>QWidget</extends>
    <header>../../Widgets/EndoscopeView/EndoscopeView.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RobotArmController</class>
+   <extends>QWidget</extends>
+   <header>../../Widgets/RobotArmController/RobotArmController.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
