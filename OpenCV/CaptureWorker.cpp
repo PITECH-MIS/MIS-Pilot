@@ -76,7 +76,7 @@ void CaptureWorker::openCamera(int id)
 {
     if(!cap.isOpened())
     {
-        if(!cap.open(id)) qDebugMessage(QString::asprintf("Failed to open camera #%d", id));
+        if(!cap.open(id, CAP_DSHOW)) qDebugMessage(QString::asprintf("Failed to open camera #%d", id));
     }
     else qDebugMessage("Camera already opened");
 }
