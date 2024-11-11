@@ -10,17 +10,16 @@ EndoscopeView::EndoscopeView(QWidget *parent)
 {
     ui->setupUi(this);
     onRefreshCameraList();
-    workerThread = new QThread;
+    workerThread = new QThread(this);
     worker = new CaptureWorker;
     captureTimer = new QTimer(this);
-    captureTimer->setTimerType(Qt::PreciseTimer);
+    // captureTimer->setTimerType(Qt::PreciseTimer);
     worker->moveToThread(workerThread);
     connect(workerThread, &QThread::finished, workerThread, &QThread::deleteLater);
     connect(workerThread, &QThread::finished, worker, &CaptureWorker::deleteLater);
     connect(captureTimer, &QTimer::timeout, this, &EndoscopeView::onCaptureTimeout);
-    connect(worker, &CaptureWorker::onRefreshFrame, this, &EndoscopeView::refreshFrame, Qt::DirectConnection);
+    connect(worker, &CaptureWorker::onRefreshFrame, this, &EndoscopeView::refreshFrame);
     onSelectFPS();
-    workerThread->start();
     connect(ui->cameraRefreshButton, &QToolButton::triggered, this, &EndoscopeView::onRefreshCameraList);
     connect(ui->fpsComboBox, &QComboBox::currentIndexChanged, this, &EndoscopeView::onSelectFPS);
     connect(ui->connectButton, &QPushButton::clicked, this, &EndoscopeView::onConnectToCamera);
@@ -53,6 +52,7 @@ void EndoscopeView::onConnectToCamera()
     {
         if(cameraList.size() > 0)
         {
+            workerThread->start();
             if(!captureTimer->isActive()) captureTimer->start();
             worker->openCamera(ui->cameraComboBox->currentIndex());
             // worker->setResolution();
@@ -76,10 +76,10 @@ void EndoscopeView::onConnectToCamera()
     }
     else
     {
+        ui->cameraView->clear();
+        captureTimer->stop();
         auto lambda = [this]()
         {
-            ui->cameraView->clear();
-            captureTimer->stop();
             if(worker->isRecording()) worker->stopRecording();
             worker->closeCamera();
             ui->connectButton->setText("Connect");
