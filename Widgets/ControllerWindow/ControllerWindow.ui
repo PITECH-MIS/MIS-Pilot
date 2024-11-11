@@ -37,7 +37,7 @@
      <rect>
       <x>10</x>
       <y>580</y>
-      <width>1581</width>
+      <width>1608</width>
       <height>294</height>
      </rect>
     </property>
@@ -2106,7 +2106,7 @@
        <rect>
         <x>420</x>
         <y>300</y>
-        <width>751</width>
+        <width>755</width>
         <height>251</height>
        </rect>
       </property>
@@ -2741,7 +2741,7 @@
      <x>0</x>
      <y>0</y>
      <width>1600</width>
-     <height>18</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuLoadDescFiles">
@@ -2754,10 +2754,25 @@
      <string>Debugger</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>Options</string>
+    </property>
+    <addaction name="actionOverride"/>
+   </widget>
    <addaction name="menuLoadDescFiles"/>
    <addaction name="menuDebugger"/>
+   <addaction name="menuOptions"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionOverride">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Override Ready</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

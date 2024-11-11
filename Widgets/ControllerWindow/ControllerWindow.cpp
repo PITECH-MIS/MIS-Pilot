@@ -48,6 +48,10 @@ ControllerWindow::ControllerWindow(ECATWrapper* w, QMap<QString, QJoystickDevice
     connect(ui->panelPostHomingButton, &QPushButton::clicked, this, [this](){
         if(panelActuator) panelActuator->beginPostInstallHoming();
     });
+    connect(ui->actionOverride, &QAction::triggered, this, [this](){
+        isOverrideReady = !isOverrideReady;
+        ui->actionOverride->setChecked(isOverrideReady);
+    });
     speedTimer->start(100);
 }
 
@@ -108,13 +112,13 @@ void ControllerWindow::updateControlCoord()
                         ui->leftDistXLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getDistalTarget()->x));
                         ui->leftDistYLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getDistalTarget()->y));
                         ui->leftDistLinearLineEdit->setText(QString::asprintf("%.3f", leftEquipment->getDistalTarget()->z));
-                        // if(leftEquipment->isAllReady())
-                        // {
+                        if(leftEquipment->isAllReady() || isOverrideReady)
+                        {
                             ui->leftReadyLabel->setText("READY");
                             leftEquipment->setProximalAct(leftEquipment->kinematics->proximal_act);
                             leftEquipment->setDistalAct(leftEquipment->kinematics->distal_act);
-                        // }
-                        // else ui->leftReadyLabel->setText("Not Ready");
+                        }
+                        else ui->leftReadyLabel->setText("Not Ready");
                     }
                 }
             }
@@ -183,13 +187,13 @@ void ControllerWindow::updateControlCoord()
                         ui->rightDistXLineEdit->setText(QString::asprintf("%.3f", rightEquipment->getDistalTarget()->x));
                         ui->rightDistYLineEdit->setText(QString::asprintf("%.3f", rightEquipment->getDistalTarget()->y));
                         ui->rightDistLinearLineEdit->setText(QString::asprintf("%.3f", rightEquipment->getDistalTarget()->z));
-                        // if(rightEquipment->isAllReady())
-                        // {
+                        if(rightEquipment->isAllReady() || isOverrideReady)
+                        {
                             ui->rightReadyLabel->setText("READY");
                             rightEquipment->setProximalAct(rightEquipment->kinematics->proximal_act);
                             rightEquipment->setDistalAct(rightEquipment->kinematics->distal_act);
-                        // }
-                        // else ui->rightReadyLabel->setText("Not Ready");
+                        }
+                        else ui->rightReadyLabel->setText("Not Ready");
                     }
                 }
             }
@@ -328,21 +332,22 @@ void ControllerWindow::updatePanelStatus()
         ui->panelRotationIqEdit->setText(QString::number(panelActuator->motorRotation.first->getIq()));
         ui->panelRotationLimiterActivatedRadioButton->setChecked(panelActuator->motorRotation.first->isLimiterActivated());
         ui->panelRotationLimiterHasActivatedRadioButton->setChecked(panelActuator->motorRotation.first->hasLimiterActivated());
-        ui->panelRotationReadyRadioButton->setChecked(panelActuator->rotation_ready);
+        ui->panelRotationReadyRadioButton->setChecked(panelActuator->rotation_ready || isOverrideReady);
 
         ui->panelPushPullLineEdit->setText(QString::number(panelActuator->getPushPullState()));
         ui->panelPushPullIqEdit->setText(QString::number(panelActuator->motorPushPull.first->getIq()));
         ui->panelPushPullLimiterActivatedRadioButton->setChecked(panelActuator->motorPushPull.first->isLimiterActivated());
         ui->panelPushPullLimiterHasActivatedRadioButton->setChecked(panelActuator->motorPushPull.first->hasLimiterActivated());
-        ui->panelPushPullReadyRadioButton->setChecked(panelActuator->pushpull_ready);
+        ui->panelPushPullReadyRadioButton->setChecked(panelActuator->pushpull_ready || isOverrideReady);
 
         ui->panelLinearLineEdit->setText(QString::number(panelActuator->getLinearState()));
         ui->panelLinearIqEdit->setText(QString::number(panelActuator->motorLinear.first->getIq()));
         ui->panelLinearLimiterActivatedRadioButton->setChecked(panelActuator->motorLinear.first->isLimiterActivated());
         ui->panelLinearLimiterHasActivatedRadioButton->setChecked(panelActuator->motorLinear.first->hasLimiterActivated());
-        ui->panelLinearReadyRadioButton->setChecked(panelActuator->linear_ready);
+        ui->panelLinearReadyRadioButton->setChecked(panelActuator->linear_ready || isOverrideReady);
 
-        ui->panelPostHomingButton->setEnabled(panelActuator->preInstall_ready);
+        ui->panelPreHomingButton->setEnabled(!isOverrideReady);
+        ui->panelPostHomingButton->setEnabled(panelActuator->preInstall_ready && !isOverrideReady);
     }
 }
 

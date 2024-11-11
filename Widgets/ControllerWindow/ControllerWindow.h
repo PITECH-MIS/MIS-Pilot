@@ -67,6 +67,7 @@ private:
     float rightDistLinSpeed = 0.0f;
     Vector2D leftPOVSpeed;
     Vector2D rightPOVSpeed;
+    bool isOverrideReady = false;
 };
 
 #endif // CONTROLLERWINDOW_H
