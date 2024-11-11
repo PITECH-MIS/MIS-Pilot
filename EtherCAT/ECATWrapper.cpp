@@ -5,7 +5,7 @@
 ECATWrapper::ECATWrapper()
 {
     memset(IOMap, 0, sizeof(IOMap));
-    connect(&pdoProtocol, &PDOMasterProtocol::receivePayload, this, [this](uint16_t slave_id,
+    connect(pdoProtocol, &PDOMasterProtocol::receivePayload, this, [this](uint16_t slave_id,
                                                                            char *payload,
                                                                            uint8_t len){
         QString ret = QString::asprintf("Received PDO Payload from slave #%d: \n", slave_id) + QString::fromUtf8(payload);
@@ -111,7 +111,7 @@ void ECATWrapper::run()
         pdoProtocolTimer->moveToThread(pdoProtocolThread);
         pdoProtocolTimer->setTimerType(Qt::CoarseTimer);
         pdoProtocolTimer->setInterval(5);
-        connect(pdoProtocolTimer, &QTimer::timeout, &pdoProtocol, &PDOMasterProtocol::onPDOLoop);
+        connect(pdoProtocolTimer, &QTimer::timeout, pdoProtocol, &PDOMasterProtocol::onPDOLoop);
         connect(pdoProtocolThread, &QThread::finished, pdoProtocolTimer, &QTimer::stop);
         connect(pdoProtocolThread, &QThread::started, pdoProtocolTimer, QOverload<>::of(&QTimer::start));
     }
@@ -214,7 +214,7 @@ void ECATWrapper::run()
                         {
                             if(slaves.contains(i)) slaves.value(i)->output = (slave_outputs_t*)ec_slave[i].outputs;
                         }
-                        pdoProtocol.parseSlaves(slaves);
+                        pdoProtocol->parseSlaves(slaves);
                         pdoProtocolThread->start();
                         // pdoProtocolThread->setPriority(QThread::HighPriority);
                         emit infoMessage("Slave outputs mapped successfully, listening PDO Protocol");
@@ -263,7 +263,7 @@ void ECATWrapper::closeConnection()
     }
     if(pdoProtocolThread)
     {
-        pdoProtocol.reset();
+        pdoProtocol->reset();
         pdoProtocolThread->quit();
         pdoProtocolThread->wait();
     }

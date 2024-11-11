@@ -31,7 +31,7 @@ public:
     QHash<uint16_t, ECATSlave*> slaves;
     // Singleton.
     static ECATWrapper *getInstance();
-    PDOMasterProtocol pdoProtocol;
+    PDOMasterProtocol *pdoProtocol = PDOMasterProtocol::getInstance();
     ECATWrapper(const ECATWrapper &) = delete;
     ECATWrapper &operator=(const ECATWrapper &) = delete;
     int printErrorStack();

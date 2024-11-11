@@ -61,10 +61,13 @@ class PDOMasterProtocol : public QObject
 {
     Q_OBJECT
 public:
-    PDOMasterProtocol();
+    PDOMasterProtocol() = default;
     void parseSlaves(QHash<uint16_t, ECATSlave*>& slaves);
     void resetSlaveBuffer(uint16_t slave_id);
     bool print(uint16_t slave_id, const char *fmt, ...);
+    static PDOMasterProtocol *getInstance();
+    PDOMasterProtocol(const PDOMasterProtocol &) = delete;
+    PDOMasterProtocol &operator=(const PDOMasterProtocol &) = delete;
 public slots:
     void onPDOLoop();
     bool sendPayload(uint16_t slave_id, char *payload, uint8_t len);

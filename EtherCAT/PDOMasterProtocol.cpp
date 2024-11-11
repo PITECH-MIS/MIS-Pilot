@@ -1,9 +1,10 @@
 #include "PDOMasterProtocol.h"
 #include "../utils.h"
 
-PDOMasterProtocol::PDOMasterProtocol()
+PDOMasterProtocol *PDOMasterProtocol::getInstance()
 {
-
+    static PDOMasterProtocol protocol;
+    return &protocol;
 }
 
 void PDOMasterProtocol::parseSlaves(QHash<uint16_t, ECATSlave*>& slaves)
