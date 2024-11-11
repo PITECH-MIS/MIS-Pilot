@@ -37,6 +37,16 @@ EndoscopeView::~EndoscopeView()
     delete ui;
 }
 
+void EndoscopeView::addEquipList(QStringList equips)
+{
+    ui->rotCorrectEquipComboBox->addItems(equips);
+}
+
+void EndoscopeView::addActuatorList(QStringList actuators)
+{
+    ui->rotCorrectActuatorComboBox->addItems(actuators);
+}
+
 void EndoscopeView::onConnectToCamera()
 {
     if(ui->connectButton->text() == "Connect")
@@ -61,6 +71,7 @@ void EndoscopeView::onConnectToCamera()
             };
             spawnTask(lambda);
             if(!recordPath.isEmpty()) ui->recordButton->setEnabled(true);
+            ui->rotCorrectCheckBox->setEnabled(true);
         }
     }
     else
@@ -79,6 +90,7 @@ void EndoscopeView::onConnectToCamera()
         };
         spawnTask(lambda);
         ui->recordButton->setEnabled(false);
+        ui->rotCorrectCheckBox->setEnabled(false);
     }
 }
 
@@ -104,7 +116,7 @@ void EndoscopeView::onTriggerRecording()
     {
         if(!recordPath.isEmpty())
         {
-            QString videoPath = recordPath + "/" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss") + ".mp4";
+            QString videoPath = recordPath + "/" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss") + ".avi";
             ui->recordButton->setEnabled(false);
             if(worker->startRecording(videoPath)) ui->recordButton->setText("Stop Rec.");
             ui->recordButton->setEnabled(true);

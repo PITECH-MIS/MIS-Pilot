@@ -418,16 +418,16 @@ void Actuator3DoF::beginPushPullHoming()
         motorPushPull.second.abs_pos_offset += result + start_pp_deg - motorPushPull.second.limiter_pos_offset;
         setPushPullDegAbs(0.0f);
 
-        QThread::msleep(1000);
+        // QThread::msleep(1000);
 
-        motorPushPull.first->setState(Motor::STATE_OFF);
-        QThread::msleep(100);
-        PDOEndpointAccess::getInstance()->SetHome(motorPushPull.first->getSN());
-        motorPushPull.second.abs_pos_offset = 0.0f;
+        // motorPushPull.first->setState(Motor::STATE_OFF);
+        // QThread::msleep(100);
+        // PDOEndpointAccess::getInstance()->SetHome(motorPushPull.first->getSN());
+        // motorPushPull.second.abs_pos_offset = 0.0f;
 
-        // enable motor
-        QThread::msleep(100);
-        setPushPullDegAbs(0.0f);
+        // // enable motor
+        // QThread::msleep(100);
+        // setPushPullDegAbs(0.0f);
 
         qDebugMessage(QString::asprintf("PushPull homing successful"));
         pushpull_ready = true;
@@ -749,15 +749,15 @@ bool Actuator3DoF::init()
         motorPushPull.first->setCurrentLimit(motorPushPull.second.current_limit);
         motorLinear.first->setCurrentLimit(motorLinear.second.current_limit);
         motorRotation.first->setTrajAbsAngle(motorRotation.second.abs_pos_offset);
-        // motorPushPull.first->setTrajAbsAngle(motorPushPull.second.abs_pos_offset); // target handled by driver
-        // motorLinear.first->setTrajAbsAngle(motorLinear.second.abs_pos_offset);
+        motorPushPull.first->setTrajAbsAngle(motorPushPull.second.abs_pos_offset);
+        // motorLinear.first->setTrajAbsAngle(motorLinear.second.abs_pos_offset); // target handled by driver
         motorRotation.first->setMode(Motor::MODE_TRAJECTORY);
-        // motorPushPull.first->setMode(Motor::MODE_TRAJECTORY);
+        motorPushPull.first->setMode(Motor::MODE_TRAJECTORY);
         // motorLinear.first->setMode(Motor::MODE_TRAJECTORY);
         motorRotation.first->setState(Motor::STATE_ON);
         QThread::msleep(100);
-        setPushPullDegAbs(motorPushPull.first->getPosDeg());
-        // motorPushPull.first->setState(Motor::STATE_ON);
+        // setPushPullDegAbs(motorPushPull.first->getPosDeg());
+        motorPushPull.first->setState(Motor::STATE_ON);
         QThread::msleep(100);
         setLinearDegAbs(motorLinear.first->getPosDeg());
         // motorLinear.first->setState(Motor::STATE_ON);

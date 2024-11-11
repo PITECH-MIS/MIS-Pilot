@@ -19,6 +19,13 @@ public:
     ~EndoscopeView();
     bool isCrop = false;
     float rotationAngle = 0.0f;
+    QString rotCorrectEquipment;
+    QString rotCorrectActuator;
+public slots:
+    void addEquipList(QStringList equips);
+    void addActuatorList(QStringList actuators);
+// signals:
+    // void onActivateCorrection(QString equipment, QString actuator);
 private slots:
     void onConnectToCamera();
     void onCaptureTimeout();

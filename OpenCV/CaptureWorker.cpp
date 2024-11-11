@@ -32,7 +32,8 @@ bool CaptureWorker::startRecording(QString filePath)
     if(m_isRecording) return false;
     if(!isOpened()) return false;
     if(videoWriter.isOpened()) stopRecording();
-    if(!videoWriter.open(filePath.toStdString(), cv::VideoWriter::fourcc('H','2','6','4'), cap.get(CAP_PROP_FPS), frameSize, true))
+    if(!videoWriter.open(filePath.toStdString(), cv::VideoWriter::fourcc('M','J','P','G'), cap.get(CAP_PROP_FPS), frameSize, true))
+    // if(!videoWriter.open(filePath.toStdString(), cv::VideoWriter::fourcc('M','P','4','V'), cap.get(CAP_PROP_FPS), frameSize, true))
     {
         qDebugMessage("Failed to open VideoWriter: " + filePath);
         return false;
