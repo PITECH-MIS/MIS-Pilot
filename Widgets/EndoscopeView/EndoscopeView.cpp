@@ -116,7 +116,7 @@ void EndoscopeView::onTriggerRecording()
     {
         if(!recordPath.isEmpty())
         {
-            QString videoPath = recordPath + "/" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss") + ".avi";
+            QString videoPath = recordPath + "/" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss") + ".mp4";
             ui->recordButton->setEnabled(false);
             if(worker->startRecording(videoPath)) ui->recordButton->setText("Stop Rec.");
             ui->recordButton->setEnabled(true);
