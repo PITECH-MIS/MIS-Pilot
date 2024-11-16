@@ -294,6 +294,34 @@ void ControllerWindow::onSelectEquipment()
     ui->endoView2->addActuatorList(act_lst);
 }
 
+void ControllerWindow::updateCameraRotation(EndoscopeView *view)
+{
+    if(view)
+    {
+        if(view->correctionActive)
+        {
+            if(view->rotCorrectActuator.length() > 0 && view->rotCorrectEquipment.length() > 0)
+            {
+                QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
+                QWeakPointer<Equipment6DoF> eq(dev.lock()->getEquipmentByName(view->rotCorrectEquipment));
+                if(!eq.isNull())
+                {
+                    if(view->rotCorrectActuator == "Proximal")
+                    {
+                        auto act = eq.lock()->getProximal();
+                        view->rotationAngle = RAD2DEG(normalizeRad(DEG2RAD(act.lock()->getRotationState())));
+                    }
+                    else if(view->rotCorrectActuator == "Distal")
+                    {
+                        auto act = eq.lock()->getDistal();
+                        view->rotationAngle = RAD2DEG(normalizeRad(DEG2RAD(act.lock()->getRotationState())));
+                    }
+                }
+            }
+        }
+    }
+}
+
 void ControllerWindow::onSelectActuator()
 {
     QWeakPointer<Device> dev(deviceHashMap.value(ui->deviceSelectComboBox->currentText()));
@@ -313,7 +341,7 @@ void ControllerWindow::onSelectActuator()
         ui->panelRotationIqEdit->setEnabled(true);
         ui->panelRotationLineEdit->setEnabled(true);
         ui->panelRotationSpinBox->setEnabled(true);
-        if(!panelActuator->is_rotation_homing) ui->panelRotationSpinBox->setValue(roundf(panelActuator->getRotationState()));
+        if(!panelActuator->is_rotation_homing && (panelActuator->rotation_ready || isOverrideReady)) ui->panelRotationSpinBox->setValue(roundf(panelActuator->getRotationState()));
 
         ui->panelPushPullAlignButton->setEnabled(true);
         ui->panelPushPullLimiterActivatedRadioButton->setEnabled(true);
@@ -322,7 +350,7 @@ void ControllerWindow::onSelectActuator()
         ui->panelPushPullIqEdit->setEnabled(true);
         ui->panelPushPullLineEdit->setEnabled(true);
         ui->panelPushPullSpinBox->setEnabled(true);
-        if(!panelActuator->is_pushpull_homing) ui->panelPushPullSpinBox->setValue(roundf(panelActuator->getPushPullState()));
+        if(!panelActuator->is_pushpull_homing && (panelActuator->pushpull_ready || isOverrideReady)) ui->panelPushPullSpinBox->setValue(roundf(panelActuator->getPushPullState()));
 
         ui->panelLinearAlignButton->setEnabled(true);
         ui->panelLinearLimiterActivatedRadioButton->setEnabled(true);
@@ -331,7 +359,7 @@ void ControllerWindow::onSelectActuator()
         ui->panelLinearIqEdit->setEnabled(true);
         ui->panelLinearLineEdit->setEnabled(true);
         ui->panelLinearSpinBox->setEnabled(true);
-        if(!panelActuator->is_linear_homing) ui->panelLinearSpinBox->setValue(roundf(panelActuator->getLinearState()));
+        if(!panelActuator->is_linear_homing && (panelActuator->linear_ready || isOverrideReady)) ui->panelLinearSpinBox->setValue(roundf(panelActuator->getLinearState()));
 
         ui->panelPreHomingButton->setEnabled(true);
         ui->panelPostHomingButton->setEnabled(panelActuator->preInstall_ready);
@@ -381,6 +409,8 @@ void ControllerWindow::updatePanelStatus()
         ui->panelPreHomingButton->setEnabled(!isOverrideReady);
         ui->panelPostHomingButton->setEnabled(panelActuator->preInstall_ready && !isOverrideReady);
     }
+    updateCameraRotation(ui->endoView1);
+    updateCameraRotation(ui->endoView2);
 }
 
 void ControllerWindow::readRecordJson()
@@ -797,12 +827,12 @@ void ControllerWindow::onButtonEvent(const QJoystickButtonEvent &event)
             }
         }
     };
-    if(ui->leftJoyComboBox->currentText() == event.joystick->name)
+    if(ui->leftJoyComboBox->currentIndex() == event.joystick->id)
     {
         lambdaSwitchEquipment(true);
         lambdaLinearMotion(true);
     }
-    else if(ui->rightJoyComboBox->currentText() == event.joystick->name)
+    else if(ui->rightJoyComboBox->currentIndex() == event.joystick->id)
     {
         lambdaSwitchEquipment(false);
         lambdaLinearMotion(false);

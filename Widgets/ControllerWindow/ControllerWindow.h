@@ -49,6 +49,7 @@ private:
     void updateControlCoord();
     void contextMenuEvent(QContextMenuEvent *event) final;
     void showEvent(QShowEvent *event);
+    void updateCameraRotation(EndoscopeView *view);
     Ui::ControllerWindow *ui;
     MotorDebugger* debuggerWindow = nullptr;
     QHash<QString, QSharedPointer<Device>> deviceHashMap;

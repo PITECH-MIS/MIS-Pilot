@@ -866,7 +866,7 @@ bool Actuator3DoF::parseJsonFromObject(const QJsonObject& object, QHash<QString,
                 }
                 else if(key == "pushpull")
                 {
-                    // cfg_ptr->abs_pos_offset = motorPushPull.first->getPosDeg(); // Home position preserved to driver
+                    cfg_ptr->abs_pos_offset = motorPushPull.first->getPosDeg(); // Home position preserved to driver
                     motorPushPull.first->limiter_index = cfg_ptr->limiter_idx;
                 }
                 else if(key == "linear")

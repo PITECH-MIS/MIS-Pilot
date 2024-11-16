@@ -32,7 +32,8 @@ bool CaptureWorker::startRecording(QString filePath)
     if(m_isRecording) return false;
     if(!isOpened()) return false;
     if(videoWriter.isOpened()) stopRecording();
-    if(!videoWriter.open(filePath.toStdString(), cv::VideoWriter::fourcc('H','2','6','4'), 30, frameSize, true)) // CAP_DSHOW, FPS = 0?
+    // 'H264' Encoder needs libopenh264 from CiscoBinary
+    if(!videoWriter.open(filePath.toStdString(), cv::VideoWriter::fourcc('H','2','6','4'), cap.get(CAP_PROP_FPS), frameSize, true)) // CAP_DSHOW, FPS = 0?
     // if(!videoWriter.open(filePath.toStdString(), cv::VideoWriter::fourcc('M','P','4','V'), cap.get(CAP_PROP_FPS), frameSize, true))
     // if(!videoWriter.open(filePath.toStdString(), cv::VideoWriter::fourcc('M','J','P','G'), 30, frameSize, true))
     {
@@ -79,6 +80,11 @@ void CaptureWorker::openCamera(int id)
     if(!cap.isOpened())
     {
         if(!cap.open(id, CAP_DSHOW)) qDebugMessage(QString::asprintf("Failed to open camera #%d", id));
+        else
+        {
+            qDebugMessage(QString::asprintf("CAP_PROP_FPS=%d", cap.get(CAP_PROP_FPS)));
+            cap.set(CAP_PROP_FPS, 30.0);
+        }
     }
     else qDebugMessage("Camera already opened");
 }

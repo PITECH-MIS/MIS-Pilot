@@ -13,7 +13,7 @@ EndoscopeView::EndoscopeView(QWidget *parent)
     workerThread = new QThread(this);
     worker = new CaptureWorker;
     captureTimer = new QTimer(this);
-    // captureTimer->setTimerType(Qt::PreciseTimer);
+    captureTimer->setTimerType(Qt::PreciseTimer);
     worker->moveToThread(workerThread);
     connect(workerThread, &QThread::finished, workerThread, &QThread::deleteLater);
     connect(workerThread, &QThread::finished, worker, &CaptureWorker::deleteLater);
@@ -26,6 +26,21 @@ EndoscopeView::EndoscopeView(QWidget *parent)
     connect(ui->recordPathSetButton, &QPushButton::clicked, this, &EndoscopeView::onSelectRecordPath);
     ui->recordButton->setEnabled(false);
     connect(ui->recordButton, &QPushButton::clicked, this, &EndoscopeView::onTriggerRecording);
+    connect(ui->rotCorrectCheckBox, &QCheckBox::checkStateChanged, this, [this](Qt::CheckState state){
+        // qDebugMessage("button callback called");
+        if(state == Qt::CheckState::Checked)
+        {
+            rotCorrectEquipment = ui->rotCorrectEquipComboBox->currentText();
+            rotCorrectActuator = ui->rotCorrectActuatorComboBox->currentText();
+            correctionActive = true;
+        }
+        else
+        {
+            rotCorrectEquipment.clear();
+            rotCorrectActuator.clear();
+            correctionActive = false;
+        }
+    });
 }
 
 EndoscopeView::~EndoscopeView()

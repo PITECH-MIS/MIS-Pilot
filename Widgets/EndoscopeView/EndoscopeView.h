@@ -19,8 +19,9 @@ public:
     ~EndoscopeView();
     bool isCrop = false;
     float rotationAngle = 0.0f;
-    QString rotCorrectEquipment;
-    QString rotCorrectActuator;
+    QString rotCorrectEquipment = "";
+    QString rotCorrectActuator = "";
+    bool correctionActive = false;
 public slots:
     void addEquipList(QStringList equips);
     void addActuatorList(QStringList actuators);
